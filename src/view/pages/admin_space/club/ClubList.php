@@ -174,6 +174,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
     </div>
-    <script src="../../../scripts/club.js"></script>
+    <!-- <script src="../../../scripts/club.js"></script> -->
 </body>
 </html>
