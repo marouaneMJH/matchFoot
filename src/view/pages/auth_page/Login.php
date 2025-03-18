@@ -18,7 +18,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
   <body>
     <div class="login-container">
       <div class="login-card">
-          <img src="./assets/logoProMax.jpg" alt="Logo" class="logo">
+          <img src="../../assets/logoProMax.jpg" alt="Logo" class="logo">
           <h2>SoftFootball</h2>
           <p>Connectez-vous pour accéder à votre espace.</p>
   

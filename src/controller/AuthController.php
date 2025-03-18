@@ -18,7 +18,7 @@ class AuthController
             isset($_POST['confirm_password']) ? $confirm_password = $_POST['confirm_password'] : $confirm_password = '';
             $profile_path = null;
 
-            if (empty($username)  || empty($email) || empty($password) || empty($confirm_password)) {
+            if (empty($username) || empty($email) || empty($password) || empty($confirm_password)) {
                 $error = 'All fields are required';
                 include __DIR__ . '/../views/signup.php';
                 return;
@@ -47,10 +47,11 @@ class AuthController
             $created_at = date('Y-m-d H:i:s');
             $displayed_name = $displayed_name ?? $username;
             $res = User::create($username, $displayed_name, $email, $hashed_password, $created_at, $profile_path);
-            $res_array = json_decode($res, true);
-            if ($res_array['status'] === 201) {
-                header('Location: /login');
-                exit;
+
+            if ($res) {
+                $success = 'Account created successfully. Please log in.';
+                include __DIR__ . '/../views/login.php';
+                return;
             }
 
             $error = 'An error occurred during signup';
