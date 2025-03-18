@@ -2,7 +2,7 @@
 
 
 // Get the route from the URL
-$requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$requestUri = parse_url($_SERVER['REQUEST_URI'], component: PHP_URL_PATH);
 
 switch ($requestUri) {
     case '/':

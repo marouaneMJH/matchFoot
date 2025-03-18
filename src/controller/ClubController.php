@@ -53,7 +53,8 @@ class ClubController extends Controller
         }
 
         $stadium = Stadium::getById($club[Club::$stadium_id]);
-        $trainer = Staff::getByFields($club[Club::$trainer_id]); // Placeholder for now
+        // $trainer = Staff::getByFields($club[Club::$trainer_id]); // Placeholder for now
+        $trainer = null;
 
         $club['logo'] = 'http://efoot/logo?file=' . $club[Club::$logo_path] . '&dir=' . self::$uploadSubDirectory;
         $club['stadium'] = $stadium;
