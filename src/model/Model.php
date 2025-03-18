@@ -115,7 +115,9 @@ class Model
             // Construct SQL query
             $query = "SELECT $selectClause FROM $table $joinStr $whereClause";
 
-          
+            // var_dump($query);
+            // var_dump($params);
+            // die();
 
             $stmt = $pdo->prepare($query);
             $stmt->execute($params);
@@ -126,6 +128,8 @@ class Model
             throw $e;
         }
     }
+
+    
 
 
 

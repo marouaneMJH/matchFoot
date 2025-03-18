@@ -5,14 +5,7 @@
 $requestUri = parse_url($_SERVER['REQUEST_URI'], component: PHP_URL_PATH);
 
 switch ($requestUri) {
-    case '/':
-        include __DIR__ . '/club/ClubList.php';
-        break;
-
-    case 'create-club':
-        include __DIR__ . '/club_form.php';
-        break;
-
+   
     case '/logo' :
         if (!isset($_GET['file']) || !isset($_GET['dir'])) {
             return; //jsonResponse(['message' => 'File name required'], 400);
@@ -21,9 +14,11 @@ switch ($requestUri) {
         $dir = basename($_GET['dir']);
         $filePath = __DIR__ . "/../../public/uploads/" . $dir . "/" . $fileName;
 
+        $defaultDir = 'image_placeholder';
+        $defaultFileName = 'image-placeholder.png';
+
         if (!file_exists($filePath)) {
-            echo $filePath;
-            return; //jsonResponse(['message' => 'File not found'], 404);
+            $filePath = __DIR__ . "/../../public/uploads/" . $defaultDir . "/" . $defaultFileName;
         }
 
         // Determine the correct Content-Type
