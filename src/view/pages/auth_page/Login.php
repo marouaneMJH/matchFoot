@@ -1,3 +1,10 @@
+<?php
+require_once __DIR__ . '/../../../controller/AuthController.php';
+if($_SERVER['REQUEST_METHOD'] === 'POST'){
+    AuthController::login();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -5,7 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
     <title>Login page</title>
-    <link rel="stylesheet" href="./styles/style.css">
+    <link rel="stylesheet" href="../../styles/style.css">
     
   </head>
   <body>
@@ -15,7 +22,7 @@
           <h2>SoftFootball</h2>
           <p>Connectez-vous pour accéder à votre espace.</p>
   
-          <form id="form_signin" method="POST">
+          <form action="Login.php" id="form_signin" method="post">
               <div class="input-group">
                   <label for="email">Adresse Email</label>
                   <input type="email" id="email" name="email" placeholder="Votre adresse mail" required>
@@ -38,24 +45,5 @@
     <form id="form_signin">
       
     </form>
-    <script>
-        const form = document.getElementById("form_signin");
-        form.addEventListener("submit",(e)=>{
-            e.preventDefault();
-            const formData = new FormData(form);
-            fetch("http://efoot/login",{
-                method: 'POST',
-                body: formData
-            })
-            .then(res => res.json())
-            .then(data => {
-                console.log(data);
-            })
-            .catch( err => {
-                console.error(err);
-            })
-        })
-
-    </script>
-  </body>
+     </body>
 </html>

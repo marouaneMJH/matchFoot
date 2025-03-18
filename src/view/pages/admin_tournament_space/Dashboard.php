@@ -7,6 +7,7 @@
     <title>Document</title>
 </head>
 <body>
+    <?php include './Test.php'; ?>
     <!-- Main Content Area -->
 <div class="ml-72 p-8 bg-green-50 min-h-screen">
     <!-- Dashboard Header -->
