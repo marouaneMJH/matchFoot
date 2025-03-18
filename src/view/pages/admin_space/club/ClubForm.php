@@ -3,6 +3,7 @@
 $clubName = '';
 $clubNickname = '';
 $clubStadeName = '';
+$clubTrainerName = '';
 $clubCreationDate = '';
 $clubLogoPath = '';
 $clubId = '';
@@ -65,6 +66,22 @@ if (isset($_GET['id'])) {
                 foreach ($stades as $stade):?>
                     <option value="<?php echo $stade[Stadium::$id]; ?>" <?php echo isset($clubStadeName) && $clubStadeName == $stade[Stadium::$name] ? 'selected' : ''; ?>>
                         <?php echo $stade[Stadium::$name]; ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div>
+            <label class="block text-sm font-medium" for="staedname">Trainer Name</label>
+
+            <select name="stade_id" id="stade_id" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <option value="-1" default disabled selected>
+                    Select Trainer
+                </option>
+                <?php
+                
+                foreach ($trainers as $trainer):?>
+                    <option value="<?php echo $trainer[Staff::$id]; ?>" <?php echo isset($clubTrainerName) && $clubTrainerName == $trainer[Staff::$lastName] ? 'selected' : ''; ?>>
+                        <?php echo $trainer[Staff::$lastName]; ?>
                     </option>
                 <?php endforeach; ?>
             </select>

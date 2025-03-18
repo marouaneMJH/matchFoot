@@ -5,7 +5,7 @@ class Stadium extends Model
 
     
 
-    protected static $table = 'stadium';
+    public static $table = 'stadium';
 
     public static $id = 'id';
     public static $name = 'name';

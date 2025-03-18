@@ -1,4 +1,4 @@
-<?php 
+<?php
 require_once __DIR__ . '/../helper/UploadFileHelper.php';
 require_once __DIR__ . '/../model/Tournament.php';
 require_once __DIR__ . '/Controller.php';
@@ -10,18 +10,18 @@ class TournamentController extends Controller
 
     public static function index(): array
     {
-        try{
+        try {
             $tournaments = Tournament::getAll();
             $modifiedTournament = [];
-            if($tournaments){
-                foreach($tournaments as $tournament){
-                    $tournament['logo']='http://efoot/logo?file=' . $tournament[Tournament::$logoPath] . '&dir=' . self::$uploadSubDirectory;
+            if ($tournaments) {
+                foreach ($tournaments as $tournament) {
+                    $tournament['logo'] = 'http://efoot/logo?file=' . $tournament[Tournament::$logoPath] . '&dir=' . self::$uploadSubDirectory;
                     $modifiedTournament[] = $tournament;
                 }
                 return $modifiedTournament;
             }
             return [];
-        }catch(PDOException $e){
+        } catch (PDOException $e) {
             $error = "Error fetching clubs: " . $e->getMessage();
             include __DIR__ . '/../view/Error.php';
             return [];
@@ -31,25 +31,28 @@ class TournamentController extends Controller
     public static function getTournamentsByAdminId($adminId): array
     {
         try {
-           $tournaments = Tournament::getData(
-            [TournamentAdmin::$adminId => $adminId],
-            [
-                TournamentAdmin::$table => [
-                    'condition' => TournamentAdmin::$tournamentId . ' = ' . Tournament::$table . '.id',
+            $tournaments = Tournament::getData(
+                [TournamentAdmin::$adminId => $adminId],
+                [
+                    TournamentAdmin::$table => [
+                        'condition' => TournamentAdmin::$tournamentId . ' = ' . Tournament::$table . '.id',
+                    ]
+                ],
+                [
+                    'id'
                 ]
-            ]
-           );
+            );
 
             if (!$tournaments) {
                 $error = "Tournaments not found";
                 include __DIR__ . '/../view/Error.php';
                 return [];
             }
-            foreach($tournaments as $tournament){
+            foreach ($tournaments as $tournament) {
                 $tournament['logo'] = 'http://efoot/logo?file=' . $tournament[Tournament::$logoPath] . '&dir=' . self::$uploadSubDirectory;
             }
 
-           return $tournaments;
+            return $tournaments;
         } catch (PDOException $e) {
             $error = "Error fetching tournament: " . $e->getMessage();
             include __DIR__ . '/../view/Error.php';
@@ -78,7 +81,7 @@ class TournamentController extends Controller
 
     public static function store(): void
     {
-        if($_SERVER['REQUEST_METHOD'] !== 'POST'){
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $error = "Invalid request method";
             include __DIR__ . '/../view/Error.php';
             return;
@@ -102,33 +105,31 @@ class TournamentController extends Controller
         ];
 
         $validatpr_results = self::validate($data, $rules);
-        if($validatpr_results !== true){
+        if ($validatpr_results !== true) {
             $error = $validatpr_results;
             include __DIR__ . '/../view/Error.php';
             return;
         }
 
-        if(isset($_FILES['logo'])){
+        if (isset($_FILES['logo'])) {
             $logo = $_FILES['logo'];
             $logo_path = uploadImage($logo, self::$uploadDirectory);
             $data[Tournament::$logoPath] = $logo_path;
         }
 
-        try{
+        try {
             Tournament::create($data);
             header('Location: TournamentList.php');
-        }catch(PDOException $e){
+        } catch (PDOException $e) {
             $error = "Error creating tournament: " . $e->getMessage();
             include __DIR__ . '/../view/Error.php';
             return;
         }
-
-
     }
 
     public static function update(): void
     {
-        if($_SERVER['REQUEST_METHOD'] !== 'POST'){
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $error = "Invalid request method";
             include __DIR__ . '/../view/Error.php';
             return;
@@ -156,42 +157,41 @@ class TournamentController extends Controller
         ];
 
         $validatpr_results = self::validate($data, $rules);
-        if($validatpr_results !== true){
+        if ($validatpr_results !== true) {
             $error = $validatpr_results;
             include __DIR__ . '/../view/Error.php';
             return;
         }
 
 
-        try{
+        try {
             $tournament = Tournament::getById($id);
             if (!$tournament) {
                 $error = "Tournament not found";
                 include __DIR__ . '/../view/Error.php';
                 return;
             }
-            
-        }catch(PDOException $e){
+        } catch (PDOException $e) {
             $error = "Error fetching tournament: " . $e->getMessage();
             include __DIR__ . '/../view/Error.php';
             return;
         }
 
-        if(isset($_FILES['logo']) && $_FILES['logo']['size'] > 0){
+        if (isset($_FILES['logo']) && $_FILES['logo']['size'] > 0) {
             $logo = $_FILES['logo'];
             $old_logo_path = $tournament[Tournament::$logoPath];
             $logo_path = uploadImage($logo, self::$uploadDirectory);
             $data[Tournament::$logoPath] = $logo_path;
         }
 
-        try{
+        try {
             Tournament::update($id, $data);
-            if($old_logo_path){
+            if ($old_logo_path) {
                 deleteImage(self::$uploadDirectory . $old_logo_path);
             }
             header('Location: TournamentList.php');
-        }catch(PDOException $e){
-            if($logo_path){
+        } catch (PDOException $e) {
+            if ($logo_path) {
                 deleteImage(self::$uploadDirectory . $logo_path);
             }
             $error = "Error updating tournament: " . $e->getMessage();
@@ -221,13 +221,11 @@ class TournamentController extends Controller
 
             if ($logoPath) {
                 deleteImage(self::$uploadDirectory . $logoPath);
-            }            
+            }
         } catch (Exception $e) {
             $error = "Error deleting tournament: " . $e->getMessage();
             include __DIR__ . '/../view/Error.php';
             return;
         }
     }
-
-
 }

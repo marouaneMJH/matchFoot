@@ -15,6 +15,7 @@ class Admin extends Model{
     public static $roleId="role_id";
     public static $createdAt="created_at";
 
+
     public function __construct($id, $firstName, $lastName, $birthDate, $phoneNumber, $email, $password, $roleId) {
         $this->id = $id;
         $this->firstName = $firstName;

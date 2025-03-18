@@ -64,10 +64,11 @@ class Model
             $pdo = self::connect();
             $whereClause = implode(" AND ", array_map(fn($key) => "$key = :$key", array_keys($data)));
             $sql = "SELECT * FROM " . static::$table . " WHERE $whereClause";
-            echo $sql;
+            
             $stmt = $pdo->prepare($sql);
             $stmt->execute($data);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
+ 
             return $result ? true : false;
         } catch (PDOException $e) {
             throw $e;
@@ -77,11 +78,15 @@ class Model
     public static function getByFields($data): array
     {
         try {
+            
             $pdo = self::connect();
             $whereClause = implode(" AND ", array_map(fn($key) => "$key = :$key", array_keys($data)));
             $stmt = $pdo->prepare("SELECT * FROM " . static::$table . " WHERE $whereClause");
+
+
             $stmt->execute($data);
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
             if (!$result) {
                 return [];
             }
@@ -92,7 +97,7 @@ class Model
         }
     }
 
-    public static function getData(array $filters = [], array $joins = []): array
+    public static function getData(array $filters = [], array $joins = [], array $commonFields = []): array
     {
         try {
             $pdo = self::connect();
@@ -104,17 +109,24 @@ class Model
             // Build WHERE Clause
             [$whereClause, $params] = self::buildWhereClause($filters);
 
+            // Build SELECT Clause
+            $selectClause = self::buildSelectClause($table, $joins, $commonFields);
+
             // Construct SQL query
-            $query = "SELECT * FROM $table $joinStr $whereClause";
+            $query = "SELECT $selectClause FROM $table $joinStr $whereClause";
+
+          
 
             $stmt = $pdo->prepare($query);
             $stmt->execute($params);
+            
 
             return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
         } catch (PDOException $e) {
             throw $e;
         }
     }
+
 
 
 
@@ -133,18 +145,49 @@ class Model
         }
     }
 
-    public static function update($id, $data): bool
+    public static function update($id, $newData): bool
     {
         try {
             $pdo = self::connect();
-            $setClause = implode(", ", array_map(fn($key) => "$key = :$key", array_keys($data)));
-            $stmt = $pdo->prepare("UPDATE " . static::$table . " SET $setClause WHERE id = :id");
-            $data['id'] = $id;
-            return $stmt->execute($data);
+
+            // Get existing data
+            $stmt = $pdo->prepare("SELECT * FROM " . static::$table . " WHERE id = :id");
+            $stmt->execute(['id' => $id]);
+            $oldData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$oldData) {
+                throw new Exception("Record with ID $id not found.");
+            }
+
+            // Compare and keep only changed fields
+            $changedFields = [];
+            $params = [];
+
+            foreach ($newData as $key => $value) {
+                if (!array_key_exists($key, $oldData) || $oldData[$key] != $value) {
+                    $changedFields[] = "$key = :$key"; // Build the SET clause
+                    $params[$key] = $value;
+                }
+            }
+
+
+            // No changes? Skip the update
+            if (empty($changedFields)) {
+                return false; // No update performed
+            }
+
+            // Prepare and execute update
+            $sql = "UPDATE " . static::$table . " SET " . implode(", ", $changedFields) . " WHERE id = :id";
+
+            $params['id'] = $id;
+            $stmt = $pdo->prepare($sql);
+
+            return $stmt->execute($params);
         } catch (PDOException $e) {
             throw $e;
         }
     }
+
 
     public static function delete($id): bool
     {
@@ -157,7 +200,18 @@ class Model
         }
     }
 
-
+    public static function deleteByFields($data): bool
+    {
+        try {
+            $pdo = self::connect();
+            $whereClause = implode(" AND ", array_map(fn($key) => "$key = :$key", array_keys($data)));
+            $stmt = $pdo->prepare("DELETE FROM " . static::$table . " WHERE $whereClause");
+            
+            return $stmt->execute($data);
+        } catch (PDOException $e) {
+            throw $e;
+        }
+    }
 
 
 
@@ -221,4 +275,43 @@ class Model
 
         return implode(" ", $joinClauses);
     }
+
+    private static function buildSelectClause(string $table, array $joins, array $commonFields = ['id']): string
+{
+    $selectFields = ["$table.id AS id"]; // Keep main table's id as "id"
+    
+    // Select all fields from the main table, except the common fields
+    $selectFields[] = implode(", ", array_map(fn($col) => "$table.$col", self::getTableColumns($table, $commonFields)));
+
+    foreach ($joins as $joinTable => $joinData) {
+        $alias = isset($joinData['alias']) ? $joinData['alias'] : $joinTable;
+
+        // Select all fields from the joined table, except common fields
+        $columns = self::getTableColumns($alias, $commonFields);
+        foreach ($columns as $column) {
+            $selectFields[] = "$alias.$column";
+        }
+
+        // If the common field (e.g., 'id') exists, alias it as tableName_id
+        foreach ($commonFields as $field) {
+            $selectFields[] = "$alias.$field AS {$alias}_$field";
+        }
+    }
+
+    return implode(", ", array_unique($selectFields));
+}
+
+private static function getTableColumns(string $table, array $excludeFields = []): array
+{
+    try {
+        $pdo = self::connect();
+        $stmt = $pdo->query("DESCRIBE $table");
+        $columns = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+        return array_filter($columns, fn($col) => !in_array($col, $excludeFields));
+    } catch (PDOException $e) {
+        throw $e;
+    }
+}
+
 }

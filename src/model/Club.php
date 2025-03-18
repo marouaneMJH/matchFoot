@@ -6,7 +6,7 @@ class Club extends Model
 
     
 
-    protected static $table = 'club';
+    public static $table = 'club';
 
     public static $id="id";
     public static $name = "name";

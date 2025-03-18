@@ -18,7 +18,6 @@ class AdminTournamentController extends Controller
             if ($admins) {
                 foreach ($admins as $admin) {
                     $admin['profile'] = 'http://efoot/logo?file=' . $admin[Admin::$profilePath] . '&dir=' . self::$uploadSubDirectory;
-                    $admin['tournaments'] = TournamentAdmin::getByFields([TournamentAdmin::$adminId => $admin[Admin::$id]]);
                     $modifiedAdmins[] = $admin;
                 }
                 return $modifiedAdmins;
@@ -108,7 +107,7 @@ class AdminTournamentController extends Controller
             foreach ($tournamentsIds as $tournamentId) {
                 $dataTournamentAdmin = [
                     TournamentAdmin::$tournamentId => $tournamentId,
-                    
+
                 ];
             }
         }
@@ -161,11 +160,13 @@ class AdminTournamentController extends Controller
         $password = isset($_POST['password']) ? trim($_POST['password']) : null;
         $birthDate = isset($_POST['birth_date']) ? trim($_POST['birth_date']) : null;
         $phoneNumber = isset($_POST['phone_number']) ? trim($_POST['phone_number']) : null;
+        $tournamentsIds = isset($_POST['tournaments']) ? $_POST['tournaments'] : null;
         $profilePath = null;
         $oldProfilePath = null;
 
 
-        
+
+
         $data = [
             Admin::$id => $id,
             Admin::$firstName => $firstName,
@@ -173,7 +174,7 @@ class AdminTournamentController extends Controller
             Admin::$email => $email,
             Admin::$password => $password,
             Admin::$birthDate => $birthDate,
-            Admin::$phoneNumber => $phoneNumber,
+            Admin::$phoneNumber => $phoneNumber
         ];
         $rules = [
             Admin::$id => 'required|numeric',
@@ -210,8 +211,7 @@ class AdminTournamentController extends Controller
 
 
 
-        if (isset($_FILES['profile_path']) && $_FILES["profile_path"]["size"] > 0)
-        {
+        if (isset($_FILES['profile_path']) && $_FILES["profile_path"]["size"] > 0) {
             $oldProfilePath = $admin[Admin::$profilePath];
             $file = $_FILES['profile_path'];
             $profilePath = uploadImage($file, self::$uploadDirectory);
@@ -223,34 +223,33 @@ class AdminTournamentController extends Controller
             $data[Admin::$profilePath] = $profilePath;
         }
 
-        if ($tournamentsIds) {
-            // Todo: To Implement this with update
-            // ! Update just only if the tournamentsIds are changed
 
-            foreach ($tournamentsIds as $tournamentId) {
-                $dataTournamentAdmin = [
-                    TournamentAdmin::$tournamentId => $tournamentId,
-                    TournamentAdmin::$adminId => $id,
-                ];
-                try {
-                    TournamentAdmin::create($dataTournamentAdmin);
-                } catch (Exception $e) {
-                    $error = "Error affecting tournament: " . $e->getMessage();
-                    include __DIR__ . '/../view/Error.php';
-                }
-            }
-        }
 
         try {
             $result = Admin::update($id, $data);
+            if ($tournamentsIds) {
+
+                foreach ($tournamentsIds as $tournamentId) {
+                    if (TournamentAdmin::getByFields([TournamentAdmin::$tournamentId => $tournamentId, TournamentAdmin::$adminId => $id]))
+                        continue;
+
+                    $dataTournamentAdmin = [
+                        TournamentAdmin::$tournamentId => $tournamentId,
+                        TournamentAdmin::$adminId => $id,
+                    ];
+                    try {
+                        TournamentAdmin::create($dataTournamentAdmin);
+                    } catch (Exception $e) {
+                        $error = "Error affecting tournament: " . $e->getMessage();
+                        include __DIR__ . '/../view/Error.php';
+                    }
+                }
+            }
             if ($result) {
                 if ($oldProfilePath) {
                     deleteImage(self::$uploadDirectory . $oldProfilePath);
                 }
                 header('Location: AdminTournamentList.php');
-            } else {
-                $error = "Error updating admin";
-                include __DIR__ . '/../view/Error.php';
             }
         } catch (Exception $e) {
             if ($profilePath) {
@@ -279,6 +278,34 @@ class AdminTournamentController extends Controller
             }
         } catch (Exception $e) {
             $error = "Error deleting admin: " . $e->getMessage();
+            include __DIR__ . '/../view/Error.php';
+        }
+    }
+
+    public static function removeTournament($id, $tournamentId)
+    {
+        if (!$id) {
+            $error = "Invalid admin id";
+            include __DIR__ . '/../view/Error.php';
+            return;
+        }
+
+        if (!$tournamentId) {
+            $error = "Invalid tournament id";
+            include __DIR__ . '/../view/Error.php';
+            return;
+        }
+
+        try {
+            $result = TournamentAdmin::deleteByFields([TournamentAdmin::$adminId => $id, TournamentAdmin::$tournamentId => $tournamentId]);
+            if ($result) {
+                header('Location: AdminTournamentList.php?id=' . $id.'&&showModal');
+            } else {
+                $error = "Error deleting tournament";
+                include __DIR__ . '/../view/Error.php';
+            }
+        } catch (Exception $e) {
+            $error = "Error deleting tournament: " . $e->getMessage();
             include __DIR__ . '/../view/Error.php';
         }
     }
