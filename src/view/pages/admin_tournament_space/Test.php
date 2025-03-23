@@ -41,8 +41,8 @@
             <select id="tournamentSelector" 
                     class="w-full p-2.5 bg-green-700 text-white rounded-lg border border-green-600 focus:outline-none focus:border-green-400 focus:ring-1 focus:ring-green-400">
                 <option value="">Select Tournament</option>
-                <option value="1">Premier League 2023</option>
-                <option value="2">Champions League</option>
+                <option value="1">Botola Pro</option>
+                <option value="2">Kass El Aarch</option>
             </select>
         </div>
     </div>
