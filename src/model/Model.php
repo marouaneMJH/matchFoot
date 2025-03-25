@@ -282,7 +282,10 @@ class Model
 
     private static function buildSelectClause(string $table, array $joins, array $commonFields = ['id']): string
 {
-    $selectFields = ["$table.id AS id"]; // Keep main table's id as "id"
+    $selectFields = [];
+    foreach ($commonFields as $field) {
+        $selectFields[] = "$table.$field as $field";
+    }
     
     // Select all fields from the main table, except the common fields
     $selectFields[] = implode(", ", array_map(fn($col) => "$table.$col", self::getTableColumns($table, $commonFields)));

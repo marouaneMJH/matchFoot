@@ -14,12 +14,12 @@ class ClubController extends Controller
     public static function index(): array
     {
         try {
-            $clubs = Club::getAll();
-            // $clubs = Club::getData(
-            //     [],
-            //     [Stadium::$table => ['condition' => Club::$stadium_id = Stadium::$table . '.' . Stadium::$id]],
-            //     ['id','name']
-            // );
+        //    $clubs = Club::getAll();
+            $clubs = Club::getData(
+                [],
+                [Stadium::$table => ['condition' => Club::$stadium_id .'='. Stadium::$table . '.' . Stadium::$id]],
+                ['id','name']
+            );
             
             $modifiedClubs = [];
             if ($clubs) {
