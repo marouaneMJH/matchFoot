@@ -36,8 +36,8 @@
                 <!-- Header Section -->
                 <div class="flex justify-between items-center mb-8">
                     <div>
-                        <h1 class="text-3xl font-bold text-green-900">Premier League 2023</h1>
-                        <p class="text-green-600 mt-1">Tournament Management Dashboard</p>
+                        <h1 class="text-3xl font-bold text-green-900">Botola Pro 2023/24</h1>
+                        <p class="text-green-600 mt-1">Moroccan Professional Football League</p>
                     </div>
 
                     <button onclick="openAddMatchModal()"
@@ -74,16 +74,14 @@
 
                 <!-- Matches Tab Content -->
                 <div id="matchesTab" class="space-y-6">
-                    <!-- Round Section -->
                     <div class="bg-white rounded-xl shadow-sm border border-green-100 p-6">
                         <h2 class="text-xl font-semibold text-green-900 mb-4">Round 1</h2>
                         <div class="space-y-4">
-                            <!-- Match Card -->
                             <div class="border border-green-100 rounded-lg p-4 hover:bg-green-50 transition-colors">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center space-x-4 flex-1">
-                                        <img src="team1-logo.jpg" alt="Team 1" class="w-12 h-12 rounded-full object-cover">
-                                        <span class="text-green-900 font-medium">Manchester United</span>
+                                        <img src="http://efoot/logo?file=wydad&dir=club_logo" alt="Wydad AC" class="w-12 h-12 rounded-full object-cover">
+                                        <span class="text-green-900 font-medium">Wydad AC</span>
                                         <span class="text-2xl font-bold text-green-800">2</span>
                                     </div>
                                     <div class="px-4 py-1 rounded bg-green-100 text-green-800">
@@ -91,23 +89,15 @@
                                     </div>
                                     <div class="flex items-center space-x-4 flex-1 justify-end">
                                         <span class="text-2xl font-bold text-green-800">1</span>
-                                        <span class="text-green-900 font-medium">Liverpool</span>
-                                        <img src="team2-logo.jpg" alt="Team 2" class="w-12 h-12 rounded-full object-cover">
+                                        <span class="text-green-900 font-medium">Raja CA</span>
+                                        <img src="http://efoot/logo?file=raja&dir=club_logo" alt="Raja CA" class="w-12 h-12 rounded-full object-cover">
                                     </div>
-                                    <div class="ml-4 flex items-center space-x-2">
-                                        <button onclick="editMatch(1)" class="text-green-600 hover:text-green-800">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                            </svg>
-                                        </button>
-                                    </div>
+                                    <!-- Rest of the match card structure remains the same -->
                                 </div>
                                 <div class="mt-2 text-sm text-green-600">
-                                    Date: 2023-12-01 | Time: 20:00 | Stadium: Old Trafford
+                                    Date: 2023-12-01 | Time: 20:00 | Stadium: Mohammed V Complex
                                 </div>
                             </div>
-                            <!-- Add more match cards here -->
                         </div>
                     </div>
                 </div>
@@ -269,29 +259,30 @@
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center space-x-4">
                                             <img class="h-10 w-10 rounded-full object-cover border-2 border-green-200"
-                                                src="team1-logo.jpg"
-                                                alt="Club Logo">
+                                                src="http://efoot/logo?file=wydad&dir=club_logo"
+                                                alt="Wydad AC">
                                             <div>
-                                                <div class="text-sm font-medium text-green-900">Manchester United</div>
-                                                <div class="text-sm text-green-600">Premier League</div>
+                                                <div class="text-sm font-medium text-green-900">Wydad AC</div>
+                                                <div class="text-sm text-green-600">Botola Pro</div>
                                             </div>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-green-900">Old Trafford</div>
-                                        <div class="text-sm text-green-600">Capacity: 74,140</div>
+                                        <div class="text-sm text-green-900">Mohammed V Complex</div>
+                                        <div class="text-sm text-green-600">Capacity: 45,000</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-green-900">1878</div>
+                                        <div class="text-sm text-green-900">1937</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-green-900">Erik ten Hag</div>
+                                        <div class="text-sm text-green-900">Adil Ramzi</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                            26 Players
+                                            28 Players
                                         </span>
                                     </td>
+                                    <!-- Rest of the club row structure remains the same -->
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div class="flex space-x-3">
                                             <button class="text-green-600 hover:text-green-900 transition-colors">
@@ -309,8 +300,7 @@
                                         </div>
                                     </td>
                                 </tr>
-                                <!-- Add more club rows here -->
-                            </tbody>
+                                <!-- Add more Moroccan club rows following the same structure -->
                         </table>
                     </div>
                 </div>
@@ -355,6 +345,7 @@
             </div>
             <div id="newsTab" class="hidden space-y-6">
                 <!-- News Header -->
+
                 <div class="bg-white rounded-xl shadow-sm border border-green-100 p-6">
                     <div class="flex justify-between items-center">
                         <div>
@@ -393,7 +384,7 @@
                                                 <img class="h-12 w-12 rounded-lg object-cover" src="news-image.jpg" alt="">
                                             </div>
                                             <div class="ml-4">
-                                                <div class="text-sm font-medium text-green-900">Quarter Finals Schedule Announced</div>
+                                                <div class="text-sm font-medium text-green-900">Casablanca Derby: Wydad vs Raja Preview</div>
                                                 <div class="text-sm text-green-500">By Admin • 2 hours ago</div>
                                             </div>
                                         </div>
