@@ -74,7 +74,7 @@ img {
 .pitchContainer {
     width: 500px;
     height: 700px;
-    background: url('../../../assets/images/terrain/lineup-pitch.jpg') no-repeat center;
+    background: url('../assets/images/terrain/lineup-pitch.jpg') no-repeat center;
     background-size: cover;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -132,7 +132,7 @@ img {
 .pitchContainer {
     width: 600px;
     height: 1000px;
-    background: url('../../../assets/images/terrain/lineup-pitch.jpg') no-repeat center;
+    background: url('../assets/images/terrain/lineup-pitch.jpg') no-repeat center;
     background-size: cover;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -229,5 +229,9 @@ img {
 .bar.right {
     background: #8b0000; /* Rouge foncé */
 }
+
+
+
+
 
 

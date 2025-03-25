@@ -140,7 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-900"><?php echo $club[Club::$name]; ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600"><?php echo $club[Club::$nickname]; ?></td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600"><?php echo $club[Stadium::$name]; ?></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600"><?php echo $club[Stadium::$table.'_'.Stadium::$name]; ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600"><?php echo $club['trainer']; ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600"><?php echo $club[Club::$founded_at]; ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
