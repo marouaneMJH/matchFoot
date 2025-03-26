@@ -1,3 +1,9 @@
+<?php
+require_once __DIR__ . '/../../../controller/ClubController.php';
+require_once __DIR__ . '/../../../controller/StadiumController.php';
+//require_once __DIR__ . '/../../../controller/GameMatchController.php';
+require_once __DIR__ . '/../../../controller/RefereeController.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -519,17 +525,22 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-green-700">Home Team</label>
-                        <select class="mt-1 block w-full rounded-md border-green-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200">
+                        <?php $clubs = ClubController::index(); ?>
+                        <select name="club1_id" class="mt-1 block w-full rounded-md border-green-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200">
                             <option>Select Team</option>
-                            <!-- Add team options -->
+                            <?php foreach ($clubs as $club) : ?>
+                                <option value="<?php echo $club[Club::$id]; ?>"><?php echo $club[Club::$name]; ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-green-700">Away Team</label>
-                        <select class="mt-1 block w-full rounded-md border-green-300 shadow-sm
-                         focus:border-green-500 focus:ring focus:ring-green-200">
+                        <?php $clubs = ClubController::index(); ?>
+                        <select name="club1_id" class="mt-1 block w-full rounded-md border-green-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200">
                             <option>Select Team</option>
-                            <!-- Add team options -->
+                            <?php foreach ($clubs as $club) : ?>
+                                <option value="<?php echo $club[Club::$id]; ?>"><?php echo $club[Club::$name]; ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                 </div>
@@ -547,9 +558,13 @@
 
                 <div>
                     <label class="block text-sm font-medium text-green-700">Stadium</label>
-                    <select class="mt-1 block w-full rounded-md border-green-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200">
+                    <?php $stadiums = StadiumController::index(); ?>
+                    <select name="stadium_id" class="mt-1 block w-full rounded-md border-green-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200">
                         <option>Select Stadium</option>
                         <!-- Add stadium options -->
+                        <?php foreach ($stadiums as $stadium) : ?>
+                            <option value="<?php echo $stadium[Stadium::$id]; ?>"><?php echo $stadium[Stadium::$name]; ?></option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
 
@@ -563,9 +578,14 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-green-700">Referee</label>
-                        <select class="mt-1 block w-full rounded-md border-green-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200">
+                        <?php $referees = RefereeController::index(); 
+                        ?>
+                        <select name="referee_id" class="mt-1 block w-full rounded-md border-green-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200">
                             <option>Select Referee</option>
                             <!-- Add referee options -->
+                            <?php foreach ($referees as $referee) : ?>
+                                <option value="<?php echo $referee[Referee::$id]; ?>"><?php echo $referee[Referee::$lastName]." ".$referee[Referee::$firstName]; ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                 </div>
