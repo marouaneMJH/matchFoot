@@ -103,14 +103,6 @@ class AdminTournamentController extends Controller
             }
         }
 
-        if ($tournamentsIds) {
-            foreach ($tournamentsIds as $tournamentId) {
-                $dataTournamentAdmin = [
-                    TournamentAdmin::$tournamentId => $tournamentId,
-
-                ];
-            }
-        }
 
         $data[Admin::$profilePath] = $profilePath;
         try {

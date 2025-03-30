@@ -142,6 +142,7 @@ class Model
             $columns = implode(", ", array_keys($data));
             $values = ":" . implode(", :", array_keys($data));
             $stmt = $pdo->prepare("INSERT INTO " . static::$table . " ($columns) VALUES ($values)");
+        
             $stmt->execute($data);
             return $pdo->lastInsertId();
         } catch (PDOException $e) {
