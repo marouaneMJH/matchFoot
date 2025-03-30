@@ -1,3 +1,5 @@
+<?php require_once __DIR__ . '/../../../controller/TournamentController.php'; ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,11 +40,15 @@
     <!-- Tournament Selection -->
     <div class="p-4 border-b border-green-700/50">
         <div class="relative">
+            <?php $tournaments = TournamentController::index(); ?>
             <select id="tournamentSelector" 
                     class="w-full p-2.5 bg-green-700 text-white rounded-lg border border-green-600 focus:outline-none focus:border-green-400 focus:ring-1 focus:ring-green-400">
-                <option value="">Select Tournament</option>
-                <option value="1">Botola Pro</option>
-                <option value="2">Kass El Aarch</option>
+                <option value="" disabled selected>Select Tournament</option>
+                <?php foreach ($tournaments as $tournament): ?>
+                    <option value="<?php echo $tournament['id']; ?>">
+                        <?php echo htmlspecialchars($tournament[Tournament::$name]); ?>
+                    </option>
+                <?php endforeach; ?>
             </select>
         </div>
     </div>
@@ -158,6 +164,15 @@
                 link.classList.add('bg-green-700/50');
             }
         });
+    });
+    const tournamentSelector = document.getElementById('tournamentSelector');
+    tournamentSelector.addEventListener('change', function() {
+        const selectedValue = this.value;
+        if (selectedValue) {
+            // Store selected tournament in session/local storage
+            localStorage.setItem('selectedTournament', selectedValue);
+            // You can add additional logic here to load tournament-specific data
+        }
     });
 </script>
 
