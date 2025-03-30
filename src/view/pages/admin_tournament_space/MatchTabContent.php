@@ -34,13 +34,13 @@ foreach ($gameMatches as $match) {
             class="flex-col space-y-4">
             <?php if (empty($liveMatches)) : ?>
                 <div class="bg-white  rounded-lg shadow-sm border border-green-100 overflow-hidden">
-                <div class="p-8 flex flex-col items-center justify-center">
-                    <h3 class="text-lg font-medium text-gray-100 mb-2">No Matches Found</h3>
-                    <p class="text-gray-100 text-center max-w-md">
-                        There are currently no matches available for this selection. Please check back later.
-                    </p>
+                    <div class="p-8 flex flex-col items-center justify-center">
+                        <h3 class="text-lg font-medium text-gray-100 mb-2">No Matches Found</h3>
+                        <p class="text-gray-100 text-center max-w-md">
+                            There are currently no matches available for this selection. Please check back later.
+                        </p>
+                    </div>
                 </div>
-            </div>
             <?php endif; ?>
             <?php foreach ($liveMatches as $match) : ?>
 
@@ -93,13 +93,13 @@ foreach ($gameMatches as $match) {
             class="flex-col space-y-4">
             <?php if (empty($upcomingMatches)) : ?>
                 <div class="bg-white  rounded-lg shadow-sm border border-green-100 overflow-hidden">
-                <div class="p-8 flex flex-col items-center justify-center">
-                    <h3 class="text-lg font-medium text-gray-100 mb-2">No Matches Found</h3>
-                    <p class="text-gray-100 text-center max-w-md">
-                        There are currently no matches available for this selection. Please check back later.
-                    </p>
+                    <div class="p-8 flex flex-col items-center justify-center">
+                        <h3 class="text-lg font-medium text-gray-100 mb-2">No Matches Found</h3>
+                        <p class="text-gray-100 text-center max-w-md">
+                            There are currently no matches available for this selection. Please check back later.
+                        </p>
+                    </div>
                 </div>
-            </div>
             <?php endif; ?>
             <?php foreach ($upcomingMatches as $match) : ?>
                 <div class="bg-white rounded-xl shadow-sm border border-green-100 p-6 ">
@@ -133,7 +133,7 @@ foreach ($gameMatches as $match) {
     </div>
     <div class="flex-col space-y-6 mb-4">
         <div class="flex items-center justify-between mb-4 hover:bg-green-100 transition-colors p-2 rounded-lg cursor-pointer" onclick="toggleSection('FinishedSection')">
-            <div class="text-xl font-semibold text-green-800 "> Finished Matches</div>
+            <div class="text-xl font-semibold text-purple-500 "> Finished Matches</div>
             <svg
                 id="icon-FinishedSection"
                 style="transition: transform 0.3s ease-in-out;transform: rotate(180deg);"
@@ -151,38 +151,52 @@ foreach ($gameMatches as $match) {
             class="flex-col space-y-4">
             <?php if (empty($finishedMatches)) : ?>
                 <div class="bg-white  rounded-lg shadow-sm border border-green-100 overflow-hidden">
-                <div class="p-8 flex flex-col items-center justify-center">
-                    <h3 class="text-lg font-medium text-gray-100 mb-2">No Matches Found</h3>
-                    <p class="text-gray-100 text-center max-w-md">
-                        There are currently no matches available for this selection. Please check back later.
-                    </p>
+                    <div class="p-8 flex flex-col items-center justify-center">
+                        <h3 class="text-lg font-medium text-gray-100 mb-2">No Matches Found</h3>
+                        <p class="text-gray-100 text-center max-w-md">
+                            There are currently no matches available for this selection. Please check back later.
+                        </p>
+                    </div>
                 </div>
-            </div>
             <?php endif; ?>
             <?php foreach ($finishedMatches as $match) : ?>
-                <div class="bg-white rounded-xl shadow-sm border border-green-100 p-6 ">
-                    <h2 class="text-xl font-semibold  mb-4"> Round: <?php echo $match[GameMatch::$round] ?></h2>
-                    <div class="space-y-4">
-                        <div class="border border-green-100 rounded-lg p-4 hover:bg-green-50 transition-colors">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center space-x-4 flex-1">
-                                    <img src=<?php echo isset($match["club1_logo"]) ?  $match["club1_logo"] : " http://efoot/logo?file=img-placeholder.png&dir=image_placeholder" ?> alt="Wydad AC" class="w-12 h-12 rounded-full object-cover">
-                                    <span class="font-medium"><?php echo $match["club1_name"] ?></span>
-                                    <span class="text-2xl font-bold ">2</span>
+                <div class=" relative group:">
+                    <div class="bg-white rounded-xl shadow-sm border border-green-100 p-6 group-hover:blur-sm ">
+                        <h2 class="text-xl font-semibold  mb-4"> Round: <?php echo $match[GameMatch::$round] ?></h2>
+                        <div class="space-y-4">
+                            <div class="border border-green-100 rounded-lg p-4 ">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-4 flex-1">
+                                        <img src=<?php echo isset($match["club1_logo"]) ?  $match["club1_logo"] : " http://efoot/logo?file=img-placeholder.png&dir=image_placeholder" ?> alt="Wydad AC" class="w-12 h-12 rounded-full object-cover">
+                                        <span class="font-medium"><?php echo $match["club1_name"] ?></span>
+                                        <span class="text-2xl font-bold ">2</span>
+                                    </div>
+                                    <div class="px-4 py-1 rounded bg-gray-100 text-gray-800">
+                                        VS
+                                    </div>
+                                    <div class="flex items-center space-x-4 flex-1 justify-end">
+                                        <span class="text-2xl font-bold ">1</span>
+                                        <span class=" font-medium"><?php echo $match["club2_name"] ?></span>
+                                        <img src=<?php echo isset($match["club2_logo"]) ?  $match["club2_logo"] : " http://efoot/logo?file=img-placeholder.png&dir=image_placeholder" ?> alt="Raja CA" class="w-12 h-12 rounded-full object-cover">
+                                    </div>
+                                    <!-- Rest of the match card structure remains the same -->
                                 </div>
-                                <div class="px-4 py-1 rounded bg-gray-100 text-gray-800">
-                                    VS
+                                <div class="mt-2 text-sm text-gray-400">
+                                    <?php echo "Date: " . $match[GameMatch::$date] . "| Time: " . $match[GameMatch::$time] . " | Stadium: " . $match["stadium_name"] ?>
                                 </div>
-                                <div class="flex items-center space-x-4 flex-1 justify-end">
-                                    <span class="text-2xl font-bold ">1</span>
-                                    <span class=" font-medium"><?php echo $match["club2_name"] ?></span>
-                                    <img src=<?php echo isset($match["club2_logo"]) ?  $match["club2_logo"] : " http://efoot/logo?file=img-placeholder.png&dir=image_placeholder" ?> alt="Raja CA" class="w-12 h-12 rounded-full object-cover">
-                                </div>
-                                <!-- Rest of the match card structure remains the same -->
                             </div>
-                            <div class="mt-2 text-sm text-gray-400">
-                                <?php echo "Date: " . $match[GameMatch::$date] . "| Time: " . $match[GameMatch::$time] . " | Stadium: " . $match["stadium_name"] ?>
-                            </div>
+                        </div>
+                        <!-- Hover action buttons - hidden by default, shown on hover -->
+                        <div class="absolute inset-0 flex items-center justify-center gap-4   group-hover:opacity-100 transition-opacity duration-300" >
+                            <button class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors shadow-md">
+                                Edit Match
+                            </button>
+                            <button class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors shadow-md">
+                                Affect Players
+                            </button>
+                            <button class="px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 transition-colors shadow-md">
+                                Affect Referees
+                            </button>
                         </div>
                     </div>
                 </div>
