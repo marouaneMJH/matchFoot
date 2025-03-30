@@ -3,11 +3,22 @@ require_once __DIR__ . '/../../../controller/ClubController.php';
 require_once __DIR__ . '/../../../controller/StadiumController.php';
 require_once __DIR__ . '/../../../controller/GameMatchController.php';
 require_once __DIR__ . '/../../../controller/RefereeController.php';
+require_once __DIR__ . '/../../../controller/TournamentController.php';
+session_start();
+// var_dump($_SESSION);
+// die();
 
 if($_SERVER['REQUEST_METHOD'] === 'POST') {
   
    
     GameMatchController::store();
+}else{
+    $tournament_id = $_SESSION['tournament_id'];
+
+    $gameMatches = GameMatchController::indexByTournament($tournament_id);
+    $tournament = TournamentController::getTournamentById($tournament_id);
+    // var_dump($tournament);
+    // die();
 }
 ?>
 <!DOCTYPE html>
@@ -48,7 +59,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <!-- Header Section -->
                 <div class="flex justify-between items-center mb-8">
                     <div>
-                        <h1 class="text-3xl font-bold text-green-900">Botola Pro 2023/24</h1>
+                        <h1 class="text-3xl font-bold text-green-900"><?php echo $tournament[Tournament::$name] ?></h1>
                         <p class="text-green-600 mt-1">Moroccan Professional Football League</p>
                     </div>
 

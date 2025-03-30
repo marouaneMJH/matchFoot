@@ -3,6 +3,32 @@ require_once __DIR__ . '/../model/GameMatch.php';
 
 class GameMatchController extends Controller
 {
+
+    private static function getMatchStatus($gameMatch): string
+    {
+        $matchDate = $gameMatch[GameMatch::$date];
+        $matchTime = $gameMatch[GameMatch::$time];
+        $matchStart = strtotime("$matchDate $matchTime");
+        $now = time();
+        $elapsed = $now - $matchStart; // in seconds
+
+        if ($matchDate < date('Y-m-d') || ($matchDate == date('Y-m-d') && $matchTime < date('H:i:s') && $elapsed > 120 * 60)) {
+            $status = "Finished";
+        } elseif ($elapsed >= 0 && $elapsed < 45 * 60) {
+            $status = "1st Half";
+        } elseif ($elapsed >= 45 * 60 && $elapsed < 60 * 60) {
+            $status = "Halftime";
+        } elseif ($elapsed >= 60 * 60 && $elapsed < 90 * 60) {
+            $status = "2nd Half";
+        } elseif ($elapsed >= 90 * 60 && $elapsed < 120 * 60) {
+            $status = "Extra Time";
+        } elseif ($elapsed < 0) {
+            $status = "Upcoming";
+        } else {
+            $status = "Unknown";
+        }
+        return $status;
+    }
     public static function index(): array
     {
         try {
@@ -30,8 +56,10 @@ class GameMatchController extends Controller
                 foreach ($gameMatches as $gameMatch) {
                     $gameMatch['club1_logo'] = 'http://efoot/logo?file=' . $gameMatch['club1_logo_path'] . '&dir=club_logo';
                     $gameMatch['club2_logo'] = 'http://efoot/logo?file=' . $gameMatch['club2_logo_path'] . '&dir=club_logo';
+                    $gameMatch['status'] = self::getMatchStatus($gameMatch);
                     $modifiedGameMatches[] = $gameMatch;
                 }
+              
                 return $modifiedGameMatches;
             } else {
                 return [];
@@ -70,7 +98,6 @@ class GameMatchController extends Controller
         }
 
         try {
-            
         } catch (Exception $e) {
             $error = "Error fetching game matches: " . $e->getMessage();
             include __DIR__ . '/../view/Error.php';
@@ -105,7 +132,7 @@ class GameMatchController extends Controller
             GameMatch::$club2_id => $club2_id,
             GameMatch::$stadium_id => $stadium_id,
         ];
-       
+
 
         $rules = [
             GameMatch::$date => 'required',
@@ -156,9 +183,9 @@ class GameMatchController extends Controller
         }
     }
 
-    public static function update():array
+    public static function update(): array
     {
-        if( $_SERVER['REQUEST_METHOD'] !== 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $error = "Invalid request method";
             include __DIR__ . '/../view/Error.php';
             return [];
@@ -202,7 +229,7 @@ class GameMatchController extends Controller
             return [];
         }
         try {
-            $gameMatch = GameMatch::update($id,$data);
+            $gameMatch = GameMatch::update($id, $data);
             if ($gameMatch) {
                 if ($referee_ids) {
                     foreach ($referee_ids as $referee_id) {
@@ -230,7 +257,6 @@ class GameMatchController extends Controller
             include __DIR__ . '/../view/Error.php';
             return [];
         }
-
     }
 
     public static function delete($id): array
@@ -257,5 +283,4 @@ class GameMatchController extends Controller
             return [];
         }
     }
-
 }

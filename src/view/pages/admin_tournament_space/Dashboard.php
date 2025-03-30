@@ -1,3 +1,5 @@
+<?php session_start(); ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,7 +11,7 @@
 </head>
 
 <body>
-    <?php include './Test.php'; ?>
+    <?php include './SideBar.php'; ?>
     <!-- Main Content Area -->
     <div class="ml-72 p-8 bg-green-50 min-h-screen">
         <!-- Dashboard Header -->
