@@ -116,7 +116,7 @@ class GameMatchController extends Controller
         $date = isset($_POST['date']) ? $_POST['date'] : null;
         $time = isset($_POST['time']) ? $_POST['time'] : null;
         $round = isset($_POST['round']) ? $_POST['round'] : null;
-        $tournament_id = isset($_POST['tournament_id']) ? $_POST['tournament_id'] : null;
+        $tournament_id = isset($_POST['tournamentId']) ? $_POST['tournamentId'] : null;
         $club1_id = isset($_POST['club1_id']) ? $_POST['club1_id'] : null;
         $club2_id = isset($_POST['club2_id']) ? $_POST['club2_id'] : null;
         $referee_ids = isset($_POST['referee_id']) ? $_POST['referee_id'] : null;
@@ -194,7 +194,7 @@ class GameMatchController extends Controller
         $date = isset($_POST['date']) ? $_POST['date'] : null;
         $time = isset($_POST['time']) ? $_POST['time'] : null;
         $round = isset($_POST['round']) ? $_POST['round'] : null;
-        $tournament_id = isset($_POST['tournament_id']) ? $_POST['tournament_id'] : null;
+        $tournament_id = isset($_POST['tournamentId']) ? $_POST['tournamentId'] : null;
         $club1_id = isset($_POST['club1_id']) ? $_POST['club1_id'] : null;
         $club2_id = isset($_POST['club2_id']) ? $_POST['club2_id'] : null;
         $referee_ids = isset($_POST['referee_id']) ? $_POST['referee_id[]'] : null;

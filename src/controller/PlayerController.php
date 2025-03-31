@@ -65,6 +65,32 @@ class PlayerController extends Controller
         }
     }
 
+    public static function getPlayersByClub($club_id){
+        if(!$club_id) {
+            $error = "Club ID is required";
+            include __DIR__ . '/../view/Error.php';
+            return [];
+        }
+
+        try {
+            $players = Player::getData([Player::$clubId => $club_id]);
+            if (!$players) {
+                $error = "Players not found";
+                include __DIR__ . '/../view/Error.php';
+                return [];
+            }
+            foreach ($players as $player) {
+                $player['profile'] = "http://efoot/logo?file=" . $player[Player::$profilePath] . "&dir=" . self::$uploadSubDirectory;
+            }
+            return $players;
+        } catch (Exception $e) {
+            $error = "Error fetching players: " . $e->getMessage();
+            include __DIR__ . '/../view/Error.php';
+            return [];
+        }
+
+    }
+
     public static function store(): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
