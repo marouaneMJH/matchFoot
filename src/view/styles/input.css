@@ -1,23 +1,4 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 @import "tailwindcss";
-
-:root {
-    --text-color: #060907;
-    --primary-color: #44bb4e;
-    --secondary-color: #44bb4e;
-    --accent-color: #5de967;
-    --bg-color: #f0fdf4 ;
-    --main-bg-color: #44bb4e;
-}
-
-/* Import Montserrat font from Google Fonts */
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap");
-
-/* Apply Montserrat as the default font for the body */
-body {
-    font-family: "Montserrat", sans-serif;
-    /* font-style: italic; */
-    font-weight: lighter; /* Semi Bold */
-}
-
-/* Run the command in \matchFoot\src\view to update tailwind live */
-/* npx tailwindcss -i ./styles/input.css -o ./styles/output.css --watch */
