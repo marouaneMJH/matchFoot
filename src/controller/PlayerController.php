@@ -5,6 +5,8 @@ require_once __DIR__ . '/ClubController.php';
 require_once __DIR__ . '/PositionController.php';
 require_once __DIR__ . '/CountryController.php';
 require_once __DIR__ . '/../helper/UploadFileHelper.php';
+require_once __DIR__ . '/../model/GameMatch.php';
+
 class PlayerController extends Controller
 {
 
@@ -73,7 +75,10 @@ class PlayerController extends Controller
         }
 
         try {
-            $players = Player::getData([Player::$clubId => $club_id]);
+            $players = Player::getData([Player::$clubId => $club_id],
+        [Position::$table => [
+                'condition' => Player::$positionId . ' = ' . Position::$table . '.id',
+            ]],['id','name']);
             if (!$players) {
                 $error = "Players not found";
                 include __DIR__ . '/../view/Error.php';
@@ -89,6 +94,41 @@ class PlayerController extends Controller
             return [];
         }
 
+    }
+
+    public static function getPlayersByMatch($match_id,$club_type): array
+    {
+        if(!$match_id) {
+            $error = "Match ID is required";
+            include __DIR__ . '/../view/Error.php';
+            return [];
+        }
+       
+
+        try {
+            $players = null;
+            if($club_type == 'home') {
+                $players = Player::getHomeClubPlayersByMatch($match_id);
+            } else {
+                $players = Player::getAwayClubPlayersByMatch($match_id);
+            }
+            if (!$players) {
+                $error = "Players not found";
+                include __DIR__ . '/../view/Error.php';
+                return [];
+            }
+            $modifiedPlayers = [];
+            foreach ($players as $player) {
+                $player['profile'] = "http://efoot/logo?file=" . $player[Player::$profilePath] . "&dir=" . self::$uploadSubDirectory;
+                $player['team'] = $club_type;
+                $modifiedPlayers[] = $player;
+            }
+            return $modifiedPlayers;
+        } catch (Exception $e) {
+            $error = "Error fetching players: " . $e->getMessage();
+            include __DIR__ . '/../view/Error.php';
+            return [];
+        }
     }
 
     public static function store(): void

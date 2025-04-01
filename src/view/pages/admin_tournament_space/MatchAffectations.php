@@ -1,7 +1,16 @@
 <?php 
-$homeTeamPlayers = PlayerController::getPlayersByTeamId(1); // Example team ID for home team
-?>
+require_once __DIR__ . '/../../../controller/PlayerController.php';
+require_once __DIR__ . '/../../../controller/RefereeController.php';
 
+if(!isset($_GET['match_id'])) {
+    header('Location: TournamentInfos.php'); // Redirect if match ID is not set
+    exit;
+}
+$match_id = $_GET['match_id'];
+$homeTeamPlayers = PlayerController::getPlayersByMatch($match_id,"home"); // Example team ID for home team
+$awayTeamPlayers = PlayerController::getPlayersByMatch($match_id,"away"); // Example team ID for away team
+$referees = RefereeController::index();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -88,9 +97,9 @@ $homeTeamPlayers = PlayerController::getPlayersByTeamId(1); // Example team ID f
 <body class="bg-gray-50 min-h-screen">
 <div class="container mx-auto py-6 px-4">
 <!-- Back button -->
-<a href="./ TournamentInfos.php" class="flex items-center text-gray-600 mb-4 hover:text-gray-800">
+<button class="flex items-center text-gray-600 mb-4 hover:text-gray-800">
   <i class="fas fa-arrow-left mr-2"></i> Back to Matches
-</a>
+</button>
 
 <!-- Match header -->
 <div class="card mb-6 border-green-100">
@@ -134,7 +143,7 @@ $homeTeamPlayers = PlayerController::getPlayersByTeamId(1); // Example team ID f
           </div>
         </div>
         <div class="card-body">
-          <div class="space-y-2 max-h-[400px] overflow-y-auto pr-2" id="home-players-list">
+          <div class="space-y-2 max-h-[42rem] overflow-y-auto pr-2" id="home-players-list">
             <!-- Home players will be populated here by JavaScript -->
           </div>
         </div>
@@ -322,7 +331,7 @@ $homeTeamPlayers = PlayerController::getPlayersByTeamId(1); // Example team ID f
           </div>
         </div>
         <div class="card-body">
-          <div class="space-y-2 max-h-[400px] overflow-y-auto pr-2" id="away-players-list">
+          <div class="space-y-2 max-h-[42rem] overflow-y-auto pr-2" id="away-players-list">
             <!-- Away players will be populated here by JavaScript -->
           </div>
         </div>
@@ -402,9 +411,11 @@ $homeTeamPlayers = PlayerController::getPlayersByTeamId(1); // Example team ID f
 
 <script>
 // Data
-const homeTeamPlayers = generatePlayers('Raja Club Athletic', 22);
+// const homeTeamPlayers = generatePlayersWithSpecificPositions('Raja Club Athletic');
+// const awayTeamPlayers = generatePlayersWithSpecificPositions('Olympique Club de Khouribga');
+const homeTeamPlayers = <?php echo json_encode($homeTeamPlayers); ?>;
 console.log(homeTeamPlayers);
-const awayTeamPlayers = generatePlayers('Olympique Club de Khouribga', 22);
+const awayTeamPlayers = <?php echo json_encode($awayTeamPlayers); ?>;
 const referees = generateReferees(6);
 
 // State
@@ -867,7 +878,7 @@ function renderPlayers() {
     return `
       <div class="flex items-center justify-between p-2 bg-gray-50 rounded-md" data-player-id="${player.id}">
         <div>
-          <div class="font-medium">${player.name}</div>
+          <div class="font-medium"> ${player.surname} ${player.name}</div>
           <div class="text-sm text-gray-500">${player.position}</div>
         </div>
         <div class="flex gap-1">
@@ -999,10 +1010,8 @@ function selectPlayerForPositioning(player, team) {
     playerPositionSelect.value = existingPosition.position;
     playerNumberInput.value = existingPosition.number;
   } else {
-    // Default values
-    playerPositionSelect.value = player.position === 'Goalkeeper' ? 'GK' : 
-                                 player.position === 'Defender' ? 'CB' : 
-                                 player.position === 'Midfielder' ? 'CM' : 'ST';
+    // Default values - use the player's specific position
+    playerPositionSelect.value = player.tag || 'CM';
     playerNumberInput.value = player.number || player.id;
   }
   
@@ -1222,112 +1231,8 @@ function autoAssignPosition(player, team) {
   
   const currentFormation = team === 'home' ? homeTeamFormation : awayTeamFormation;
   
-  // Determine position based on player role
-  let position;
-  if (player.position === 'Goalkeeper') {
-    position = 'GK';
-  } else if (player.position === 'Defender') {
-    // Check which defender positions are available
-    const defenders = playerPositions.filter(p => 
-      p.team === team && ['LB', 'CB', 'CB2', 'CB3', 'RB', 'LWB', 'RWB'].includes(p.position)
-    );
-    
-    if (currentFormation.startsWith('3') || currentFormation.startsWith('5')) {
-      // 3 or 5 at the back formations
-      const hasCB = defenders.some(d => d.position === 'CB');
-      const hasCB2 = defenders.some(d => d.position === 'CB2');
-      const hasCB3 = defenders.some(d => d.position === 'CB3');
-      
-      if (!hasCB) position = 'CB';
-      else if (!hasCB2) position = 'CB2';
-      else if (!hasCB3) position = 'CB3';
-      else if (currentFormation.startsWith('5') && !defenders.some(d => d.position === 'LWB')) position = 'LWB';
-      else if (currentFormation.startsWith('5') && !defenders.some(d => d.position === 'RWB')) position = 'RWB';
-      else position = 'CB'; // Default
-    } else {
-      // 4 at the back formations
-      const hasLB = defenders.some(d => d.position === 'LB');
-      const hasCB = defenders.some(d => d.position === 'CB');
-      const hasCB2 = defenders.some(d => d.position === 'CB2');
-      const hasRB = defenders.some(d => d.position === 'RB');
-      
-      if (!hasLB) position = 'LB';
-      else if (!hasCB) position = 'CB';
-      else if (!hasCB2) position = 'CB2';
-      else if (!hasRB) position = 'RB';
-      else position = 'CB'; // Default
-    }
-  } else if (player.position === 'Midfielder') {
-    // Check which midfielder positions are available
-    const midfielders = playerPositions.filter(p => 
-      p.team === team && ['CDM', 'CDM2', 'CM', 'CM2', 'CAM', 'LM', 'RM'].includes(p.position)
-    );
-    
-    if (currentFormation === '4-2-3-1') {
-      const hasCDM = midfielders.some(m => m.position === 'CDM');
-      const hasCDM2 = midfielders.some(m => m.position === 'CDM2');
-      const hasCAM = midfielders.some(m => m.position === 'CAM');
-      const hasLM = midfielders.some(m => m.position === 'LM');
-      const hasRM = midfielders.some(m => m.position === 'RM');
-      
-      if (!hasCDM) position = 'CDM';
-      else if (!hasCDM2) position = 'CDM2';
-      else if (!hasCAM) position = 'CAM';
-      else if (!hasLM) position = 'LM';
-      else if (!hasRM) position = 'RM';
-      else position = 'CM'; // Default
-    } else if (currentFormation === '4-4-2' || currentFormation === '3-4-3') {
-      const hasCM = midfielders.some(m => m.position === 'CM');
-      const hasCM2 = midfielders.some(m => m.position === 'CM2');
-      const hasLM = midfielders.some(m => m.position === 'LM');
-      const hasRM = midfielders.some(m => m.position === 'RM');
-      
-      if (!hasLM) position = 'LM';
-      else if (!hasCM) position = 'CM';
-      else if (!hasCM2) position = 'CM2';
-      else if (!hasRM) position = 'RM';
-      else position = 'CM'; // Default
-    } else {
-      // Other formations
-      const hasCDM = midfielders.some(m => m.position === 'CDM');
-      const hasCM = midfielders.some(m => m.position === 'CM');
-      const hasCAM = midfielders.some(m => m.position === 'CAM');
-      
-      if (!hasCDM) position = 'CDM';
-      else if (!hasCM) position = 'CM';
-      else if (!hasCAM) position = 'CAM';
-      else position = 'CM'; // Default
-    }
-  } else if (player.position === 'Forward') {
-    // Check which forward positions are available
-    const forwards = playerPositions.filter(p => 
-      p.team === team && ['LW', 'RW', 'ST', 'ST2', 'CF'].includes(p.position)
-    );
-    
-    if (currentFormation === '4-3-3' || currentFormation === '3-4-3') {
-      const hasLW = forwards.some(f => f.position === 'LW');
-      const hasST = forwards.some(f => f.position === 'ST');
-      const hasRW = forwards.some(f => f.position === 'RW');
-      
-      if (!hasLW) position = 'LW';
-      else if (!hasST) position = 'ST';
-      else if (!hasRW) position = 'RW';
-      else position = 'ST'; // Default
-    } else if (currentFormation === '4-4-2' || currentFormation === '3-5-2') {
-      const hasST = forwards.some(f => f.position === 'ST');
-      const hasST2 = forwards.some(f => f.position === 'ST2');
-      
-      if (!hasST) position = 'ST';
-      else if (!hasST2) position = 'ST2';
-      else position = 'ST'; // Default
-    } else {
-      // Other formations
-      const hasST = forwards.some(f => f.position === 'ST');
-      
-      if (!hasST) position = 'ST';
-      else position = 'ST'; // Default
-    }
-  }
+  // Use the player's specific position directly
+  let position = player.tag;
   
   // If we determined a position, assign it
   if (position) {
@@ -1335,6 +1240,19 @@ function autoAssignPosition(player, team) {
     
     // Find position key (for positions with multiple spots like CB)
     let positionKey = position;
+    
+    // Handle special cases for positions that might have multiple spots
+    if (position === 'CB') {
+      // Check if we already have CBs assigned and pick the next available one
+      const existingCBs = playerPositions.filter(p => 
+        p.team === team && (p.position === 'CB' || p.position === 'CB2' || p.position === 'CB3')
+      );
+      
+      if (existingCBs.length === 0) positionKey = 'CB';
+      else if (existingCBs.length === 1) positionKey = 'CB2';
+      else if (existingCBs.length === 2 && (currentFormation.startsWith('3') || currentFormation.startsWith('5'))) positionKey = 'CB3';
+      else positionKey = 'CB'; // Default if all spots are taken
+    }
     
     // Get coordinates for the position
     const coordinates = formationPositions[positionKey] || [50, team === 'home' ? 60 : 40];
@@ -1625,20 +1543,42 @@ function renderPlayerPositions() {
   });
 }
 
-// Helper function to generate mock players
-function generatePlayers(teamName, count) {
-  const positions = ['Goalkeeper', 'Defender', 'Midfielder', 'Forward'];
+// Helper function to generate players with specific positions
+function generatePlayersWithSpecificPositions(teamName) {
   const players = [];
+  let id = 1;
   
-  for (let i = 1; i <= count; i++) {
-    players.push({
-      id: i,
-      name: `Player ${i}`,
-      position: positions[Math.floor(Math.random() * positions.length)],
-      team: teamName,
-      number: i
-    });
-  }
+  // Define specific positions and how many of each to create
+  const positionDistribution = [
+    { position: 'Goalkeeper', tag: 'GK', count: 3 },
+    { position: 'Left Back', tag: 'LB', count: 2 },
+    { position: 'Center Back', tag: 'CB', count: 4 },
+    { position: 'Right Back', tag: 'RB', count: 2 },
+    { position: 'Defensive Midfielder', tag: 'CDM', count: 2 },
+    { position: 'Center Midfielder', tag: 'CM', count: 3 },
+    { position: 'Attacking Midfielder', tag: 'CAM', count: 2 },
+    { position: 'Left Midfielder', tag: 'LM', count: 1 },
+    { position: 'Right Midfielder', tag: 'RM', count: 1 },
+    { position: 'Left Wing', tag: 'LW', count: 2 },
+    { position: 'Right Wing', tag: 'RW', count: 2 },
+    { position: 'Striker', tag: 'ST', count: 3 },
+    { position: 'Center Forward', tag: 'CF', count: 1 }
+  ];
+  
+  // Create players for each position
+  positionDistribution.forEach(posInfo => {
+    for (let i = 0; i < posInfo.count; i++) {
+      players.push({
+        id: id,
+        name: `${posInfo.tag} Player ${id}`,
+        position: posInfo.position,
+        tag: posInfo.tag,
+        team: teamName,
+        number: id
+      });
+      id++;
+    }
+  });
   
   return players;
 }
@@ -1664,3 +1604,4 @@ document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>
+

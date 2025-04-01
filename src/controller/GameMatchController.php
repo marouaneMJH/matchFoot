@@ -105,6 +105,7 @@ class GameMatchController extends Controller
         }
         return $gameMatches;
     }
+    
 
     public static function store(): array
     {

@@ -3,7 +3,7 @@ require_once  __DIR__ . '/Model.php';
 
 class Position extends Model {
     
-    protected static $table = 'position';
+    public static $table = 'position';
     public static $id = 'id';
     public static $tag = 'tag';
     public static $name = 'name';
