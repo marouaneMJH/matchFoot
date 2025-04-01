@@ -22,7 +22,7 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-green-900">1</td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center">
-                            <img class="h-8 w-8 rounded-full" src="http://efoot/logo?file=qsdqsclub&dir=club_logo" alt="Wydad AC">
+                            <img class="h-8 w-8 rounded-full" src="../../../../public/uploads/image_placeholder/img-placeholder.png" alt="Wydad AC">
                             <span class="ml-2 text-sm font-medium text-green-900">Wydad AC</span>
                         </div>
                     </td>
@@ -41,7 +41,7 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-green-900">2</td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center">
-                            <img class="h-8 w-8 rounded-full" src="http://efoot/logo?file=qsdqsclub&dir=club_logo" alt="Raja CA">
+                            <img class="h-8 w-8 rounded-full" src="../../../../public/uploads/image_placeholder/img-placeholder.png" alt="Raja CA">
                             <span class="ml-2 text-sm font-medium text-green-900">Raja CA</span>
                         </div>
                     </td>
@@ -60,7 +60,7 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-green-900">3</td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center">
-                            <img class="h-8 w-8 rounded-full" src="http://efoot/logo?file=qsdqsclub&dir=club_logo" alt="FAR Rabat">
+                            <img class="h-8 w-8 rounded-full" src="../../../../public/uploads/image_placeholder/img-placeholder.png" alt="FAR Rabat">
                             <span class="ml-2 text-sm font-medium text-green-900">FAR Rabat</span>
                         </div>
                     </td>
@@ -79,7 +79,7 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-green-900">4</td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center">
-                            <img class="h-8 w-8 rounded-full" src="http://efoot/logo?file=qsdqsclub&dir=club_logo" alt="RS Berkane">
+                            <img class="h-8 w-8 rounded-full" src="../../../../public/uploads/image_placeholder/img-placeholder.png" alt="RS Berkane">
                             <span class="ml-2 text-sm font-medium text-green-900">RS Berkane</span>
                         </div>
                     </td>
@@ -98,7 +98,7 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-green-900">5</td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center">
-                            <img class="h-8 w-8 rounded-full" src="http://efoot/logo?file=qsdqsclub&dir=club_logo" alt="FUS Rabat">
+                            <img class="h-8 w-8 rounded-full" src="../../../../public/uploads/image_placeholder/img-placeholder.png" alt="FUS Rabat">
                             <span class="ml-2 text-sm font-medium text-green-900">FUS Rabat</span>
                         </div>
                     </td>

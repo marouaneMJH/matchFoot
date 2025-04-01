@@ -34,7 +34,7 @@
                     <td class="px-6 py-4">
                         <div class="flex items-center">
                             <div class="flex-shrink-0 h-12 w-12">
-                                <img class="h-12 w-12 rounded-lg object-cover" src="news-image.jpg" alt="">
+                                <img class="h-12 w-12 rounded-lg object-cover" src="../../../../public/uploads/image_placeholder/img-placeholder.png" alt="">
                             </div>
                             <div class="ml-4">
                                 <div class="text-sm font-medium text-green-900">Casablanca Derby: Wydad vs Raja Preview</div>
