@@ -8,18 +8,26 @@ session_start();
 // var_dump($_SESSION);
 // die();
 
-if($_SERVER['REQUEST_METHOD'] === 'POST') {
-  
-   
-    GameMatchController::store();
-}else{
-    $tournament_id = $_SESSION['tournament_id'];
-
-    $gameMatches = GameMatchController::indexByTournament($tournament_id);
-    $tournament = TournamentController::getTournamentById($tournament_id);
-    // var_dump($tournament);
-    // die();
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tournament_id'])) {
+    $_SESSION['tournament_id'] = $_POST['tournament_id'];
+    header('Location: TournamentInfos.php'); // redirect to clean the POST
+    exit;
 }
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tournamentId'])) {
+
+
+    GameMatchController::store();
+}
+$tournament_id = $_SESSION['tournament_id'];
+
+$gameMatches = GameMatchController::indexByTournament($tournament_id);
+$tournament = TournamentController::getTournamentById($tournament_id);
+// var_dump($_SESSION);
+// var_dump($tournament);
+
+// die();
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -59,7 +67,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <!-- Header Section -->
                 <div class="flex justify-between items-center mb-8">
                     <div>
-                        <h1 class="text-3xl font-bold text-green-900"><?php echo $tournament[Tournament::$name] ?></h1>
+                        <h1 class="text-3xl font-bold text-green-900"><?php echo $tournament[Tournament::$name]; ?></h1>
                         <p class="text-green-600 mt-1">Moroccan Professional Football League</p>
                     </div>
 
@@ -105,18 +113,18 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             <!-- Clubs Tab Content -->
             <?php include __DIR__ . '/ClubTabContent.php'; ?>
 
-           
 
-                <!-- News List -->
-              <?php include __DIR__ . '/NewsTabContent.php'; ?>
 
-            
-           
+            <!-- News List -->
+            <?php include __DIR__ . '/NewsTabContent.php'; ?>
+
+
+
 
         </div>
     </div>
 
- 
+
 
     <script>
         function openAddMatchModal() {
