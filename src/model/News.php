@@ -1,8 +1,6 @@
 <?php
-require_once __DIR__ . '/../database/connectDB.php';
+require_once __DIR__ . '/Model.php';
 
-
-require 'Person.php';
 
 // use Person;
 
@@ -15,16 +13,23 @@ class News extends Model
 
     public static $id="id";
     public static $admin_id="admin_id";
-    public static $date="date";
+    public static $title="title";
     public static $description="description";
+    public static $category="category";
+    public static $status="status";
+    public static $image_path="image_path";
+    public static $date="date";
 
 
     
-    public function __construct($id = null, $admin_id = null, $date = null, $description = null) {
+    public function __construct($id = null, $admin_id = null, $title = null, $description = null, $category = null, $status = null, $date = null) {
         $this->id = $id;
         $this->admin_id = $admin_id;
-        $this->date = $date;
+        $this->title = $title;
         $this->description = $description;
+        $this->category = $category;
+        $this->status = $status;
+        $this->date = $date;
     }
 
 

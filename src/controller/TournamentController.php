@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../helper/UploadFileHelper.php';
 require_once __DIR__ . '/../model/Tournament.php';
+require_once __DIR__ . '/../model/TournamentAdmin.php';
 require_once __DIR__ . '/Controller.php';
 
 class TournamentController extends Controller
