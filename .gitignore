@@ -1,2 +1,2 @@
 .env
-node_modules/
+/src/view/node_modules
