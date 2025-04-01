@@ -45,7 +45,7 @@ foreach ($gameMatches as $match) {
             <?php foreach ($liveMatches as $match) : ?>
 
                 <div class="relative group">
-                    <div class="bg-white rounded-xl shadow-sm border border-green-100 p-6 ">
+                <div class="bg-white rounded-xl shadow-sm border border-green-100 p-6 group-hover:bg-green-50 group-hover:border-green-400 to-be-blured-<?php echo $match[GameMatch::$id] ?>">
                         <div class="flex items-center justify-between mb-4">
                             <h2 class="text-xl font-semibold  mb-4"> Round: <?php echo $match[GameMatch::$round] ?></h2>
                             <span class="flex items-center gap-1 px-2 py-0.5 text-sm font-semibold text-red-700 bg-red-100 rounded-full animate-pulse">
@@ -78,7 +78,7 @@ foreach ($gameMatches as $match) {
                         </div>
                     </div>
                     <!-- Hover action buttons - hidden by default, shown on hover -->
-                    <div class="absolute inset-0 flex items-center justify-center gap-4 opacity-0 cursor-pointer  transition-opacity duration-300 to-be-shown-<?php echo $match[GameMatch::$id] ?>" onclick="blureDiv(<?php echo $match[GameMatch::$id] ?>)">
+                    <div class="absolute inset-0 flex items-center justify-center  gap-4 opacity-0 cursor-pointer  transition-opacity duration-300 to-be-shown-<?php echo $match[GameMatch::$id] ?>" onclick="blureDiv(<?php echo $match[GameMatch::$id] ?>)">
                         
                         <a href="./MatchRecordEvents.php?match_id=<?php echo $match[GameMatch::$id] ?>" class="px-3 py-2 bg-green-500 text-white rounded-md font-semibold hover:bg-green-600 transition-colors shadow-md cursor-pointer">
                            Record Match Events
