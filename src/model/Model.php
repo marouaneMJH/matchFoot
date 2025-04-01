@@ -142,6 +142,7 @@ class Model
             $columns = implode(", ", array_keys($data));
             $values = ":" . implode(", :", array_keys($data));
             $stmt = $pdo->prepare("INSERT INTO " . static::$table . " ($columns) VALUES ($values)");
+        
             $stmt->execute($data);
             return $pdo->lastInsertId();
         } catch (PDOException $e) {
@@ -282,7 +283,10 @@ class Model
 
     private static function buildSelectClause(string $table, array $joins, array $commonFields = ['id']): string
 {
-    $selectFields = ["$table.id AS id"]; // Keep main table's id as "id"
+    $selectFields = [];
+    foreach ($commonFields as $field) {
+        $selectFields[] = "$table.$field as $field";
+    }
     
     // Select all fields from the main table, except the common fields
     $selectFields[] = implode(", ", array_map(fn($col) => "$table.$col", self::getTableColumns($table, $commonFields)));

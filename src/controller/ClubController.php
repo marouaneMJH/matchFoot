@@ -14,12 +14,12 @@ class ClubController extends Controller
     public static function index(): array
     {
         try {
-            $clubs = Club::getAll();
-            // $clubs = Club::getData(
-            //     [],
-            //     [Stadium::$table => ['condition' => Club::$stadium_id = Stadium::$table . '.' . Stadium::$id]],
-            //     ['id','name']
-            // );
+        //    $clubs = Club::getAll();
+            $clubs = Club::getData(
+                [],
+                [Stadium::$table => ['condition' => Club::$stadium_id .'='. Stadium::$table . '.' . Stadium::$id]],
+                ['id','name']
+            );
             
             $modifiedClubs = [];
             if ($clubs) {
@@ -53,7 +53,8 @@ class ClubController extends Controller
         }
 
         $stadium = Stadium::getById($club[Club::$stadium_id]);
-        $trainer = Staff::getByFields($club[Club::$trainer_id]); // Placeholder for now
+        // $trainer = Staff::getByFields($club[Club::$trainer_id]); // Placeholder for now
+        $trainer = null;
 
         $club['logo'] = 'http://efoot/logo?file=' . $club[Club::$logo_path] . '&dir=' . self::$uploadSubDirectory;
         $club['stadium'] = $stadium;
