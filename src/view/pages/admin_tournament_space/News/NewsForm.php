@@ -5,6 +5,7 @@ $content = "";
 $category = "";
 $status = "";
 $newsId = "";
+$showModal= "";
 
 if (isset($_GET['id'])) {
     $newsItem = NewsController::getNewsById($_GET['id']);
