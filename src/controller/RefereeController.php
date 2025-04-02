@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../model/Referee.php';
 require_once __DIR__ . '/Controller.php';
+require_once __DIR__ . '/../model/RefereeRole.php';
 require_once __DIR__ . '/CountryController.php';
 
 class RefereeController extends Controller
@@ -10,25 +11,32 @@ class RefereeController extends Controller
     {
         try {
             $referees = Referee::getAll();
-            $modifiedReferees = [];
-            if($referees){
-                foreach ($referees as $referee) {
-                    $country = CountryController::getCountryById($referee[Referee::$country_id]);
-                    $referee['country'] = $country;
-                    $modifiedReferees[] = $referee;
-                }
-                $referees = $modifiedReferees;
-            }else{
-                $referees = [];
+            foreach ($referees as &$referee) {
+            $startingDate = new DateTime($referee['starting_date']);
+            $currentDate = new DateTime();
+            $experience = $currentDate->diff($startingDate)->y;
+            $referee['experience_years'] = $experience;
             }
+
+            
+           
+            if (!$referees) {
+                $error = "No referees found";
+                include __DIR__ . '/../view/Error.php';
+                return [];
+            }
+            
+            return $referees;
 
         } catch (Exception $e) {
             $error = "An error occurred while retrieving referees";
             include __DIR__ . '/../view/Error.php';
             return [];
         }
-        return $referees;
+        
     }
+
+    
 
     public static function getRefereeById($id): array
     {
@@ -38,7 +46,6 @@ class RefereeController extends Controller
             include __DIR__ . '/../view/Error.php';
             return [];
         }
-        $referee['country'] = CountryController::getCountryById($referee[Referee::$country_id]);
         return $referee;
     }
 
@@ -53,12 +60,14 @@ class RefereeController extends Controller
         $firstName = isset($_POST['first_name']) ? trim($_POST['first_name']) : null;
         $lastName = isset($_POST['last_name']) ? trim($_POST['last_name']) : null;
         $birthDate = isset($_POST['birth_date']) ? trim($_POST['birth_date']) : null;
+        $startingDate = isset($_POST['starting_date']) ? trim($_POST['starting_date']) : null;
         $countryId = isset($_POST['country_id']) ? trim(intval($_POST['country_id'])) : null;
 
         $data = [
             Referee::$firstName => $firstName,
             Referee::$lastName => $lastName,
             Referee::$birthDate => $birthDate,
+            Referee::$startingDate => $startingDate,
             Referee::$country_id => $countryId,
         ];
 
@@ -66,6 +75,7 @@ class RefereeController extends Controller
             Referee::$firstName => 'required|min:2|max:30',
             Referee::$lastName => 'required|min:2|max:30',
             Referee::$birthDate => 'required|date_format:Y-m-d',
+            Referee::$startingDate => 'required|date_format:Y-m-d',
             Referee::$country_id => 'required|numeric',
         ];
 
@@ -85,6 +95,17 @@ class RefereeController extends Controller
             }
         }catch (Exception $e){
             $error = "Error  fetching country: " . $e->getMessage();
+            include __DIR__ . '/../view/Error.php';
+        }
+
+        try{
+            if(!RefereeRole::exists([RefereeRole::$id => $roleId])){
+                $error = "Role not found";
+                include __DIR__ . '/../view/Error.php';
+                return;
+            }
+        }catch (Exception $e){
+            $error = "Error  fetching role: " . $e->getMessage();
             include __DIR__ . '/../view/Error.php';
         }
 
@@ -110,6 +131,7 @@ class RefereeController extends Controller
         $firstName = isset($_POST['first_name']) ? trim($_POST['first_name']) : null;
         $lastName = isset($_POST['last_name']) ? trim($_POST['last_name']) : null;
         $birthDate = isset($_POST['birth_date']) ? trim($_POST['birth_date']) : null;
+        $startingDate = isset($_POST['starting_date']) ? trim($_POST['starting_date']) : null;
         $countryId = isset($_POST['country_id']) ? trim(intval($_POST['country_id'])) : null;
 
         if(!$id){
@@ -130,6 +152,7 @@ class RefereeController extends Controller
             Referee::$firstName => $firstName,
             Referee::$lastName => $lastName,
             Referee::$birthDate => $birthDate,
+            Referee::$startingDate => $startingDate,
             Referee::$country_id => $countryId,
         ];
 
@@ -137,6 +160,7 @@ class RefereeController extends Controller
             Referee::$firstName => 'required|min:2|max:30',
             Referee::$lastName => 'required|min:2|max:30',
             Referee::$birthDate => 'required|date_format:Y-m-d',
+            Referee::$startingDate => 'required|date_format:Y-m-d',
             Referee::$country_id => 'required|numeric',
         ];
 
@@ -156,6 +180,17 @@ class RefereeController extends Controller
             }
         }catch (Exception $e){
             $error = "Error  fetching country: " . $e->getMessage();
+            include __DIR__ . '/../view/Error.php';
+        }
+
+        try{
+            if(!RefereeRole::exists([RefereeRole::$id => $roleId])){
+                $error = "Role not found";
+                include __DIR__ . '/../view/Error.php';
+                return;
+            }
+        }catch (Exception $e){
+            $error = "Error  fetching role: " . $e->getMessage();
             include __DIR__ . '/../view/Error.php';
         }
 

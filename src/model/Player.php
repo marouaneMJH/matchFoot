@@ -47,7 +47,7 @@ class Player extends Model
 
     public static function getHomeClubPlayersByMatch($match_id)
     {
-        $query = "SELECT game_match.time, game_match.round, game_match.date, game_match.club1_id, game_match.formation2_id, game_match.stadium_id,stadium.name as stadium_name, club.name as club_name, club.nickname, club.logo_path,  club.id AS club_id, player.name, player.surname,player.profile_path,player.number,player.id AS id, position.tag, position.name as position, position.id AS position_id 
+        $query = "SELECT game_match.time, game_match.round, game_match.date, game_match.club1_id, game_match.formation1_id, game_match.stadium_id,stadium.name as stadium_name, club.name as club_name, club.nickname, club.logo_path,  club.id AS club_id, player.name, player.surname,player.profile_path,player.number,player.id AS id, position.tag, position.name as position, position.id AS position_id 
         FROM game_match INNER JOIN club ON club1_id = club.id 
             INNER JOIN player ON club_id = club.id 
             INNER JOIN position ON position_id = position.id  

@@ -1,19 +1,32 @@
 <?php
 require_once __DIR__ . '/../../../controller/PlayerController.php';
 require_once __DIR__ . '/../../../controller/RefereeController.php';
+require_once __DIR__ . '/../../../controller/RefereeRoleController.php';
+require_once __DIR__ . '/../../../controller/RefereeMatchController.php';
 require_once __DIR__ . '/../../../controller/GameMatchController.php';
 require_once __DIR__ . '/../../../controller/FormationController.php';
+require_once __DIR__ . '/../../../controller/LineupController.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lineup_data'], $_POST['match_id'])) {
   $matchId = $_POST['match_id'];
   $lineup = json_decode($_POST['lineup_data'], true);
+  $formation1Id = $_POST['home_team_formation'];
+  $formation2Id = $_POST['away_team_formation'];
+  $referees = json_decode($_POST['referee_data'], true);
+  // var_dump($lineup);
+  // var_dump($referees);
+  // var_dump($formation1Id);
+  // var_dump($formation2Id);
+  // die();
+  LineupController::storeAllLineups();
+  RefereeMatchController::store();
 
-  var_dump($lineup);
-  var_dump($matchId);
-  die();
+
+
+
 
   // Optional: redirect to avoid resubmission
-  header("Location: MatchSetupPage.php?match_id=$matchId&saved=1");
+  header("Location: MatchAffectations.php?match_id=$matchId&saved=1");
   exit;
 }
 
@@ -23,11 +36,18 @@ if (!isset($_GET['match_id'])) {
   exit;
 }
 $match_id = $_GET['match_id'];
+$lineups = LineupController::getAllLineups();
+// var_dump($lineups);
+// die();
+
 $match = GameMatchController::getGameMatchById($match_id);
 $formations = FormationController::index();
 $homeTeamPlayers = PlayerController::getPlayersByMatch($match_id, "home"); // Example team ID for home team
 $awayTeamPlayers = PlayerController::getPlayersByMatch($match_id, "away"); // Example team ID for away team
 $referees = RefereeController::index();
+$refereeRoles = RefereeRoleController::index();
+$refereesInMatch = RefereeMatchController::getAllRefereesByMatch($match_id);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -117,9 +137,9 @@ $referees = RefereeController::index();
 <body class="bg-gray-50 min-h-screen">
   <div class="container mx-auto py-6 px-4">
     <!-- Back button -->
-    <button class="flex items-center text-gray-600 mb-4 hover:text-gray-800">
+    <a href="./TournamentInfos.php" class="flex items-center text-gray-600 mb-4 hover:text-gray-800">
       <i class="fas fa-arrow-left mr-2"></i> Back to Matches
-    </button>
+    </a>
 
     <!-- Match header -->
     <div class="card mb-6 border-green-100">
@@ -181,20 +201,20 @@ $referees = RefereeController::index();
               <!-- Team-specific formation selectors -->
               <div class="flex items-center">
                 <select id="home-formation-select" class="border border-blue-300 rounded-md px-2 py-1 text-sm bg-blue-50 text-blue-800" style="display: block;">
-                  <option value="4-3-3">4-3-3</option>
-                  <option value="4-4-2">4-4-2</option>
-                  <option value="3-5-2">3-5-2</option>
-                  <option value="5-3-2">5-3-2</option>
-                  <option value="4-2-3-1">4-2-3-1</option>
-                  <option value="3-4-3">3-4-3</option>
+                  <?php foreach ($formations as $formation) : ?>
+                    <option value="<?php echo $formation[Formation::$id]; ?>"
+                      <?php echo ($formation[Formation::$id] == $homeTeamPlayers[0]['formation1_id']) ? 'selected' : ''; ?>>
+                      <?php echo $formation[Formation::$name]; ?>
+                    </option>
+                  <?php endforeach; ?>
                 </select>
                 <select id="away-formation-select" class="border border-red-300 rounded-md px-2 py-1 text-sm bg-red-50 text-red-800" style="display: none;">
-                  <option value="4-3-3">4-3-3</option>
-                  <option value="4-4-2">4-4-2</option>
-                  <option value="3-5-2">3-5-2</option>
-                  <option value="5-3-2">5-3-2</option>
-                  <option value="4-2-3-1">4-2-3-1</option>
-                  <option value="3-4-3">3-4-3</option>
+                  <?php foreach ($formations as $formation) : ?>
+                    <option value="<?php echo $formation[Formation::$id]; ?>"
+                      <?php echo ($formation[Formation::$id] == $awayTeamPlayers[0]['formation2_id']) ? 'selected' : ''; ?>>
+                      <?php echo $formation[Formation::$name]; ?>
+                    </option>
+                  <?php endforeach; ?>
                 </select>
               </div>
             </div>
@@ -427,6 +447,9 @@ $referees = RefereeController::index();
     <form method="POST" action="" id="lineup-form">
       <input type="hidden" name="lineup_data" id="lineup_data_input">
       <input type="hidden" name="match_id" value="<?php echo $match_id; ?>">
+      <input type="hidden" name="referee_data" id="referee_data_input">
+      <input type="hidden" name="home_team_formation" id="home_team_formation_input">
+      <input type="hidden" name="away_team_formation" id="away_team_formation_input">
       <div class="mt-6 flex justify-end">
         <button class="btn btn-primary flex items-center" onclick="submitLineup(event)">
           <i class="fas fa-save mr-2"></i> Save Match Setup
@@ -441,9 +464,33 @@ $referees = RefereeController::index();
     // const homeTeamPlayers = generatePlayersWithSpecificPositions('Raja Club Athletic');
     // const awayTeamPlayers = generatePlayersWithSpecificPositions('Olympique Club de Khouribga');
     const homeTeamPlayers = <?php echo json_encode($homeTeamPlayers); ?>;
-    console.log(homeTeamPlayers);
+    console.log("homeTeamPlayers",homeTeamPlayers);
     const awayTeamPlayers = <?php echo json_encode($awayTeamPlayers); ?>;
-    const referees = generateReferees(6);
+    console.log("awayTeamPlayers",awayTeamPlayers);
+    const formations = <?php echo json_encode($formations); ?>;
+    console.log("formations",formations);
+    const refereesFromDb = <?php echo json_encode($referees); ?>;
+    console.log("refereesFromDb",refereesFromDb);
+    const refereesInMatchFromDb = <?php echo json_encode($refereesInMatch); ?>;
+    console.log("refereesInMatchFromDb",refereesInMatchFromDb);
+    const refereeRolesFromDb = <?php echo json_encode($refereeRoles); ?>;
+    console.log("refereeRolesFromDb",refereeRolesFromDb);
+    const referees = refereesFromDb.map(referee => {
+      return {
+        id: referee.id,
+        name: `${referee.name} ${referee.surname}`,
+        experience: referee.experience_years,
+        nationality: referee.country_name
+      };
+    });
+    console.log("referees",referees);
+
+    // referees.push({
+    //       id: i,
+    //       name: `Referee ${i}`,
+    //       experience: Math.floor(Math.random() * 15) + 3, // 3-18 years of experience
+    //       nationality: 'Morocco'
+    //     });
 
     // State
     let selectedHomeTeamPlayers = []; // Starting players
@@ -451,9 +498,66 @@ $referees = RefereeController::index();
     let substituteHomeTeamPlayers = []; // Substitute players
     let substituteAwayTeamPlayers = []; // Substitute players
     let selectedReferees = {};
-    let homeTeamFormation = '4-3-3';
-    let awayTeamFormation = '4-3-3';
+    let homeTeamFormationObject = formations.find(formation => formation.id == <?php echo $match[GameMatch::$formation1_id] ?>) // Default formation for home team
+    let awayTeamFormationObject = formations.find(formation => formation.id == <?php echo $match[GameMatch::$formation2_id] ?>) // Default formation for away team
+    let homeTeamFormation = homeTeamFormationObject ? homeTeamFormationObject.name : '4-3-3' // Default formation for home team
+    let awayTeamFormation = awayTeamFormationObject ? awayTeamFormationObject.name : '4-3-3' // Default formation for away team
     let playerPositions = []; // Array to store player positions on the field
+    let positionsFromDb = <?php echo json_encode($lineups); ?>; // Positions from the database
+
+    homeTeamPlayers.forEach(player => {
+      positionsFromDb.forEach(position => {
+        if (player.id == position.player_id && position.club_type == 'H' && position.match_id == <?php echo $match_id ?>) {
+          if(position.is_starting == 'Y') {
+            selectedHomeTeamPlayers.push(player);
+          } else {
+            substituteHomeTeamPlayers.push(player);
+          }
+        }
+      });
+    });
+
+    awayTeamPlayers.forEach(player => {
+      positionsFromDb.forEach(position => {
+        if (player.id == position.player_id && position.club_type == 'A' && position.match_id == <?php echo $match_id ?>) {
+          if(position.is_starting == 'Y') {
+            selectedAwayTeamPlayers.push(player);
+          } else {
+            substituteAwayTeamPlayers.push(player);
+          }
+        }
+      });
+    });
+    console.log("selectedAwayTeamPlayers",selectedAwayTeamPlayers);
+
+    console.log("selectedHomeTeamPlayers",selectedHomeTeamPlayers);
+    
+
+    // selectedReferees = refereeRolesFromDb.map(refereeRole => {
+    //   const referee = refereesInMatchFromDb.find(ref => ref.referee_id == refereeRole.referee_id);
+    //   return {
+    //     id: referee ? referee.id : null,
+    //     name: referee ? `${referee.name} ${referee.surname}` : 'Not Assigned',
+    //     role: refereeRole.role_name
+    //   };
+    // });
+    refereesInMatchFromDb.forEach(entry => {
+    const refereeInfo = refereesFromDb.find(r => r.id === entry.referee_id);
+    const roleInfo = refereeRolesFromDb.find(role => role.id === entry.role_id);
+
+    if (refereeInfo && roleInfo) {
+      selectedReferees[roleInfo.name] = {
+        id: refereeInfo.id,
+        name: `${refereeInfo.name} ${refereeInfo.surname}`,
+        experience: refereeInfo.experience_years,
+        nationality: refereeInfo.country_name
+      };
+    }
+  });
+  updateAssignedReferees();
+    console.log("selectedReferees",selectedReferees);
+
+    console.log(positionsFromDb);
     let currentEditingPlayer = null; // Currently selected player for position editing
     let currentlyViewingTeam = 'home'; // Currently viewing team lineup (home or away)
 
@@ -671,6 +775,42 @@ $referees = RefereeController::index();
       'ST2': 'Striker'
     };
 
+    playerPositions = selectedHomeTeamPlayers.map(player => {
+      const tag = player.tag;
+      const team = 'home';
+      const formation = homeTeamFormation;
+      const formationPositions = positionMappings[formation][team];
+      const coordinates = formationPositions[tag] || [50, 60];
+      return {
+        id: player.id,
+        positionId: player.position_id || null,
+        team: 'home',
+        position: player.position,
+        positionKey: tag,
+        name: player.name,
+        number: player.number,
+        x: coordinates[0],
+        y: coordinates[1],
+      };
+    }).concat(selectedAwayTeamPlayers.map(player => {
+      const tag = player.tag;
+      const team = 'away';
+      const formation = awayTeamFormation;
+      const formationPositions = positionMappings[formation][team];
+      const coordinates = formationPositions[tag] || [50, 40];
+      return {
+        id: player.id,
+        positionId: player.position_id || null,
+        team: 'away',
+        position: player.position,
+        positionKey: tag,
+        name: player.name,
+        number: player.number,
+        x: coordinates[0],
+        y: coordinates[1],
+      };
+    }));
+
     // DOM Elements
     const tabs = document.querySelectorAll('.tab');
     const tabPanes = document.querySelectorAll('.tab-pane');
@@ -784,7 +924,9 @@ $referees = RefereeController::index();
 
       // Formation change for home team
       homeFormationSelect.addEventListener('change', () => {
-        homeTeamFormation = homeFormationSelect.value;
+
+        homeTeamFormation = formations.find(f => f.id == homeFormationSelect.value).name;
+        console.log('Home formation:', homeTeamFormation);
 
         // Update player positions based on new formation
         updatePlayerPositionsForFormation('home');
@@ -794,7 +936,8 @@ $referees = RefereeController::index();
 
       // Formation change for away team
       awayFormationSelect.addEventListener('change', () => {
-        awayTeamFormation = awayFormationSelect.value;
+        awayTeamFormation = formations.find(f => f.id == awayFormationSelect.value).name;
+        console.log('Away formation:', awayTeamFormation);
 
         // Update player positions based on new formation
         updatePlayerPositionsForFormation('away');
@@ -905,7 +1048,7 @@ $referees = RefereeController::index();
         return `
       <div class="flex items-center justify-between p-2 bg-gray-50 rounded-md" data-player-id="${player.id}">
         <div>
-          <div class="font-medium"> ${player.surname} ${player.name}</div>
+         <div class="font-medium flex space-x-2"> <p class="font-bold"> ${player.number} </p> <p>${player.surname} ${player.name}</p></div>
           <div class="text-sm text-gray-500">${player.position} (${player.tag})</div>
         </div>
         <div class="flex gap-1">
@@ -948,7 +1091,7 @@ $referees = RefereeController::index();
         return `
       <div class="flex items-center justify-between p-2 bg-gray-50 rounded-md" data-player-id="${player.id}">
         <div>
-          <div class="font-medium">${player.surname} ${player.name}</div>
+          <div class="font-medium flex space-x-2"> <p class="font-bold"> ${player.number} </p> <p>${player.surname} ${player.name}</p></div>
           <div class="text-sm text-gray-500">${player.position} (${player.tag})</div>
         </div>
         <div class="flex gap-1">
@@ -1037,7 +1180,7 @@ $referees = RefereeController::index();
       editPlayerTeam.textContent = team === 'home' ? 'Raja Club Athletic' : 'Olympique Club de Khouribga';
 
       if (existingPosition) {
-        playerPositionSelect.value = existingPosition.position;
+        playerPositionSelect.value = existingPosition.positionKey;
         playerNumberInput.value = existingPosition.number;
       } else {
         // Default values - use the player's specific position
@@ -1067,18 +1210,19 @@ $referees = RefereeController::index();
       const currentFormation = team === 'home' ? homeTeamFormation : awayTeamFormation;
 
       // Update existing player positions based on new formation
+      console.log('playerPositions', playerPositions);
       playerPositions.forEach(player => {
         if (player.team === team) {
           const formationPositions = positionMappings[currentFormation][team];
 
           // Find the closest matching position in the new formation
-          let positionKey = player.position;
+          let positionKey = player.positionKey;
 
           // Handle special cases for positions that might have multiple spots
-          if (player.position === 'CB' || player.position === 'CB2' || player.position === 'CB3') {
+          if (player.positionKey === 'CB' || player.positionKey === 'CB2' || player.positionKey === 'CB3') {
             // Find all CBs for this team
             const teamCBs = playerPositions.filter(p =>
-              p.team === team && (p.position === 'CB' || p.position === 'CB2' || p.position === 'CB3')
+              p.team === team && (p.positionKey === 'CB' || p.positionKey === 'CB2' || p.positionKey === 'CB3')
             );
 
             // Sort by player ID to maintain consistent ordering
@@ -1092,7 +1236,7 @@ $referees = RefereeController::index();
           }
 
           // Get coordinates for the position in the new formation
-          const coordinates = formationPositions[positionKey] || formationPositions[player.position] || [50, team === 'home' ? 60 : 40];
+          const coordinates = formationPositions[positionKey] || formationPositions[player.positionKey] || [50, team === 'home' ? 60 : 40];
 
           // Update coordinates
           player.x = coordinates[0];
@@ -1140,6 +1284,7 @@ $referees = RefereeController::index();
           const referee = referees.find(r => r.id === refereeId);
 
           assignReferee(referee, role);
+          console.log('selectedReferees', selectedReferees);
         });
       });
     }
@@ -1688,14 +1833,63 @@ $referees = RefereeController::index();
       e.preventDefault();
       const form = document.getElementById('lineup-form');
       const lineupInput = document.getElementById('lineup_data_input');
+      const home_team_formation_input = document.getElementById('home_team_formation_input');
+      const away_team_formation_input = document.getElementById('away_team_formation_input');
+      const referee_data_input = document.getElementById('referee_data_input');
 
       // Only save playerPositions (which already has all needed info)
-      const playersToSend = playerPositions.map(player => ({
-        player_id: player.id,
-        club_type: player.team === 'home' ? 'H' : 'A',
-        position_id: player.positionId,
-      }));
+      // const playersToSend = playerPositions.map(player => ({
+      //   player_id: player.id,
+      //   club_type: player.team === 'home' ? 'H' : 'A',
+      //   position_id: player.positionId,
+
+      // }));
+
+      const playersToSend = [];
+      selectedHomeTeamPlayers.forEach(player => {
+        playersToSend.push({
+          player_id: player.id,
+          club_type: 'H',
+          is_starting: 'Y',
+          position_id: player.position_id
+        });
+      });
+      substituteHomeTeamPlayers.forEach(player => {
+        playersToSend.push({
+          player_id: player.id,
+          club_type: 'H',
+          is_starting: 'N',
+          position_id: player.position_id
+        });
+      });
+      selectedAwayTeamPlayers.forEach(player => {
+        playersToSend.push({
+          player_id: player.id,
+          club_type: 'A',
+          is_starting: 'Y',
+          position_id: player.position_id
+        });
+      });
+      substituteAwayTeamPlayers.forEach(player => {
+        playersToSend.push({
+          player_id: player.id,
+          club_type: 'A',
+          is_starting: 'N',
+          position_id: player.position_id
+        });
+      });
       lineupInput.value = JSON.stringify(playersToSend);
+      home_team_formation_input.value = formations.find(formation => formation.name === homeTeamFormation).id;
+      away_team_formation_input.value = formations.find(formation => formation.name === awayTeamFormation).id;
+      console.log('referees', selectedReferees);
+      const  refereeRoles = <?php echo json_encode($refereeRoles); ?>;
+      console.log('refereeRoles', refereeRoles);
+      const refereesToSend = Object.entries(selectedReferees).map(([role, referee]) => ({
+        role_id: refereeRoles.find(r => r.name === role).id,
+        referee_id: referee.id,
+      }));
+
+      referee_data_input.value = JSON.stringify(refereesToSend);
       form.submit();
     }
   </script>

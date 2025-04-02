@@ -1,6 +1,6 @@
 <?php
 
-$refereeId = $refereeFirstName = $refereeLastName = $refereeCountry = $refereeBirthDay = '';
+$refereeId = $refereeFirstName = $refereeLastName = $refereeCountry = $refereeBirthDay = $refereeStartingDate  ='';
 $is_update = false;
 
 if (isset($_GET['id'])) {
@@ -10,6 +10,7 @@ if (isset($_GET['id'])) {
     $refereeLastName = $referee[Referee::$lastName];
     $refereeCountry = $referee[Referee::$country_id];
     $refereeBirthDay = $referee[Referee::$birthDate];
+    $refereeStartingDate = $referee[Referee::$startingDate];
 
     $is_update = true;
 }
@@ -48,6 +49,17 @@ if (isset($_GET['id'])) {
                 name="birth_date"
                 id="birth_date"
                 value="<?php echo $refereeBirthDay; ?>"
+                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                required>
+        </div>
+        <div>
+            <label for="starting_date" class="block text-sm font-medium">Date de debut</label>
+            <input
+                type="date"
+                dateformat="yyyy-mm-dd"
+                name="starting_date"
+                id="starting_date"
+                value="<?php echo $refereeStartingDate; ?>"
                 class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 required>
         </div>

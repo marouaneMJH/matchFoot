@@ -238,6 +238,9 @@
 .max-h-\[150px\] {
   max-height: 150px;
 }
+.max-h-\[400px\] {
+  max-height: 400px;
+}
 .max-h-\[500px\] {
   max-height: 500px;
 }
@@ -900,9 +903,6 @@
 .text-blue-800 {
   color: var(--color-blue-800);
 }
-.text-gray-100 {
-  color: var(--color-gray-100);
-}
 .text-gray-400 {
   color: var(--color-gray-400);
 }
@@ -941,6 +941,9 @@
 }
 .text-green-900 {
   color: var(--color-green-900);
+}
+.text-purple-600 {
+  color: var(--color-purple-600);
 }
 .text-purple-800 {
   color: var(--color-purple-800);
@@ -1508,6 +1511,7 @@
     --color-blue-900: oklch(0.379 0.146 265.522);
     --color-purple-50: oklch(0.977 0.014 308.299);
     --color-purple-100: oklch(0.946 0.033 307.174);
+    --color-purple-600: oklch(0.558 0.288 302.321);
     --color-purple-800: oklch(0.438 0.218 303.724);
     --color-gray-50: oklch(0.985 0.002 247.839);
     --color-gray-100: oklch(0.967 0.003 264.542);
