@@ -1,5 +1,9 @@
 <?php
 require_once __DIR__ . '/../../../../controller/RefereeController.php';
+require_once __DIR__ . '/../../../../controller/RefereeRoleController.php';
+
+require_once __DIR__ . '/../../../../controller/CountryController.php';
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['id']) && !empty($_POST['id'])) {
@@ -86,6 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <th class="px-6 py-4 text-left text-xs font-medium text-[var(--text-color)] uppercase tracking-wider">Last Name</th>
                                     <th class="px-6 py-4 text-left text-xs font-medium text-[var(--text-color)] uppercase tracking-wider">First Name</th>
                                     <th class="px-6 py-4 text-left text-xs font-medium text-[var(--text-color)] uppercase tracking-wider">Birth Date</th>
+                                    <th class="px-6 py-4 text-left text-xs font-medium text-[var(--text-color)] uppercase tracking-wider">Experience Years</th>
                                     <th class="px-6 py-4 text-left text-xs font-medium text-[var(--text-color)] uppercase tracking-wider">Country</th>
                                     <th class="px-6 py-4 text-left text-xs font-medium text-[var(--text-color)] uppercase tracking-wider">Actions</th>
                                 </tr>
@@ -103,9 +108,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-[var(--text-color)]"><?php echo $referee[Referee::$lastName]; ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-color)]"><?php echo $referee[Referee::$firstName]; ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--primary-color)]"><?php echo $referee[Referee::$birthDate]; ?></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--primary-color)]"><?php echo $referee['experience_years']; ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="country-badge">
-                                            <?php echo $referee['country'][Country::$name]; ?>
+                                            <?php echo $referee["country_name"]; ?>
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">

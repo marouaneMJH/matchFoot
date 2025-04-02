@@ -12,6 +12,7 @@ $playerCountry = '';
 $playerPosition = '';
 $is_update = false;
 
+
 if (isset($_GET['id'])) {
     $playerId = $_GET['id'];
     $player = PlayerController::getPlayerById($playerId);

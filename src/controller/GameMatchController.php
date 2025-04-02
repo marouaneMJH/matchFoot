@@ -12,7 +12,7 @@ class GameMatchController extends Controller
         $now = time();
         $elapsed = $now - $matchStart; // in seconds
 
-        if ($matchDate < date('Y-m-d') || ($matchDate == date('Y-m-d') && $matchTime < date('H:i:s') && $elapsed > 120 * 60)) {
+        if ($matchDate < date('Y-m-d') || ($matchDate == date('Y-m-d') && $matchTime < date('H:i:s') && $elapsed > 90 * 60)) {
             $status = "Finished";
         } elseif ($elapsed >= 0 && $elapsed < 45 * 60) {
             $status = "1st Half";
@@ -20,9 +20,7 @@ class GameMatchController extends Controller
             $status = "Halftime";
         } elseif ($elapsed >= 60 * 60 && $elapsed < 90 * 60) {
             $status = "2nd Half";
-        } elseif ($elapsed >= 90 * 60 && $elapsed < 120 * 60) {
-            $status = "Extra Time";
-        } elseif ($elapsed < 0) {
+        }  elseif ($elapsed < 0) {
             $status = "Upcoming";
         } else {
             $status = "Unknown";
@@ -89,22 +87,7 @@ class GameMatchController extends Controller
         return $gameMatch;
     }
 
-    public static function getByTournament($tournament_id): array
-    {
-        if (!$tournament_id) {
-            $error = "Invalid tournament id";
-            include __DIR__ . '/../view/Error.php';
-            return [];
-        }
 
-        try {
-        } catch (Exception $e) {
-            $error = "Error fetching game matches: " . $e->getMessage();
-            include __DIR__ . '/../view/Error.php';
-            return [];
-        }
-        return $gameMatches;
-    }
     
 
     public static function store(): array

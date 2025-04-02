@@ -21,8 +21,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tournamentId'])) {
 }
 $tournament_id = $_SESSION['tournament_id'];
 
+$start = microtime(true);
 $gameMatches = GameMatchController::indexByTournament($tournament_id);
+$end = microtime(true);
+error_log("GameMatchController::indexByTournament took " . ($end - $start) . " seconds");
+$start = microtime(true);
 $tournament = TournamentController::getTournamentById($tournament_id);
+$end = microtime(true);
+error_log("TournamentController::getTournamentById took " . ($end - $start) . " seconds");
 // var_dump($_SESSION);
 // var_dump($tournament);
 

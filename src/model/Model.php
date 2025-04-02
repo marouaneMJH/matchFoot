@@ -186,6 +186,7 @@ class Model
 
             $params['id'] = $id;
             $stmt = $pdo->prepare($sql);
+          
 
             return $stmt->execute($params);
         } catch (PDOException $e) {

@@ -22,8 +22,8 @@ class PlayerController extends Controller
                 foreach ($players as $player) {
                     $club = ClubController::getClubById($player[Player::$clubId]);
                     $position = PositionController::getPositionById($player[Player::$positionId]);
-                    $country= CountryController::getCountryById($player[Player::$countryId]);
-                    
+                    $country = CountryController::getCountryById($player[Player::$countryId]);
+
                     $player['profile'] = "http://efoot/logo?file=" . $player[Player::$profilePath] . "&dir=" . self::$uploadSubDirectory;
                     $player['position'] = $position;
                     $player['club'] = $club;
@@ -34,6 +34,29 @@ class PlayerController extends Controller
                 return $modifiedPlayers;
             }
             return [];
+        } catch (Exception $e) {
+            $error = "Error fetching players: " . $e->getMessage();
+            include __DIR__ . '/../view/Error.php';
+            return [];
+        }
+    }
+
+    public static function getAllPlayers(): array
+    {
+        try {
+            $players = Player::getAllPlayers();
+            $modifiedPlayers = [];
+
+
+            if ($players) {
+                foreach ($players as $player) {
+                    $player['profile'] = "http://efoot/logo?file=" . $player[Player::$profilePath] . "&dir=" . self::$uploadSubDirectory;
+                    $modifiedPlayers[] = $player;
+                }
+                return $modifiedPlayers;
+            } else {
+                return [];
+            }
         } catch (Exception $e) {
             $error = "Error fetching players: " . $e->getMessage();
             include __DIR__ . '/../view/Error.php';
@@ -53,7 +76,7 @@ class PlayerController extends Controller
 
             $club = ClubController::getClubById($player[Player::$clubId]);
             $position = PositionController::getPositionById($player[Player::$positionId]);
-            $country= CountryController::getCountryById($player[Player::$countryId]);
+            $country = CountryController::getCountryById($player[Player::$countryId]);
 
             $player['profile'] = "http://efoot/logo?file=" . $player[Player::$profilePath] . "&dir=" . self::$uploadSubDirectory;
             $player['club'] = $club;
@@ -67,18 +90,22 @@ class PlayerController extends Controller
         }
     }
 
-    public static function getPlayersByClub($club_id){
-        if(!$club_id) {
+    public static function getPlayersByClub($club_id)
+    {
+        if (!$club_id) {
             $error = "Club ID is required";
             include __DIR__ . '/../view/Error.php';
             return [];
         }
 
         try {
-            $players = Player::getData([Player::$clubId => $club_id],
-        [Position::$table => [
-                'condition' => Player::$positionId . ' = ' . Position::$table . '.id',
-            ]],['id','name']);
+            $players = Player::getData(
+                [Player::$clubId => $club_id],
+                [Position::$table => [
+                    'condition' => Player::$positionId . ' = ' . Position::$table . '.id',
+                ]],
+                ['id', 'name']
+            );
             if (!$players) {
                 $error = "Players not found";
                 include __DIR__ . '/../view/Error.php';
@@ -93,21 +120,20 @@ class PlayerController extends Controller
             include __DIR__ . '/../view/Error.php';
             return [];
         }
-
     }
 
-    public static function getPlayersByMatch($match_id,$club_type): array
+    public static function getPlayersByMatch($match_id, $club_type): array
     {
-        if(!$match_id) {
+        if (!$match_id) {
             $error = "Match ID is required";
             include __DIR__ . '/../view/Error.php';
             return [];
         }
-       
+
 
         try {
             $players = null;
-            if($club_type == 'home') {
+            if ($club_type == 'home') {
                 $players = Player::getHomeClubPlayersByMatch($match_id);
             } else {
                 $players = Player::getAwayClubPlayersByMatch($match_id);
@@ -309,8 +335,8 @@ class PlayerController extends Controller
                 deleteImage(self::$uploadDirectory . $old_profile_path);
             }
             header("Location: PlayerList.php");
-        }catch (Exception $e) {
-            if($old_profile_path) {
+        } catch (Exception $e) {
+            if ($old_profile_path) {
                 deleteImage(self::$uploadDirectory . $profile_path);
             }
             $error = "Error updating player: " . $e->getMessage();

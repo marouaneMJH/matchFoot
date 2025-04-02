@@ -34,7 +34,7 @@
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center space-x-4">
                                 <img class="h-10 w-10 rounded-full object-cover border-2 border-green-200"
-                                    src="http://efoot/logo?file=wydad&dir=club_logo"
+                                    src="../../../../public/uploads/image_placeholder/img-placeholder.png"
                                     alt="Wydad AC">
                                 <div>
                                     <div class="text-sm font-medium text-green-900">Wydad AC</div>
