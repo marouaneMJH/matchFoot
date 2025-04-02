@@ -43,6 +43,7 @@ class ClubController extends Controller
             return [];
         }
     }
+    
     public static function getClubById($id): array
     {
         $club = Club::getById($id);
@@ -247,7 +248,6 @@ class ClubController extends Controller
             include __DIR__ . '/../view/Error.php';
         }
     }
-
 
     public static function deleteClub($id): void
     {
