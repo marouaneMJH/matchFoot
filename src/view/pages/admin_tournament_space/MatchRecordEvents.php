@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Live Match Events Tracker</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -31,26 +33,34 @@
   </script>
   <style type="text/css">
     :root {
-      --color-primary: 34 197 94; /* Green-500 */
+      --color-primary: 34 197 94;
+      /* Green-500 */
       --color-primary-foreground: 255 255 255;
-      --color-muted: 240 253 244; /* Green-50 */
-      --color-muted-foreground: 20 83 45; /* Green-900 */
+      --color-muted: 240 253 244;
+      /* Green-50 */
+      --color-muted-foreground: 20 83 45;
+      /* Green-900 */
       --color-destructive: 239 68 68;
       --color-destructive-foreground: 255 255 255;
     }
-    
+
     .scrollbar-hide::-webkit-scrollbar {
       display: none;
     }
-    
+
     .scrollbar-hide {
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
   </style>
 </head>
+
 <body class="bg-green-50">
+
   <div class="container mx-auto p-4">
+    <a href="./TournamentInfos.php" class="flex items-center text-gray-600 mb-4 hover:text-gray-800">
+      <i class="fas fa-arrow-left mr-2"></i> Back to Matches
+    </a>
     <div class="bg-white rounded-lg shadow-md mb-6">
       <div class="p-4 pb-2 border-b">
         <div class="flex justify-between items-center">
@@ -67,7 +77,7 @@
           Record live match events as they happen
         </p>
       </div>
-      
+
       <div class="p-4">
         <div class="flex justify-between items-center mb-6 bg-muted p-4 rounded-lg">
           <div class="flex items-center gap-3">
@@ -76,13 +86,13 @@
             </div>
             <div class="font-semibold" id="home-team-name">FC Barcelona</div>
           </div>
-          
+
           <div class="flex items-center gap-4">
             <div class="text-3xl font-bold" id="home-score">0</div>
             <div class="text-xl font-bold text-muted-foreground">-</div>
             <div class="text-3xl font-bold" id="away-score">0</div>
           </div>
-          
+
           <div class="flex items-center gap-3">
             <div class="font-semibold" id="away-team-name">Real Madrid</div>
             <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
@@ -105,7 +115,7 @@
               </button>
             </div>
           </div>
-          
+
           <div class="space-y-4 mb-6">
             <div class="grid grid-cols-2 gap-4 mt-4">
               <div>
@@ -115,7 +125,7 @@
                   <option value="awayTeam">Real Madrid</option>
                 </select>
               </div>
-              
+
               <div>
                 <label class="text-sm font-medium mb-1 block" id="player-label">Player</label>
                 <select id="player-select" class="w-full rounded-md border border-gray-300 p-2 text-sm">
@@ -123,7 +133,7 @@
                 </select>
               </div>
             </div>
-            
+
             <div id="goal-content" class="event-content">
               <div>
                 <label class="text-sm font-medium mb-1 block">Goal Type</label>
@@ -143,7 +153,7 @@
                 </select>
               </div>
             </div>
-            
+
             <div id="card-content" class="event-content hidden">
               <div>
                 <label class="text-sm font-medium mb-1 block">Card Type</label>
@@ -155,7 +165,7 @@
                 </select>
               </div>
             </div>
-            
+
             <div id="substitution-content" class="event-content hidden">
               <div>
                 <label class="text-sm font-medium mb-1 block">Player Coming Off</label>
@@ -170,7 +180,7 @@
                 </select>
               </div>
             </div>
-            
+
             <div class="flex justify-end gap-2">
               <button id="cancel-btn" class="hidden px-4 py-2 border border-gray-300 rounded-md text-sm font-medium flex items-center gap-1">
                 <i class="ri-refresh-line text-sm"></i>
@@ -181,7 +191,7 @@
               </button>
             </div>
           </div>
-          
+
           <div>
             <h3 class="font-medium mb-2">Match Timeline</h3>
             <div class="h-[300px] rounded-md border p-4 overflow-y-auto scrollbar-hide" id="timeline">
@@ -199,52 +209,223 @@
   <script>
     // Mock data
     const matchDetails = {
-      homeTeam: { id: 1, name: "FC Barcelona", logo: "https://via.placeholder.com/40" },
-      awayTeam: { id: 2, name: "Real Madrid", logo: "https://via.placeholder.com/40" },
+      homeTeam: {
+        id: 1,
+        name: "FC Barcelona",
+        logo: "https://via.placeholder.com/40"
+      },
+      awayTeam: {
+        id: 2,
+        name: "Real Madrid",
+        logo: "https://via.placeholder.com/40"
+      },
       venue: "Camp Nou",
       startTime: new Date(),
       status: "LIVE"
     };
 
     const mockPlayers = {
-      homeTeam: [
-        { id: 1, name: "John Smith", number: 1, position: "GK", onField: true, bench: false },
-        { id: 2, name: "David Johnson", number: 4, position: "DF", onField: true, bench: false },
-        { id: 3, name: "Michael Williams", number: 5, position: "DF", onField: true, bench: false },
-        { id: 4, name: "James Brown", number: 8, position: "MF", onField: true, bench: false },
-        { id: 5, name: "Robert Jones", number: 9, position: "FW", onField: true, bench: false },
-        { id: 6, name: "Thomas Davis", number: 10, position: "FW", onField: true, bench: false },
-        { id: 7, name: "Daniel Miller", number: 11, position: "FW", onField: true, bench: false },
-        { id: 15, name: "William Clark", number: 12, position: "DF", onField: false, bench: true },
-        { id: 16, name: "Joseph Lewis", number: 14, position: "MF", onField: false, bench: true },
-        { id: 17, name: "Richard Walker", number: 16, position: "FW", onField: false, bench: true },
+      homeTeam: [{
+          id: 1,
+          name: "John Smith",
+          number: 1,
+          position: "GK",
+          onField: true,
+          bench: false
+        },
+        {
+          id: 2,
+          name: "David Johnson",
+          number: 4,
+          position: "DF",
+          onField: true,
+          bench: false
+        },
+        {
+          id: 3,
+          name: "Michael Williams",
+          number: 5,
+          position: "DF",
+          onField: true,
+          bench: false
+        },
+        {
+          id: 4,
+          name: "James Brown",
+          number: 8,
+          position: "MF",
+          onField: true,
+          bench: false
+        },
+        {
+          id: 5,
+          name: "Robert Jones",
+          number: 9,
+          position: "FW",
+          onField: true,
+          bench: false
+        },
+        {
+          id: 6,
+          name: "Thomas Davis",
+          number: 10,
+          position: "FW",
+          onField: true,
+          bench: false
+        },
+        {
+          id: 7,
+          name: "Daniel Miller",
+          number: 11,
+          position: "FW",
+          onField: true,
+          bench: false
+        },
+        {
+          id: 15,
+          name: "William Clark",
+          number: 12,
+          position: "DF",
+          onField: false,
+          bench: true
+        },
+        {
+          id: 16,
+          name: "Joseph Lewis",
+          number: 14,
+          position: "MF",
+          onField: false,
+          bench: true
+        },
+        {
+          id: 17,
+          name: "Richard Walker",
+          number: 16,
+          position: "FW",
+          onField: false,
+          bench: true
+        },
       ],
-      awayTeam: [
-        { id: 8, name: "Christopher Wilson", number: 1, position: "GK", onField: true, bench: false },
-        { id: 9, name: "Matthew Moore", number: 2, position: "DF", onField: true, bench: false },
-        { id: 10, name: "Anthony Taylor", number: 5, position: "DF", onField: true, bench: false },
-        { id: 11, name: "Paul Anderson", number: 6, position: "MF", onField: true, bench: false },
-        { id: 12, name: "Mark Thomas", number: 8, position: "MF", onField: true, bench: false },
-        { id: 13, name: "Steven Jackson", number: 9, position: "FW", onField: true, bench: false },
-        { id: 14, name: "Andrew White", number: 11, position: "FW", onField: true, bench: false },
-        { id: 18, name: "Edward Harris", number: 13, position: "DF", onField: false, bench: true },
-        { id: 19, name: "Charles Martin", number: 15, position: "MF", onField: false, bench: true },
-        { id: 20, name: "Brian Thompson", number: 17, position: "FW", onField: false, bench: true },
+      awayTeam: [{
+          id: 8,
+          name: "Christopher Wilson",
+          number: 1,
+          position: "GK",
+          onField: true,
+          bench: false
+        },
+        {
+          id: 9,
+          name: "Matthew Moore",
+          number: 2,
+          position: "DF",
+          onField: true,
+          bench: false
+        },
+        {
+          id: 10,
+          name: "Anthony Taylor",
+          number: 5,
+          position: "DF",
+          onField: true,
+          bench: false
+        },
+        {
+          id: 11,
+          name: "Paul Anderson",
+          number: 6,
+          position: "MF",
+          onField: true,
+          bench: false
+        },
+        {
+          id: 12,
+          name: "Mark Thomas",
+          number: 8,
+          position: "MF",
+          onField: true,
+          bench: false
+        },
+        {
+          id: 13,
+          name: "Steven Jackson",
+          number: 9,
+          position: "FW",
+          onField: true,
+          bench: false
+        },
+        {
+          id: 14,
+          name: "Andrew White",
+          number: 11,
+          position: "FW",
+          onField: true,
+          bench: false
+        },
+        {
+          id: 18,
+          name: "Edward Harris",
+          number: 13,
+          position: "DF",
+          onField: false,
+          bench: true
+        },
+        {
+          id: 19,
+          name: "Charles Martin",
+          number: 15,
+          position: "MF",
+          onField: false,
+          bench: true
+        },
+        {
+          id: 20,
+          name: "Brian Thompson",
+          number: 17,
+          position: "FW",
+          onField: false,
+          bench: true
+        },
       ]
     };
 
-    const goalTypes = [
-      { id: 1, name: "Normal Goal" },
-      { id: 2, name: "Penalty" },
-      { id: 3, name: "Free Kick" },
-      { id: 4, name: "Header" },
-      { id: 5, name: "Own Goal" }
+    const goalTypes = [{
+        id: 1,
+        name: "Normal Goal"
+      },
+      {
+        id: 2,
+        name: "Penalty"
+      },
+      {
+        id: 3,
+        name: "Free Kick"
+      },
+      {
+        id: 4,
+        name: "Header"
+      },
+      {
+        id: 5,
+        name: "Own Goal"
+      }
     ];
 
-    const cardTypes = [
-      { id: 1, name: "Yellow Card", color: "bg-yellow-500" },
-      { id: 2, name: "Red Card", color: "bg-red-600" },
-      { id: 3, name: "Second Yellow Card", color: "bg-gradient-to-r from-yellow-500 to-red-600" }
+    const cardTypes = [{
+        id: 1,
+        name: "Yellow Card",
+        color: "bg-yellow-500"
+      },
+      {
+        id: 2,
+        name: "Red Card",
+        color: "bg-red-600"
+      },
+      {
+        id: 3,
+        name: "Second Yellow Card",
+        color: "bg-gradient-to-r from-yellow-500 to-red-600"
+      }
     ];
 
     // State
@@ -252,7 +433,10 @@
     let events = [];
     let selectedTeam = "homeTeam";
     let activeTab = "goal";
-    let score = { home: 0, away: 0 };
+    let score = {
+      home: 0,
+      away: 0
+    };
     let isEditing = null;
 
     // DOM Elements
@@ -285,26 +469,26 @@
       homeTeamName.textContent = matchDetails.homeTeam.name;
       awayTeamLogo.src = matchDetails.awayTeam.logo;
       awayTeamName.textContent = matchDetails.awayTeam.name;
-      
+
       // Set team options
       teamSelect.querySelector('option[value="homeTeam"]').textContent = matchDetails.homeTeam.name;
       teamSelect.querySelector('option[value="awayTeam"]').textContent = matchDetails.awayTeam.name;
-      
+
       // Start match timer
       setInterval(updateMatchTime, 60000); // Update every minute
-      
+
       // Populate player select
       populatePlayerSelect();
       populateAssistPlayerSelect();
-      
+
       // Set active tab
       setActiveTab('goal');
-      
+
       // Event listeners
       teamSelect.addEventListener('change', handleTeamChange);
       recordBtn.addEventListener('click', handleRecordEvent);
       cancelBtn.addEventListener('click', handleCancelEdit);
-      
+
       // Tab event listeners
       eventTabs.forEach(tab => {
         tab.addEventListener('click', () => {
@@ -326,7 +510,7 @@
 
     function setActiveTab(tab) {
       activeTab = tab;
-      
+
       // Update tab styling
       eventTabs.forEach(t => {
         if (t.dataset.tab === tab) {
@@ -337,14 +521,14 @@
           t.classList.add('text-gray-700', 'bg-gray-100');
         }
       });
-      
+
       // Show/hide content
       eventContents.forEach(content => {
         content.classList.add('hidden');
       });
-      
+
       document.getElementById(`${tab}-content`).classList.remove('hidden');
-      
+
       // Update player label based on active tab
       if (tab === 'substitution') {
         populateSubstitutionSelects();
@@ -373,7 +557,7 @@
       while (playerSelect.options.length > 1) {
         playerSelect.remove(1);
       }
-      
+
       // Add players from selected team who are on the field
       const players = mockPlayers[selectedTeam].filter(p => p.onField);
       players.forEach(player => {
@@ -389,7 +573,7 @@
       while (assistPlayerSelect.options.length > 1) {
         assistPlayerSelect.remove(1);
       }
-      
+
       // Add players from selected team who are on the field
       const players = mockPlayers[selectedTeam].filter(p => p.onField);
       players.forEach(player => {
@@ -408,18 +592,18 @@
       while (playerOnSelect.options.length > 1) {
         playerOnSelect.remove(1);
       }
-      
+
       // Add players from selected team
       const playersOnField = mockPlayers[selectedTeam].filter(p => p.onField);
       const playersOnBench = mockPlayers[selectedTeam].filter(p => p.bench);
-      
+
       playersOnField.forEach(player => {
         const option = document.createElement('option');
         option.value = player.id;
         option.textContent = `${player.number} - ${player.name} (${player.position})`;
         playerOffSelect.appendChild(option);
       });
-      
+
       playersOnBench.forEach(player => {
         const option = document.createElement('option');
         option.value = player.id;
@@ -446,23 +630,23 @@
       const playerId = playerSelect.value;
       const goalTypeId = goalTypeSelect.value;
       const assistPlayerId = assistPlayerSelect.value;
-      
+
       if (!playerId || !goalTypeId) {
         alert('Please select a player and goal type');
         return;
       }
-      
+
       const team = selectedTeam === "homeTeam" ? matchDetails.homeTeam : matchDetails.awayTeam;
       const player = mockPlayers[selectedTeam].find(p => p.id == playerId);
       const goalType = goalTypes.find(gt => gt.id == goalTypeId);
-      
+
       if (!player || !goalType) return;
-      
+
       const eventDetails = {
         goalTypeId: goalType.id,
         goalTypeName: goalType.name
       };
-      
+
       // Add assist details if provided
       if (assistPlayerId) {
         const assistPlayer = mockPlayers[selectedTeam].find(p => p.id == assistPlayerId);
@@ -472,7 +656,7 @@
           eventDetails.assistPlayerNumber = assistPlayer.number;
         }
       }
-      
+
       // Update score
       if (goalType.name === "Own Goal") {
         if (selectedTeam === "homeTeam") {
@@ -491,7 +675,7 @@
           awayScore.textContent = score.away;
         }
       }
-      
+
       const newEvent = {
         id: Date.now().toString(),
         type: "GOAL",
@@ -504,9 +688,9 @@
         details: eventDetails,
         timestamp: new Date()
       };
-      
+
       addOrUpdateEvent(newEvent);
-      
+
       // Reset selections
       playerSelect.value = "";
       goalTypeSelect.value = "";
@@ -516,24 +700,24 @@
     function recordCard() {
       const playerId = playerSelect.value;
       const cardTypeId = cardTypeSelect.value;
-      
+
       if (!playerId || !cardTypeId) {
         alert('Please select a player and card type');
         return;
       }
-      
+
       const team = selectedTeam === "homeTeam" ? matchDetails.homeTeam : matchDetails.awayTeam;
       const player = mockPlayers[selectedTeam].find(p => p.id == playerId);
       const cardType = cardTypes.find(ct => ct.id == cardTypeId);
-      
+
       if (!player || !cardType) return;
-      
+
       const eventDetails = {
         cardTypeId: cardType.id,
         cardTypeName: cardType.name,
         cardColor: cardType.color
       };
-      
+
       const newEvent = {
         id: Date.now().toString(),
         type: "CARD",
@@ -546,9 +730,9 @@
         details: eventDetails,
         timestamp: new Date()
       };
-      
+
       addOrUpdateEvent(newEvent);
-      
+
       // Reset selections
       playerSelect.value = "";
       cardTypeSelect.value = "";
@@ -557,18 +741,18 @@
     function recordSubstitution() {
       const playerOffId = playerOffSelect.value;
       const playerOnId = playerOnSelect.value;
-      
+
       if (!playerOffId || !playerOnId) {
         alert('Please select both players for the substitution');
         return;
       }
-      
+
       const team = selectedTeam === "homeTeam" ? matchDetails.homeTeam : matchDetails.awayTeam;
       const playerOff = mockPlayers[selectedTeam].find(p => p.id == playerOffId);
       const playerOn = mockPlayers[selectedTeam].find(p => p.id == playerOnId);
-      
+
       if (!playerOff || !playerOn) return;
-      
+
       const eventDetails = {
         substitutionType: "Standard",
         playerOffId: playerOff.id,
@@ -578,7 +762,7 @@
         playerOnName: playerOn.name,
         playerOnNumber: playerOn.number
       };
-      
+
       const newEvent = {
         id: Date.now().toString(),
         type: "SUBSTITUTION",
@@ -591,19 +775,19 @@
         details: eventDetails,
         timestamp: new Date()
       };
-      
+
       addOrUpdateEvent(newEvent);
-      
+
       // Update player status
       playerOff.onField = false;
       playerOff.bench = true;
       playerOn.onField = true;
       playerOn.bench = false;
-      
+
       // Reset selections
       playerOffSelect.value = "";
       playerOnSelect.value = "";
-      
+
       // Refresh player selects
       populateSubstitutionSelects();
     }
@@ -617,7 +801,7 @@
       } else {
         events = [newEvent, ...events];
       }
-      
+
       renderEvents();
     }
 
@@ -627,14 +811,14 @@
         eventsContainer.innerHTML = '';
         return;
       }
-      
+
       emptyTimeline.classList.add('hidden');
       eventsContainer.innerHTML = '';
-      
+
       events.forEach(event => {
         const eventEl = document.createElement('div');
         eventEl.className = 'flex items-start gap-3 pb-3 border-b';
-        
+
         let eventContent = `
           <div class="min-w-[40px] text-center">
             <div class="bg-muted rounded-md px-2 py-1 text-xs font-medium">
@@ -649,7 +833,7 @@
               <span class="text-xs text-muted-foreground">(${event.teamName})</span>
             </div>
         `;
-        
+
         if (event.type === "GOAL") {
           eventContent += `
             <div class="flex items-center gap-2 mt-1">
@@ -657,7 +841,7 @@
               <span class="text-sm">${event.details.goalTypeName}</span>
             </div>
           `;
-          
+
           // Add assist information if available
           if (event.details.assistPlayerName) {
             eventContent += `
@@ -686,7 +870,7 @@
             </div>
           `;
         }
-        
+
         eventContent += `
           </div>
           
@@ -699,7 +883,7 @@
             </button>
           </div>
         `;
-        
+
         eventEl.innerHTML = eventContent;
         eventsContainer.appendChild(eventEl);
       });
@@ -709,7 +893,7 @@
       isEditing = null;
       cancelBtn.classList.add('hidden');
       recordBtn.textContent = 'Record Event';
-      
+
       // Reset selections
       playerSelect.value = "";
       goalTypeSelect.value = "";
@@ -723,23 +907,23 @@
     window.editEvent = function(eventId) {
       const event = events.find(e => e.id === eventId);
       if (!event) return;
-      
+
       isEditing = eventId;
       cancelBtn.classList.remove('hidden');
       recordBtn.textContent = 'Update Event';
-      
+
       // Set team
       selectedTeam = event.teamId === matchDetails.homeTeam.id ? "homeTeam" : "awayTeam";
       teamSelect.value = selectedTeam;
-      
+
       // Set active tab based on event type
       setActiveTab(event.type.toLowerCase());
-      
+
       // Populate fields based on event type
       if (event.type === "GOAL") {
         playerSelect.value = event.playerId;
         goalTypeSelect.value = event.details.goalTypeId;
-        
+
         // Set assist player if available
         if (event.details.assistPlayerId) {
           assistPlayerSelect.value = event.details.assistPlayerId;
@@ -758,12 +942,12 @@
     window.deleteEvent = function(eventId) {
       const event = events.find(e => e.id === eventId);
       if (!event) return;
-      
+
       // Update score if deleting a goal
       if (event.type === "GOAL") {
         const isOwnGoal = event.details.goalTypeName === "Own Goal";
         const isHomeTeam = event.teamId === matchDetails.homeTeam.id;
-        
+
         if (isOwnGoal) {
           if (isHomeTeam) {
             score.away = Math.max(0, score.away - 1);
@@ -782,30 +966,30 @@
           }
         }
       }
-      
+
       // If deleting a substitution, revert player statuses
       if (event.type === "SUBSTITUTION") {
         const playerOff = mockPlayers[event.teamId === matchDetails.homeTeam.id ? "homeTeam" : "awayTeam"]
           .find(p => p.id == event.details.playerOffId);
         const playerOn = mockPlayers[event.teamId === matchDetails.homeTeam.id ? "homeTeam" : "awayTeam"]
           .find(p => p.id == event.details.playerOnId);
-          
+
         if (playerOff && playerOn) {
           playerOff.onField = true;
           playerOff.bench = false;
           playerOn.onField = false;
           playerOn.bench = true;
-          
+
           // Refresh player selects if we're on the substitution tab
           if (activeTab === 'substitution') {
             populateSubstitutionSelects();
           }
         }
       }
-      
+
       events = events.filter(e => e.id !== eventId);
       renderEvents();
-      
+
       if (isEditing === eventId) {
         handleCancelEdit();
       }
@@ -815,4 +999,5 @@
     init();
   </script>
 </body>
+
 </html>
