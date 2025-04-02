@@ -16,43 +16,53 @@ class AuthController
 
     public static function signup()
     {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            self::redirectToSignup();
+        try {
+            error_log("Signup function called"); // Debugging
+            if ($_SERVER["REQUEST_METHOD"] === "POST") {
+                error_log("Received POST request: " . json_encode($_POST));
+    
+                // Validate required fields
+                if (empty($_POST['username']) || empty($_POST['displayName']) || empty($_POST['email']) || empty($_POST['password'])) {
+                    error_log("Missing required fields");
+                    $_SESSION['error-signup'] = "All fields are required.";
+                    return;
+                }
+    
+                $username = $_POST['username'];
+                $displayName = $_POST['displayName'];
+                $email = $_POST['email'];
+                $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
+                $createdAt = date('Y-m-d H:i:s');
+    
+                $profilePath = null;
+                if (!empty($_FILES['profileImage']['name'])) {
+                    error_log("Handling profile image upload...");
+                    $uploadDir = __DIR__ . "/../../../uploads/";
+                    if (!file_exists($uploadDir)) {
+                        mkdir($uploadDir, 0777, true);
+                    }
+                    $profilePath = $uploadDir . basename($_FILES['profileImage']['name']);
+                    move_uploaded_file($_FILES['profileImage']['tmp_name'], $profilePath);
+                }
+    
+                error_log("Calling User::create...");
+                $user = User::create($username, $displayName, $email, $password, $createdAt, $profilePath);
+                
+                if ($user) {
+                    error_log("User created successfully!");
+                    header("Location: Login.php");
+                    exit();
+                } else {
+                    error_log("User creation failed");
+                    $_SESSION['error-signup'] = "An error occurred during signup.";
+                }
+            }
+        } catch (Exception $e) {
+            error_log("Signup error: " . $e->getMessage());
+            $_SESSION['error-signup'] = "An error occurred during signup.";
         }
-
-        self::startSession();
-
-        if (($error_result = self::checkSignupForm($_POST)) !== null) {
-            $_SESSION['error-signup'] = $error_result;
-            self::redirectToSignup();
-        }
-
-        $username = trim($_POST['username']);
-        $displayed_name = trim($_POST['displayed_name']) ?: $username;
-        $email = trim($_POST['email']);
-        $password = trim($_POST['password']);
-        $profile_path = null;
-
-        if (User::getUserByEmailOrUsername($email, $username)) {
-            $_SESSION['error-signup'] = 'User already exists';
-            self::redirectToSignup();
-        }
-
-        if (!empty($_FILES['profile_image']['name'])) {
-            $uploadDir = __DIR__ . '/../public/uploads/profiles/';
-            $profile_path = uploadImage($_FILES['profile_image'], $uploadDir);
-        }
-
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-        $created_at = date('Y-m-d H:i:s');
-
-        if (User::create($username, $displayed_name, $email, $hashed_password, $created_at, $profile_path)) {
-            self::redirectToLogin();
-        }
-
-        $_SESSION['error-signup'] = 'An error occurred during signup';
-        self::redirectToSignup();
     }
+    
 
     public static function login()
     {

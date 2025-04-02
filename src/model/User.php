@@ -5,7 +5,7 @@ class User  implements JsonSerializable
 {
     use DbConnection;
 
-    private static $table = 'users';
+    private static $table = 'user';
 
 
 
@@ -104,33 +104,35 @@ class User  implements JsonSerializable
     {
         try {
             $pdo = self::connect();
-            if (!$pdo) {
-                throw new Exception("Database connection failed");
-            }
-    
             $table = self::$table;
-            $hashed_password = password_hash($password, PASSWORD_DEFAULT); // Secure password storage
+    
+            error_log("Preparing SQL statement...");
     
             $stmt = $pdo->prepare("INSERT INTO `$table` (username, displayed_name, email, password, profile_path, created_at) 
-                                    VALUES (:username, :displayed_name, :email, :password, :profile_path, :created_at)");
+                                   VALUES (:username, :displayed_name, :email, :password, :profile_path, :created_at)");
     
             $stmt->execute([
-                'username' => $username,
-                'displayed_name' => $displayed_name,
-                'email' => $email,
-                'password' => $hashed_password, // Use hashed password
-                'profile_path' => $profile_path,
+                'username' => $username, 
+                'displayed_name' => $displayed_name, 
+                'email' => $email, 
+                'password' => $password, 
+                'profile_path' => $profile_path, 
                 'created_at' => $created_at
             ]);
     
             $id = $pdo->lastInsertId();
-            return new User($id, $username, $displayed_name, $email, $hashed_password, $created_at, $profile_path);
-        
+            error_log("User inserted with ID: " . $id);
+    
+            return new User($id, $username, $displayed_name, $email, $password, $created_at, $profile_path);
+        } catch (PDOException $th) {
+            error_log("Database error: " . $th->getMessage());
+            return null;
         } catch (Exception $e) {
-            error_log("Error in create(): " . $e->getMessage()); // Log errors instead of failing silently
+            error_log("General error: " . $e->getMessage());
             return null;
         }
     }
+    
     
 
     public function update() {}
