@@ -109,9 +109,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--primary-color)]"><?php echo $player[Player::$height]; ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--primary-color)]"><?php echo $player[Player::$weight]; ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--primary-color)]"><?php echo $player[Player::$foot]; ?></td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--primary-color)]"><?php echo $player['club_name']; ?></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--primary-color)]"><?php echo $player['club_nickname']; ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--primary-color)]"><?php echo $player['country_name']; ?></td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--primary-color)]"><?php echo $player['position_name']; ?></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--primary-color)]"><?php echo $player['position_tag']; ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div class="flex space-x-3">
                                             <a href="PlayerList.php?id=<?php echo $player[Player::$id]; ?>&&showModal" 

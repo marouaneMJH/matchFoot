@@ -35,7 +35,7 @@ class Player extends Model
 
     public static function getAllPlayers(): array
     {
-        $query = "SELECT p.id, p.name,p.surname,p.weight,p.foot,p.birth_date,p.height,p.profile_path,pos.name AS position_name,c.name AS club_name,c.nickname AS club_nickname,country.name AS country_name,p.number
+        $query = "SELECT p.id, p.name,p.surname,p.weight,p.foot,p.birth_date,p.height,p.profile_path,pos.name AS position_name,pos.tag as position_tag,c.name AS club_name,c.nickname AS club_nickname,country.name AS country_name,p.number
                 FROM player p
                     JOIN position pos ON p.position_id = pos.id
                     JOIN club c ON p.club_id = c.id
