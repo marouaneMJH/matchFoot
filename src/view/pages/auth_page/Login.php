@@ -3,6 +3,13 @@ require_once __DIR__ . '/../../../controller/AuthController.php';
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
     AuthController::login();
 }
+
+if($_SERVER['REQUEST_METHOD'] === 'GET')
+{
+    if(AuthController::isLoggedIn())
+        exit;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -16,6 +23,13 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     
   </head>
   <body>
+
+    <?php
+    if (isset($_SESSION['error-login'])) {
+        echo '<div class="error-message">' . $_SESSION['error-login'] . '</div>';
+        unset($_SESSION['error-login']);
+    }
+    ?>
     <div class="login-container">
       <div class="login-card">
           <img src="../../assets/logoProMax.jpg" alt="Logo" class="logo">

@@ -62,6 +62,14 @@ class User  implements JsonSerializable
         }
     }
 
+    /**
+     * * Get user by email or username
+     * * @param string $email 
+     * * @param string $username
+     * * @return User|null
+     * * This method retrieves a user from the database by their email or username.
+     * * It returns a User object if found, or null if not found.
+     */
     public static function getUserByEmailOrUsername($email, $username)
     {
         try {

@@ -1,3 +1,11 @@
+<?php
+    require_once __DIR__ . '/../../../controller/AuthController.php';
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        AuthController::signup();
+    }
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,8 +14,20 @@
     <title>signup page</title>
     <link rel="stylesheet" href="../../styles/styles12.css">
 </head>
+<?php
+    session_start();
+    var_dump($_SESSION);
+?>
 <body>
-    <form id="signup-form">
+    <?php
+    // session_start();
+    if (isset($_SESSION['error-signup'])) {
+        echo '<div class="error-message">' . $_SESSION['error-signup'] . '</div>';
+        unset($_SESSION['error-signup']);
+    }
+    ?>
+    <form action="#" method="POST" id="signupForm"  enctype=multipart/form-data>
+
         <div class="signup-container">
             <div class="signup-card">
                 <h2>Créer un compte</h2>
@@ -43,29 +63,9 @@
                 <div class="links">
                     <a href="Login.php">Déjà inscrit ? Connectez-vous ici</a>
                 </div>
+
             </div>
         </div>
     </form>
-
-    <script>
-        const form = document.getElementById('signup-form');
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData(form);
-           // const fileInput = document.getElementById("profile_image");
-           // console.log(fileInput);
-           // formData.append("file", fileInput.files[0]);
-            fetch('http://efoot/signup', {
-                method: 'POST',
-                body: formData
-            })
-            .then(res => res.json())
-            .then(data => {
-                console.log(data);
-            }).catch(error => {
-                console.error('Error:', error);
-            });
-        });
-    </script>
 </body>
 </html>
