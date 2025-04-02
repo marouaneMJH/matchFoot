@@ -140,7 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 
                 <!-- News List -->
-                <?php include __DIR__ . '/News/NewsTabContent.php'; ?>
+                <?php include __DIR__ . '/news/NewsTabContent.php'; ?>
                 
             </div>
 

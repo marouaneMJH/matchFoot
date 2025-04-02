@@ -1,58 +1,66 @@
 <?php
 require_once __DIR__ . '/../helper/UploadFileHelper.php';
-require_once __DIR__ . '/../model/News.php';
+require_once __DIR__ . '/../model/Comment.php';
+require_once __DIR__ . '/../model/Admin.php';
 require_once __DIR__ . '/Controller.php';
 
-class NewsController extends Controller
+class CommentController extends Controller
 {
-    private static $uploadDirectory = __DIR__ . '/../../public/uploads/news_image/';
-    private static $uploadSubDirectory = 'news_image';
+    private static $uploadDirectory = __DIR__ . '/../../public/uploads/admin_profiles/';
+    private static $uploadSubDirectory = 'admin_profiles';
 
     public static function index(): array
     {
         try {
-            $news = News::getAll();
-            // $newss = News::getData(
-            //     [],
-            //     [Stadium::$table => ['condition' => News::$stadium_id = Stadium::$table . '.' . Stadium::$id]],
-            //     ['id','name']
-            // );
-            
-            $modifiedNews = [];
-            if ($news) {
-                foreach ($news as $news) {
-                    // $stade = StadiumController::getStadById($news[News::$stadium_id]);
-                    if($news[News::$image_path])
-                        $news['image'] = 'http://efoot/logo?file=' . $news[News::$image_path] . '&dir=' . self::$uploadSubDirectory;
-                    // $news['stadium'] = $stade;
-                    $modifiedNews[] = $news;
+            $comments = Comment::getAll();
+
+            if ($comments) {
+
+                $mappedComments = [];
+                foreach ($comments as $comment) {
+
+                    $user = Admin::getById($comment['user_id']);
+
+                    if (!$user) {
+                        $error = "User not found";
+                        include __DIR__ . '/../view/Error.php';
+                        return [];
+                    }
+
+                    $mappedComments[] = [
+                        'id' => $comment[Comment::$id],
+                        'user_id' => $comment[Comment::$user_id],
+                        'match_id' => $comment[Comment::$match_id],
+                        'comment_reply_id' => $comment[Comment::$comment_reply_id],
+                        'comment' => $comment[Comment::$comment],
+                        'date' => $comment[Comment::$date],
+                        'username' => $user[Admin::$firstName] . ' ' . $user[Admin::$lastName],
+                        'profile_logo' => 'http://efoot/logo?file=' . $user[Admin::$profilePath] . '&dir=' . self::$uploadSubDirectory
+                    ];
                 }
 
-                return $modifiedNews;
-               
+                return $mappedComments;
             } else {
                 return [];
             }
         } catch (Exception $e) {
-            $error = "Error fetching newss: " . $e->getMessage();
+            $error = "Error fetching Comments: " . $e->getMessage();
             include __DIR__ . '/../view/Error.php';
             return [];
         }
     }
-    
-    public static function getClubById($id): array
+
+    public static function getCommentById($id): array
     {
-        $news = News::getById($id);
-        if (!$news) {
-            $error = "News not found";
+        try {
+            $comment = Comment::getById($id);
+
+            return $comment;
+        } catch (Exception $e) {
+            $error = "Error fetching Comment: " . $e->getMessage();
             include __DIR__ . '/../view/Error.php';
             return [];
         }
-
-        $news['image'] = 'http://efoot/logo?file=' . $news[News::$image_path] . '&dir=' . self::$uploadSubDirectory;
-
-
-        return $news; // Display news details
     }
 
     public static function store(): void
@@ -63,58 +71,50 @@ class NewsController extends Controller
             return;
         }
 
-        $admin_id = isset($_POST['admin_id']) ? trim(intval($_POST['admin_id'])) : 4;
-        $title = isset($_POST['title']) ? trim(string: $_POST['title']) : null;
-        $content = isset($_POST['content']) ? trim($_POST['content']) : null;
-        $category = isset($_POST['category']) ? trim($_POST['category']) : null;
-        $status = isset($_POST['status']) ? trim($_POST['status']) : null;
-        $date = isset($_POST['date']) ? trim(intval($_POST['date'])) : null;
-        $image_path = null;
+        $id = isset($_POST['id']) ? trim(intval($_POST['id'])) : null;
+        $user_id = isset($_POST['user_id']) ? trim(intval($_POST['user_id'])) : null;
+        $match_id = isset($_POST['match_id']) ? trim(intval($_POST['match_id'])) : null;
+        $comment_reply_id = isset($_POST['comment_reply_id']) ? trim(intval($_POST['comment_reply_id'])) : null;
+        $comment = isset($_POST['comment']) ? trim($_POST['comment']) : null;
+        $date = isset($_POST['date']) ? trim($_POST['date']) : null;
 
-        
-        
         $data = [
-            News::$admin_id => $admin_id,
-            News::$title => $title,
-            News::$content => $content,
-            News::$category => $category,
-            News::$status => $status,
-            News::$date => $date
+            'id' => $id,
+            'user_id' => $user_id,
+            'match_id' => $match_id,
+            'comment_reply_id' => $comment_reply_id,
+            'comment' => $comment,
+            'date' => $date
         ];
-        var_dump($data);
-        
+
         $rules = [
-            News::$title => 'required|max:255',
-            News::$content => 'required',
-            News::$category => 'required',
-            News::$status => 'required'
+            Comment::$user_id => 'numeric',
+            Comment::$match_id => 'numeric',
+            Comment::$comment_reply_id => 'numeric|nullable',
+            Comment::$comment => 'required|max:1000',
+            Comment::$date => 'date'
         ];
-        $validate_result = self::validate($data, $rules);
+
+        $validate_result = true; //self::validate($data, $rules);
         if ($validate_result !== true) {
             $error = $validate_result;
             include __DIR__ . '/../view/Error.php';
             return;
         }
 
-        // Handle file upload
-        if (isset($_FILES["image"]) && $_FILES["image"]["size"] > 0) {
-            $image = $_FILES["image"];
-            $image_path = uploadImage($image, self::$uploadDirectory);
-        }
 
         $date = date('Y-m-d H:i:s');
-        $data[News::$image_path] = $image_path ?? null;
-        $data[News::$date] = $date;
+        $data[Comment::$date] = $date;
 
         try {
-            News::create($data);
-            header("Location: TournamentInfos.php?success=1");
+            Comment::create($data);
+            header("Location: ../Accueil.php?Target=comments&&success=1");
             exit();
         } catch (Exception $e) {
             if (isset($image_path)) {
-            deleteImage(self::$uploadDirectory . $image_path);
+                deleteImage(self::$uploadDirectory . $image_path);
             }
-            $error = "Failed to create news: " . $e->getMessage();
+            $error = "Failed to create Comment: " . $e->getMessage();
             include __DIR__ . '/../view/Error.php';
         }
     }
@@ -128,13 +128,11 @@ class NewsController extends Controller
         }
 
         $id = isset($_POST['id']) ? trim(intval($_POST['id'])) : null;
-        $title = isset($_POST['title']) ? trim($_POST['title']) : null;
-        $content = isset($_POST['content']) ? trim($_POST['content']) : null;
-        $category = isset($_POST['category']) ? trim(intval($_POST['category'])) : null;
-        $status = isset($_POST['status']) ? trim($_POST['status']) : null;
+        $user_id = isset($_POST['user_id']) ? trim(intval($_POST['user_id'])) : null;
+        $match_id = isset($_POST['match_id']) ? trim(intval($_POST['match_id'])) : null;
+        $comment_reply_id = isset($_POST['comment_reply_id']) ? trim(intval($_POST['comment_reply_id'])) : null;
+        $comment = isset($_POST['comment']) ? trim($_POST['comment']) : null;
         $date = isset($_POST['date']) ? trim($_POST['date']) : null;
-        $image_path = null;
-        $old_image_path = null;
 
         if (!$id) {
             $error = "Id is required";
@@ -142,27 +140,28 @@ class NewsController extends Controller
             return;
         }
 
-        $news = News::getById($id);
-        if (!$news) {
-            $error = "News not found";
+        $comment = Comment::getById($id);
+        if (!$comment) {
+            $error = "Comment not found";
             include __DIR__ . '/../view/Error.php';
             return;
         }
 
         $data = [
-            News::$title => $title,
-            News::$content => $content,
-            News::$category => $category,
-            News::$status => $status,
-            News::$date => $date
+            'id' => $id,
+            'user_id' => $user_id,
+            'match_id' => $match_id,
+            'comment_reply_id' => $comment_reply_id,
+            'comment' => $comment,
+            'date' => $date
         ];
 
         $rules = [
-            News::$title => 'required|max:255',
-            News::$content => 'required',
-            News::$category => 'required|numeric',
-            News::$status => 'required',
-            News::$date => 'required|date'
+            Comment::$user_id => 'required|numeric',
+            Comment::$match_id => 'required|numeric',
+            Comment::$comment_reply_id => 'numeric|nullable',
+            Comment::$comment => 'required|max:1000',
+            Comment::$date => 'required|date'
         ];
 
         $validate_result = self::validate($data, $rules);
@@ -173,68 +172,45 @@ class NewsController extends Controller
             return;
         }
 
-        $image_path = $news[News::$image_path];
-
-        // Handle file upload
-        if (isset($_FILES["image"]) && $_FILES["image"]["size"] > 0) {
-            $image = $_FILES["image"];
-            $old_image_path = $image_path;
-            $image_path = uploadImage($image, self::$uploadDirectory);
-        }
-
-        $data[News::$image_path] = $image_path;
-        $data[News::$created_at] = $news[News::$created_at];
-
         try {
-            $result = News::update($id, $data);
+            $result = Comment::update($id, $data);
 
             if ($result) {
-                // Delete old image if new image is uploaded
-                if ($old_image_path) {
-                    deleteImage(self::$uploadDirectory . $old_image_path);
-                }
 
-                header("Location: TournamentInfos.php?updated=1");
+                header("Location: ../Accueil.php?Target=comments&&updated=1");
                 exit();
             } else {
-                // Delete new image if update failed
-                if ($old_image_path) {
-                    deleteImage(self::$uploadDirectory . $image_path);
-                }
-                $error = "News not found or already updated";
+                $error = "Comment not found or already updated";
                 include __DIR__ . '/../view/Error.php';
             }
         } catch (Exception $e) {
-            $error = "Error updating news: " . $e->getMessage();
+            $error = "Error updating Comment: " . $e->getMessage();
             include __DIR__ . '/../view/Error.php';
         }
     }
 
-    public static function deleteNews($id): void
+    public static function deleteComment($id): void
     {
         if (!$id) {
-            $error = "News ID is required";
+            $error = "Comment ID is required";
             include __DIR__ . '/../view/Error.php';
             return;
         }
 
         try {
-            $news = News::getById($id);
-            if (!$news) {
-                $error = "News not found";
+            $comment = Comment::getById($id);
+            if (!$comment) {
+                $error = "Comment not found";
                 include __DIR__ . '/../view/Error.php';
                 return;
             }
-            $image_path = $news[News::$image_path];
-            News::delete($id);
 
-            if ($image_path) {
-                deleteImage(self::$uploadDirectory . $image_path);
-            }
-            header("Location: ../TournamentInfos.php?deleted=1");
+            Comment::delete($id);
+
+            header("Location: ../Accueil.php?Target=comments&&deleted=1");
             exit();
         } catch (Exception $e) {
-            $error = "Error deleting news: " . $e->getMessage();
+            $error = "Error deleting Comment: " . $e->getMessage();
             include __DIR__ . '/../view/Error.php';
         }
     }

@@ -12,26 +12,19 @@ class NewsController extends Controller
     {
         try {
             $news = News::getAll();
-            // $newss = News::getData(
-            //     [],
-            //     [Stadium::$table => ['condition' => News::$stadium_id = Stadium::$table . '.' . Stadium::$id]],
-            //     ['id','name']
-            // );
 
             $modifiedNews = [];
             if ($news) {
                 foreach ($news as $news) {
-                    // $stade = StadiumController::getStadById($news[News::$stadium_id]);
                     if ($news[News::$image_path])
                         $news['image'] = 'http://efoot/logo?file=' . $news[News::$image_path] . '&dir=' . self::$uploadSubDirectory;
-                    // $news['stadium'] = $stade;
+
                     $modifiedNews[] = $news;
                 }
 
                 rsort($modifiedNews);
-                
-                return $modifiedNews;
 
+                return $modifiedNews;
             } else {
                 return [];
             }

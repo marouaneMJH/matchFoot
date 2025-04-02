@@ -3,10 +3,12 @@ session_start();
 if (isset($_GET["Target"])) {
   $_SESSION["current_page"] = $_GET["Target"];
 }
-if
-(!isset($_SESSION["current_page"])) {
+
+
+if (!isset($_SESSION["current_page"])) {
   $_SESSION["current_page"] = "accueil";
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -124,28 +126,29 @@ if
       <h2>MENU</h2>
       <ul id="menu">
         <li data-content="accueil" class="<?php if ($_SESSION['current_page'] == 'accueil')
-          echo 'active' ?>">
-            <i class="fas fa-home"></i> <a href="Accueil.php?Target=accueil"> Accueil </a>
-          </li>
-          <li data-content="classement" class="<?php if ($_SESSION['current_page'] == 'classement')
-          echo 'active' ?>">
-            <i class="fas fa-list"></i> <a href="Accueil.php?Target=classement">Classement</a>
-          </li>
-          <li data-content="actualite" class="<?php if ($_SESSION['current_page'] == 'news')
-          echo 'active' ?>">
-            <i class="fas fa-newspaper"></i> <a href="Accueil.php?Target=news">Actualité</a>
-          </li>
-          <li data-content="sondage" class="<?php if ($_SESSION['current_page'] == 'sondage')
-          echo 'active' ?>">
-            <i class="fas fa-poll"></i> <a href="Accueil.php?Target=sondage">Sondage</a></li>
-          <!-- <li data-content="admin">
+                                            echo 'active' ?>">
+          <i class="fas fa-home"></i> <a href="Accueil.php?Target=accueil"> Accueil </a>
+        </li>
+        <li data-content="classement" class="<?php if ($_SESSION['current_page'] == 'classement')
+                                                echo 'active' ?>">
+          <i class="fas fa-list"></i> <a href="Accueil.php?Target=classement">Classement</a>
+        </li>
+        <li data-content="actualite" class="<?php if ($_SESSION['current_page'] == 'news')
+                                              echo 'active' ?>">
+          <i class="fas fa-newspaper"></i> <a href="Accueil.php?Target=news">Actualité</a>
+        </li>
+        <li data-content="sondage" class="<?php if ($_SESSION['current_page'] == 'sondage')
+                                            echo 'active' ?>">
+          <i class="fas fa-poll"></i> <a href="Accueil.php?Target=sondage">Sondage</a>
+        </li>
+        <!-- <li data-content="admin">
             <i class="fas fa-user-lock"></i> Espace Administrateur
           </li> -->
-          <li data-content="admin">
-            <i class="fas fa-user-lock"></i> TODO
-          </li>
-          <!-- code javascript LOGIQUE -->
-          <!-- document.addEventListener("DOMContentLoaded", function () {
+        <li data-content="admin">
+          <i class="fas fa-user-lock"></i> <a href="Accueil.php?Target=comments"> TODO </a>
+        </li>
+        <!-- code javascript LOGIQUE -->
+        <!-- document.addEventListener("DOMContentLoaded", function () {
                     const menuItems = document.querySelectorAll("#menu li");
                     const contentSections = document.querySelectorAll(".content-section");
                 
@@ -167,68 +170,78 @@ if
                     });
                 });
                  -->
-        </ul>
-        <h2>TOURNOIS MAROCAINES</h2>
-        <ul>
-          <li>
-            <img src="../../assets/images/equipes_logo/BOTOLA_Logo.png" alt="Botola Pro 1" />
-            Botola Pro inwi 1
-          </li>
-          <li>
-            <img src="../../assets/images/equipes_logo/BOTOLA PRO 2_logo.png" alt="Botola Pro 2" />
-            Botola Pro inwi 2
-          </li>
-          <li>
-            <img src="../../assets/images/equipes_logo/Coupe du throne.jpeg" alt="Coupe du Throne" />
-            Coupe du Throne
-          </li>
-          <li>
-            <img src="../../assets/images/equipes_logo/Excellence cup.jpeg" alt="Coupe d'excellence" />
-            Coupe d'excellence
-          </li>
-        </ul>
+      </ul>
+      <h2>TOURNOIS MAROCAINES</h2>
+      <ul>
+        <li>
+          <img src="../../assets/images/equipes_logo/BOTOLA_Logo.png" alt="Botola Pro 1" />
+          Botola Pro inwi 1
+        </li>
+        <li>
+          <img src="../../assets/images/equipes_logo/BOTOLA PRO 2_logo.png" alt="Botola Pro 2" />
+          Botola Pro inwi 2
+        </li>
+        <li>
+          <img src="../../assets/images/equipes_logo/Coupe du throne.jpeg" alt="Coupe du Throne" />
+          Coupe du Throne
+        </li>
+        <li>
+          <img src="../../assets/images/equipes_logo/Excellence cup.jpeg" alt="Coupe d'excellence" />
+          Coupe d'excellence
+        </li>
+      </ul>
 
-        <h2>CLUBS PRÉFÉRÉS</h2>
-        <ul>
-          <li>
-            <img src="../../assets/images/equipes_logo/raja_logo.jpeg" alt="Raja CA" />
-            Raja CA
-          </li>
-          <li>
-            <img src="../../assets/images/equipes_logo/berkane_logo.jpeg" alt="RS Berkane" />
-            RS Berkane
-          </li>
-          <li>
-            <img src="../../assets/images/equipes_logo/WYDAD_logo.png" alt="Wydad AC" />
-            Wydad AC
-          </li>
-          <li>
-            <img src="../../assets/images/equipes_logo/AS far_logo.jpeg" alt="AS far" />
-            AS Far
-          </li>
-        </ul>
-      </aside>
+      <h2>CLUBS PRÉFÉRÉS</h2>
+      <ul>
+        <li>
+          <img src="../../assets/images/equipes_logo/raja_logo.jpeg" alt="Raja CA" />
+          Raja CA
+        </li>
+        <li>
+          <img src="../../assets/images/equipes_logo/berkane_logo.jpeg" alt="RS Berkane" />
+          RS Berkane
+        </li>
+        <li>
+          <img src="../../assets/images/equipes_logo/WYDAD_logo.png" alt="Wydad AC" />
+          Wydad AC
+        </li>
+        <li>
+          <img src="../../assets/images/equipes_logo/AS far_logo.jpeg" alt="AS far" />
+          AS Far
+        </li>
+      </ul>
+    </aside>
 
-      <section id="content">
+    <section id="content">
 
-        <?php
+      <?php
 
-        switch ($_SESSION["current_page"]) {
-          case "accueil":
-            include_once "Match.php";
-            break;
-          case "classement":
-            include_once "Classement.php";
-            break;
-          case "news":
-            include_once "News.php";
-            break;
-          case "sondage":
-            include_once "Sondage.php";
-            break;
-        }
+      switch ($_SESSION["current_page"]) {
+        case "accueil":
+          include_once "Match.php";
+          break;
+        case "classement":
+          include_once "Classement.php";
+          break;
+        case "news":
+          include_once "News.php";
+          break;
+        case "sondage":
+          include_once "Sondage.php";
+          break;
+        case "comments":
+          if (!isset($_SESSION['admin_id'])) {
+            echo "<script>alert('You should sign in to be able to use this service'); window.location.href = '../auth_page/Login.php';</script>";
+            die();
+          } else
+            include_once "comments/Comments.php";
+          break;
+        case "comment_form":
+          include_once "comments/CommentForm.php";
+          break;
+      }
 
-        ?>
+      ?>
 
 
 

@@ -249,7 +249,6 @@ class ClubController extends Controller
         }
     }
 
-
     public static function deleteClub($id): void
     {
         if (!$id) {

@@ -46,7 +46,7 @@
                         echo '<tr><td colspan="7" class="px-6 py-4 text-center text-green-500">No news found</td></tr>';
                     } else {
                         foreach ($news as $newsItem):
-                            ?>
+                    ?>
                             <tr class="hover:bg-green-50 transition-colors">
                                 <td class="px-6 py-4">
                                     <img class="h-10 w-10 rounded-full object-cover border-2 border-green-200"
@@ -78,7 +78,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-3">
-                                        <a href="../user_space/Accueil.php"
+                                        <a href="../user_space/Accueil.php?Target=news" target="_blank"
                                             class="text-green-600 hover:text-green-900 transition-colors">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -94,7 +94,7 @@
                                                         d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                                 </svg>
                                             </a>
-                                            <a href="News/DeleteNews.php?id=<?php echo $newsItem[News::$id]; ?>"
+                                            <a href="news/DeleteNews.php?id=<?php echo $newsItem[News::$id]; ?>"
                                                 class="text-red-600 hover:text-red-900 transition-colors">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -105,7 +105,7 @@
                                 </td>
                             </tr>
 
-                        <?php endforeach;
+                    <?php endforeach;
                     } ?>
                     <!-- Add more news rows here -->
                 </tbody>

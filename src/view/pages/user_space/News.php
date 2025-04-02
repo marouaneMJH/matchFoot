@@ -120,32 +120,5 @@
               </script>
             <?php endforeach;
           } ?>
-          <!--       
-              <div class="news-item">
-                  <img src="../../assets/images/news/coach_change.jpeg" alt="Changement d'entraîneur">
-                  <div class="news-content">
-                      <h3>Changement d'entraîneur au Raja CA</h3>
-                      <p>Le Raja Casablanca annonce l'arrivée d'un nouveau coach après une série de mauvais résultats.</p>
-                      <a href="#">Lire plus</a>
-                  </div>
-              </div>
-      
-              <div class="news-item">
-                  <img src="../../assets/images/news/new_transfer.jpeg" alt="Nouveau transfert">
-                  <div class="news-content">
-                      <h3>Un nouveau renfort pour l'AS FAR</h3>
-                      <p>L'AS FAR a officialisé l'arrivée d'un attaquant international pour renforcer son effectif en vue de la fin de saison.</p>
-                      <a href="#">Lire plus</a>
-                  </div>
-              </div>
-      
-              <div class="news-item">
-                  <img src="../../assets/images/news/cup_results.jpeg" alt="Résultats Coupe">
-                  <div class="news-content">
-                      <h3>Les demi-finales de la Coupe du Trône dévoilées</h3>
-                      <p>Les affiches des demi-finales ont été dévoilées avec un duel explosif entre le MAS et le WAC.</p>
-                      <a href="#">Lire plus</a>
-                  </div>
-              </div> -->
         </div>
       </div>
