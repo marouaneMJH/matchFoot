@@ -259,4 +259,4 @@ foreach ($gameMatches as $match) {
 </script>
 
 <!-- Add/Edit Match Modal -->
-<?php include __DIR__ . '/Add_EditMatchModal.php'; ?>
+<?php //include __DIR__ . '/Add_EditMatchModal.php'; ?>
