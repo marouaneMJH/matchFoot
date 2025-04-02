@@ -340,9 +340,6 @@
 .max-w-2xl {
   max-width: var(--container-2xl);
 }
-.max-w-4xl {
-  max-width: var(--container-4xl);
-}
 .max-w-5xl {
   max-width: var(--container-5xl);
 }
@@ -1066,9 +1063,6 @@
 }
 .text-green-900 {
   color: var(--color-green-900);
-}
-.text-purple-600 {
-  color: var(--color-purple-600);
 }
 .text-purple-800 {
   color: var(--color-purple-800);
@@ -1979,6 +1973,14 @@
   }
 }
 @layer utilities;
+:root {
+  --text-color: #060907;
+  --primary-color: #44bb4e;
+  --secondary-color: #44bb4e;
+  --accent-color: #5de967;
+  --bg-color: #f0fdf4;
+  --main-bg-color: #44bb4e;
+}
 @property --tw-translate-x {
   syntax: "*";
   inherits: false;
