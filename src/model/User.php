@@ -102,25 +102,36 @@ class User  implements JsonSerializable
 
     public static function create($username, $displayed_name, $email, $password, $created_at, $profile_path = null)
     {
-
-
         try {
             $pdo = self::connect();
+            if (!$pdo) {
+                throw new Exception("Database connection failed");
+            }
+    
             $table = self::$table;
-            $stmt = $pdo->prepare(" INSERT INTO `$table` (username, displayed_name, email, password, profile_path, created_at) 
-                                VALUES (:username, :displayed_name, :email, :password, :profile_path, :created_at)");
-            $stmt->execute(['username' => $username, 'displayed_name' => $displayed_name, 'email' => $email, 'password' => $password, 'profile_path' => $profile_path, 'created_at' => $created_at]);
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT); // Secure password storage
+    
+            $stmt = $pdo->prepare("INSERT INTO `$table` (username, displayed_name, email, password, profile_path, created_at) 
+                                    VALUES (:username, :displayed_name, :email, :password, :profile_path, :created_at)");
+    
+            $stmt->execute([
+                'username' => $username,
+                'displayed_name' => $displayed_name,
+                'email' => $email,
+                'password' => $hashed_password, // Use hashed password
+                'profile_path' => $profile_path,
+                'created_at' => $created_at
+            ]);
+    
             $id = $pdo->lastInsertId();
-            $user = new User($id, $username, $displayed_name, $email, $password,$created_at,$profile_path);
-            http_response_code(201);
-            return json_encode(['message' => 'User created successfully', 'status' => 201, 'user' => $user]);
-        } catch (PDOException $th) {
-            http_response_code(500);
-            return json_encode(['message' => 'Failed to create the user', 'error' => $th, 'status' => 500]);
+            return new User($id, $username, $displayed_name, $email, $hashed_password, $created_at, $profile_path);
+        
         } catch (Exception $e) {
-            return $e->getMessage();
+            error_log("Error in create(): " . $e->getMessage()); // Log errors instead of failing silently
+            return null;
         }
     }
+    
 
     public function update() {}
 
