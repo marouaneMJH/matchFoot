@@ -115,7 +115,7 @@ class Model
             // Construct SQL query
             $query = "SELECT $selectClause FROM $table $joinStr $whereClause";
 
-            // var_dump($query);
+            // echo($query);
             // var_dump($params);
             // die();
 

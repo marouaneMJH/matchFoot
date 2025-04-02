@@ -10,7 +10,7 @@
         </div>
 
         <form class="space-y-4" method="POST" action="TournamentInfos.php">
-            <input type="text" id="tournamentField" name="tournament_id" class="hidden">
+            <input type="text" id="tournamentField" name="tournamentId" class="hidden">
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-green-700">Home Team</label>
