@@ -14,7 +14,7 @@ class News extends Model
     public static $id="id";
     public static $admin_id="admin_id";
     public static $title="title";
-    public static $description="description";
+    public static $content="content";
     public static $category="category";
     public static $status="status";
     public static $image_path="image_path";
@@ -22,11 +22,11 @@ class News extends Model
 
 
     
-    public function __construct($id = null, $admin_id = null, $title = null, $description = null, $category = null, $status = null, $date = null) {
+    public function __construct($id = null, $admin_id = null, $title = null, $content = null, $category = null, $status = null, $date = null) {
         $this->id = $id;
         $this->admin_id = $admin_id;
         $this->title = $title;
-        $this->description = $description;
+        $this->content = $content;
         $this->category = $category;
         $this->status = $status;
         $this->date = $date;

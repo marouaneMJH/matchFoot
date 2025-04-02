@@ -28,6 +28,16 @@ $tournament = TournamentController::getTournamentById($tournament_id);
 
 // die();
 
+require_once __DIR__ . '/../../../controller/NewsController.php';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['id']) && !empty($_POST['id'])) {
+        NewsController::update();
+    } else {
+        NewsController::store();
+    }
+}
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -124,15 +134,15 @@ $tournament = TournamentController::getTournamentById($tournament_id);
                 <!-- Standings Tab Content -->
                 <?php include __DIR__ . '/StandingsTabContent.php'; ?>
 
+                <!-- Clubs Tab Content -->
+                <?php include __DIR__ . '/ClubTabContent.php'; ?>
+                
+                
+                
+                <!-- News List -->
+                <?php include __DIR__ . '/News/NewsTabContent.php'; ?>
+                
             </div>
-            <!-- Clubs Tab Content -->
-            <?php include __DIR__ . '/ClubTabContent.php'; ?>
-
-
-
-            <!-- News List -->
-            <?php include __DIR__ . '/NewsTabContent.php'; ?>
-
 
 
 
@@ -166,32 +176,6 @@ $tournament = TournamentController::getTournamentById($tournament_id);
             modal.classList.add('flex');
             // Add logic to populate form with match data
         }
-
-        // function switchTab(tab) {
-        //     const matchesTab = document.getElementById('matchesTab');
-        //     const standingsTab = document.getElementById('standingsTab');
-        //     const clubsTab = document.getElementById('clubsTab');
-        //     const tabs = document.querySelectorAll('nav button');
-
-        //     tabs.forEach(t => t.classList.remove('tab-active'));
-
-        //     // Hide all tabs
-        //     matchesTab.classList.add('hidden');
-        //     standingsTab.classList.add('hidden');
-        //     clubsTab.classList.add('hidden');
-
-        //     // Show selected tab
-        //     if (tab === 'matches') {
-        //         matchesTab.classList.remove('hidden');
-        //         tabs[0].classList.add('tab-active');
-        //     } else if (tab === 'standings') {
-        //         standingsTab.classList.remove('hidden');
-        //         tabs[1].classList.add('tab-active');
-        //     } else if (tab === 'clubs') {
-        //         clubsTab.classList.remove('hidden');
-        //         tabs[2].classList.add('tab-active');
-        //     }
-        // }
 
         // Update your switchTab function to include the news tab
         function switchTab(tab) {
@@ -239,7 +223,7 @@ $tournament = TournamentController::getTournamentById($tournament_id);
             const modal = document.getElementById('newsModal');
             modal.classList.add('hidden');
             modal.classList.remove('flex');
-            localStorage.clear('current_tab');
+            localStorage.removeItem('current_tab');
         }
 
         // Optional: Add rich text editor initialization if you want to use one

@@ -17,21 +17,19 @@ class NewsController extends Controller
             //     [Stadium::$table => ['condition' => News::$stadium_id = Stadium::$table . '.' . Stadium::$id]],
             //     ['id','name']
             // );
-
+            
             $modifiedNews = [];
             if ($news) {
                 foreach ($news as $news) {
                     // $stade = StadiumController::getStadById($news[News::$stadium_id]);
-                    if ($news[News::$image_path])
+                    if($news[News::$image_path])
                         $news['image'] = 'http://efoot/logo?file=' . $news[News::$image_path] . '&dir=' . self::$uploadSubDirectory;
                     // $news['stadium'] = $stade;
                     $modifiedNews[] = $news;
                 }
 
-                rsort($modifiedNews);
-                
                 return $modifiedNews;
-
+               
             } else {
                 return [];
             }
@@ -41,8 +39,8 @@ class NewsController extends Controller
             return [];
         }
     }
-
-    public static function getNewsById($id): array
+    
+    public static function getClubById($id): array
     {
         $news = News::getById($id);
         if (!$news) {
@@ -73,8 +71,8 @@ class NewsController extends Controller
         $date = isset($_POST['date']) ? trim(intval($_POST['date'])) : null;
         $image_path = null;
 
-
-
+        
+        
         $data = [
             News::$admin_id => $admin_id,
             News::$title => $title,
@@ -84,7 +82,7 @@ class NewsController extends Controller
             News::$date => $date
         ];
         var_dump($data);
-
+        
         $rules = [
             News::$title => 'required|max:255',
             News::$content => 'required',
@@ -114,7 +112,7 @@ class NewsController extends Controller
             exit();
         } catch (Exception $e) {
             if (isset($image_path)) {
-                deleteImage(self::$uploadDirectory . $image_path);
+            deleteImage(self::$uploadDirectory . $image_path);
             }
             $error = "Failed to create news: " . $e->getMessage();
             include __DIR__ . '/../view/Error.php';
@@ -130,12 +128,11 @@ class NewsController extends Controller
         }
 
         $id = isset($_POST['id']) ? trim(intval($_POST['id'])) : null;
-        $admin_id = isset($_POST['admin_id']) ? trim(intval($_POST['admin_id'])) : 4;
-        $title = isset($_POST['title']) ? trim(string: $_POST['title']) : null;
+        $title = isset($_POST['title']) ? trim($_POST['title']) : null;
         $content = isset($_POST['content']) ? trim($_POST['content']) : null;
-        $category = isset($_POST['category']) ? trim($_POST['category']) : null;
+        $category = isset($_POST['category']) ? trim(intval($_POST['category'])) : null;
         $status = isset($_POST['status']) ? trim($_POST['status']) : null;
-        $date = isset($_POST['date']) ? trim(intval($_POST['date'])) : null;
+        $date = isset($_POST['date']) ? trim($_POST['date']) : null;
         $image_path = null;
         $old_image_path = null;
 
@@ -153,19 +150,19 @@ class NewsController extends Controller
         }
 
         $data = [
-            News::$admin_id => $news[News::$admin_id],
             News::$title => $title,
             News::$content => $content,
             News::$category => $category,
             News::$status => $status,
-            News::$date => $news[News::$date]
+            News::$date => $date
         ];
 
         $rules = [
             News::$title => 'required|max:255',
             News::$content => 'required',
-            News::$category => 'required',
-            News::$status => 'required'
+            News::$category => 'required|numeric',
+            News::$status => 'required',
+            News::$date => 'required|date'
         ];
 
         $validate_result = self::validate($data, $rules);
@@ -186,7 +183,7 @@ class NewsController extends Controller
         }
 
         $data[News::$image_path] = $image_path;
-        $data[News::$date] = $news[News::$date];
+        $data[News::$created_at] = $news[News::$created_at];
 
         try {
             $result = News::update($id, $data);
