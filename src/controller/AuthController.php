@@ -146,7 +146,7 @@ class AuthController
         exit;
     }
 
-    private static function redirectToDashboard(?string $userType = null)
+    public static function redirectToDashboard(?string $userType = null)
     {
         self::startSession();
         $userType = $userType ?? $_SESSION['user_type'] ?? null;

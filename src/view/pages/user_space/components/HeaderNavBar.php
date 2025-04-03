@@ -90,14 +90,14 @@ class HeaderNavBar {
 
     private function renderNotificationMail() {
         if ($this->isLoggedIn) {
-            return 'Mail' . $this->mail->render();
+            return $this->mail->render();
         }
         return '';
     }
 
     private function renderSetting() {
         if ($this->isLoggedIn) {
-            return '<a href="' . $this->basePath . 'authentification/signup.html"><i class="settings">Settings</a>';
+            return '<a href="' . $this->basePath . 'pages/user_space/Profile.php"><i class="fa-solid fa-gear"></i></a>';
         }
         return '';
     }
