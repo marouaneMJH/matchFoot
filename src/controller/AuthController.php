@@ -98,19 +98,39 @@ class AuthController
         self::startSession();
 
         if (!isset($_SESSION['user']) && !isset($_SESSION['admin'])) {
-            include __DIR__ . '/../views/login.php';
-            return;
+            self::redirectToLogin();
+            exit;
         }
         
         session_destroy();
-        header('Location: Login.php');
+        self::redirectToLogin();
+
         exit;
     }
 
     public static function isLoggedIn()
     {
         self::startSession();
-        return isset($_SESSION['user']) || isset($_SESSION['admin']);
+        if(isset($_SESSION['user']) || isset($_SESSION['admin']))
+        {
+            self::redirectToDashboard($_SESSION['user_type'] ?? null);
+            return true;
+        };
+
+        return false;
+    }
+
+    public static function checkAuth()
+    {
+        self::startSession();
+        if (!isset($_SESSION['user']) && !isset($_SESSION['admin'])) {
+            self::redirectToLogin();
+        }
+        if (isset($_SESSION['user'])) {
+            self::redirectToDashboard('user');
+        } elseif (isset($_SESSION['admin'])) {
+            self::redirectToDashboard('admin');
+        }
     }
 
     private static function redirectToLogin()
@@ -129,14 +149,20 @@ class AuthController
     {
         self::startSession();
         $userType = $userType ?? $_SESSION['user_type'] ?? null;
-
+        
         if ($userType === 'admin') {
-            header('Location: ../admin_space/admin_tournament/AdminTournamentList.php');
+            if(isset($_SESSION['admin_role_id']) && $_SESSION['admin_role_id'] == 1) {
+                header('Location: ../admin_space/dashboard/Dashboard.php');
+                exit;
+            } else {
+                header('Location: ../admin_tournament_space/Dashboard.php');
+                exit;
+            }
         } else
         {
             header('Location: ../user_space/Accueil.php');       
+            exit;
         }
-        exit;
     }
 
     private static function loginUser(string $email, string $username, string $password)
@@ -162,6 +188,11 @@ class AuthController
             $_SESSION['admin'] = $admin;
             $_SESSION['user_type'] = 'admin';
             $_SESSION['admin_id'] = $admin[0]['id'];
+            $_SESSION['admin_role_id'] = $admin[0]['role_id'];
+            if(isset($admin[0]['role_id']) && $admin[0]['role_id'] == 2) {
+                $_SESSION['tournament_id'] = 2;
+            } 
+
             self::redirectToDashboard('admin');
         }
         return false;
