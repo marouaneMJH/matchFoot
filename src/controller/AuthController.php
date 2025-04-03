@@ -113,7 +113,8 @@ class AuthController
         self::startSession();
         if(isset($_SESSION['user']) || isset($_SESSION['admin']))
         {
-            self::redirectToDashboard($_SESSION['user_type'] ?? null);
+            // todo redirect to dashboard
+            // self::redirectToDashboard($_SESSION['user_type'] ?? null);
             return true;
         };
 
