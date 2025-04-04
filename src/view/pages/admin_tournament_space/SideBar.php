@@ -3,7 +3,10 @@
 require_once __DIR__ . '/../../../controller/AuthController.php';
 // AuthController::checkAuth(); // Ensure the user is logged in and authorized to view this page
 
-session_start(); // Start the session
+AuthController::startSession();
+AuthController::checkAuth(); // Ensure the user is logged in and authorized to view this page
+$_SESSION['tournament_id'] = 2;
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['tournament_id'])) {
     $_SESSION['tournament_id'] = $_POST['tournament_id'];
 }else 
@@ -57,6 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['tournament_id'])) {
         <!-- Tournament Selection -->
         <div class="p-4 border-b border-green-700/50">
             <div class="relative">
+                <?php $_SESSION['admin_id'] = 4 ?>
                 <?php $adminTournaments = TournamentController::getTournamentsByAdminId($_SESSION['admin_id']); ?>
                 <form action="TournamentInfos.php" method="POST">
                     <select id="tournamentSelector"
