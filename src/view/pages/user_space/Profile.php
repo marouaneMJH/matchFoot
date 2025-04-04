@@ -52,7 +52,6 @@
 </head>
 <body class="bg-gray-50">
     <div class="flex flex-col min-h-screen">
-        
         <!-- Header Navbar -->
         <?php echo $headerNavbar->renderHeader(); ?>
 
