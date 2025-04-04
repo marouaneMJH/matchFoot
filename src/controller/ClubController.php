@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../helper/UploadFileHelper.php';
 require_once __DIR__ . '/../model/Club.php';
+require_once __DIR__ . '/../model/Player.php';
 require_once __DIR__ . '/StadiumController.php';
 require_once __DIR__ . '/StaffController.php';
 require_once __DIR__ . '/TrainerController.php';
@@ -54,17 +55,24 @@ class ClubController extends Controller
             include __DIR__ . '/../view/Error.php';
             return [];
         }
-
+    
         $stadium = Stadium::getById($club[Club::$stadium_id]);
-        // $trainer = Staff::getByFields($club[Club::$trainer_id]); // Placeholder for now
-        $trainer = null;
-
+        
+        // Récupérer la ville du stade
+        if ($stadium && isset($stadium['city_id'])) {
+            $ville = City::getById($stadium['city_id']);
+            if ($ville) {
+                $stadium['ville'] = $ville;
+            }
+        }
+        
+        $trainer = null; // ou récupérer l'entraîneur si nécessaire
+    
         $club['logo'] = 'http://efoot/logo?file=' . $club[Club::$logo_path] . '&dir=' . self::$uploadSubDirectory;
         $club['stadium'] = $stadium;
         $club['trainer'] = $trainer;
-
-
-        return $club; // Display club details
+    
+        return $club;
     }
 
     public static function store(): void
@@ -345,4 +353,67 @@ public static function unsubscribe()
         include __DIR__ . '/../view/Error.php';
     }
 }
+    public static function showClubDetail($clubId)
+{
+    try {
+        // Récupérer les données du club
+        $club = self::getClubById($clubId);
+        if (empty($club)) {
+            throw new Exception("Club non trouvé");
+        }
+
+        // Récupérer les joueurs du club
+        $players = Player::getByFields([Player::$clubId => $clubId]);
+
+        // Inclure la vue - MODIFIEZ CETTE LIGNE POUR POINTER VERS LE BON FICHIER
+        include __DIR__ . '/../view/pages/user_space/ClubDetail.php';
+    } catch (Exception $e) {
+        $error = $e->getMessage();
+        include __DIR__ . '/../view/Error.php';
+    }
+}
+
+    /**
+     * Calcule l'âge à partir de la date de naissance
+     */
+    public static function calculateAge($birthDate)
+    {
+        if (empty($birthDate)) return 'Inconnu';
+        
+        $birthDate = new DateTime($birthDate);
+        $today = new DateTime();
+        return $today->diff($birthDate)->y;
+    }
+
+    /**
+     * Récupère les prochains matchs du club
+     */
+    public static function getUpcomingMatches($clubId)
+    {
+        $query = "SELECT m.*, 
+                 home.name as home_team_name, home.logo_path as home_logo,
+                 away.name as away_team_name, away.logo_path as away_logo,
+                 s.name as stadium_name
+                 FROM game_match m
+                 JOIN club home ON m.club1_id = home.id
+                 JOIN club away ON m.club2_id = away.id
+                 JOIN stadium s ON m.stadium_id = s.id
+                 WHERE (m.club1_id = :club_id OR m.club2_id = :club_id)
+                 AND m.date >= NOW()
+                 ORDER BY m.date ASC
+                 LIMIT 5";
+        
+        $pdo = Model::connect();
+        $stmt = $pdo->prepare($query);
+        $stmt->execute(['club_id' => $clubId]);
+        $matches = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Formater les URLs des logos
+        foreach ($matches as &$match) {
+            $match['home_logo_url'] = "http://efoot/logo?file=" . $match['home_logo'] . "&dir=club_logo";
+            $match['away_logo_url'] = "http://efoot/logo?file=" . $match['away_logo'] . "&dir=club_logo";
+        }
+
+        return $matches;
+    }
 }

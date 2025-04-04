@@ -1,11 +1,77 @@
+<?php
+require_once __DIR__ . '/../../../controller/GameMatchController.php';
+require_once __DIR__ . '/../../../controller/LineupController.php';
+require_once __DIR__ . '/../../../controller/GoalTypeController.php';
+require_once __DIR__ . '/../../../controller/GoalController.php';
+require_once __DIR__ . '/../../../controller/CardController.php';
+require_once __DIR__ . '/../../../controller/SubstitutionController.php';
+
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['match_id'], $_POST['events'])) {
+  $matchId = $_POST['match_id'];
+  $event = json_decode($_POST['events'], true);
+  // var_dump($event);
+  $isEditing_id = $event[0][0]['isEditing_id'] ?? null;
+  if ($isEditing_id) {
+    $_POST['event_id'] = $isEditing_id;
+  }
+  switch ($event[0][0]['type']) {
+    case 'G':
+      $_POST['lineup_id'] = $event[0][0]['lineup_player'];
+      $_POST['minute'] = $event[0][0]['minute'];
+      $_POST['goal_type'] = $event[0][0]['goal_type'];
+      $_POST['assistor_id'] = $event[0][0]['assist_player'];
+      // var_dump($_POST);
+      $result = $isEditing_id ? GoalController::update() : GoalController::store();
+      break;
+    case 'C':
+      $_POST['lineup_id'] = $event[0][0]['lineup_player'];
+      $_POST['minute'] = $event[0][0]['minute'];
+      $_POST['card_type'] = $event[0][0]['card_type'];
+
+      $result = $isEditing_id ? CardController::update() : CardController::store();
+      break;
+    case 'S':
+      // var_dump($event[0][0]);
+      // die();
+      $_POST['lineup_1_id'] = $event[0][0]['lineup_player_in'];
+      $_POST['lineup_2_id'] = $event[0][0]['lineup_player_out'];
+      $_POST['minute'] = $event[0][0]['minute'];
+      $result = $isEditing_id ? SubstitutionController::update() : SubstitutionController::store();
+      break;
+  }
+} else if ($_SERVER['REQUEST_METHOD'] === 'DELETE' && isset($_DELETE['event_id'], $_DELETE['event_type'])) {
+  var_dump($_DELETE);
+  die();
+}
+
+if (!isset($_GET['match_id'])) {
+  header("Location: ./TournamentInfos.php");
+  exit;
+}
+
+$matchId = $_GET['match_id'];
+$match = GameMatchController::getGameMatchById($matchId);
+$lineups = LineupController::getAllLineupDataByMatchId($matchId);
+$goalTypes = GoalTypeController::index();
+$goals = GoalController::getGoalsByMatchId($matchId);
+$cards = CardController::getCardsByMatchId($matchId);
+$substitutions = SubstitutionController::getSubstitutionsByMatchId($matchId);
+
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Live Match Events Tracker</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -31,26 +97,35 @@
   </script>
   <style type="text/css">
     :root {
-      --color-primary: 34 197 94; /* Green-500 */
+      --color-primary: 34 197 94;
+      /* Green-500 */
       --color-primary-foreground: 255 255 255;
-      --color-muted: 240 253 244; /* Green-50 */
-      --color-muted-foreground: 20 83 45; /* Green-900 */
+      --color-muted: 240 253 244;
+      /* Green-50 */
+      --color-muted-foreground: 20 83 45;
+      /* Green-900 */
       --color-destructive: 239 68 68;
       --color-destructive-foreground: 255 255 255;
     }
-    
+
     .scrollbar-hide::-webkit-scrollbar {
       display: none;
     }
-    
+
     .scrollbar-hide {
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
   </style>
 </head>
+
 <body class="bg-green-50">
+
+
   <div class="container mx-auto p-4">
+    <a href="./TournamentInfos.php" class="flex items-center text-gray-600 mb-4 hover:text-gray-800">
+      <i class="fas fa-arrow-left mr-2"></i> Back to Matches
+    </a>
     <div class="bg-white rounded-lg shadow-md mb-6">
       <div class="p-4 pb-2 border-b">
         <div class="flex justify-between items-center">
@@ -60,29 +135,29 @@
           </div>
           <div class="flex items-center gap-2">
             <i class="ri-time-line text-sm text-muted-foreground"></i>
-            <span class="text-sm font-medium" id="match-time">0m</span>
+            <span class="text-sm font-medium" id="match-time"><?php echo $match['minute'] ?>m</span>
           </div>
         </div>
         <p class="text-sm text-muted-foreground">
           Record live match events as they happen
         </p>
       </div>
-      
+
       <div class="p-4">
         <div class="flex justify-between items-center mb-6 bg-muted p-4 rounded-lg">
           <div class="flex items-center gap-3">
             <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
               <img src="https://via.placeholder.com/40" alt="Home Team" id="home-team-logo" class="h-full w-full object-cover">
             </div>
-            <div class="font-semibold" id="home-team-name">FC Barcelona</div>
+            <div class="font-semibold" id="home-team-name"></div>
           </div>
-          
+
           <div class="flex items-center gap-4">
             <div class="text-3xl font-bold" id="home-score">0</div>
             <div class="text-xl font-bold text-muted-foreground">-</div>
             <div class="text-3xl font-bold" id="away-score">0</div>
           </div>
-          
+
           <div class="flex items-center gap-3">
             <div class="font-semibold" id="away-team-name">Real Madrid</div>
             <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
@@ -105,7 +180,7 @@
               </button>
             </div>
           </div>
-          
+
           <div class="space-y-4 mb-6">
             <div class="grid grid-cols-2 gap-4 mt-4">
               <div>
@@ -115,7 +190,7 @@
                   <option value="awayTeam">Real Madrid</option>
                 </select>
               </div>
-              
+
               <div>
                 <label class="text-sm font-medium mb-1 block" id="player-label">Player</label>
                 <select id="player-select" class="w-full rounded-md border border-gray-300 p-2 text-sm">
@@ -123,7 +198,7 @@
                 </select>
               </div>
             </div>
-            
+
             <div id="goal-content" class="event-content">
               <div>
                 <label class="text-sm font-medium mb-1 block">Goal Type</label>
@@ -143,7 +218,7 @@
                 </select>
               </div>
             </div>
-            
+
             <div id="card-content" class="event-content hidden">
               <div>
                 <label class="text-sm font-medium mb-1 block">Card Type</label>
@@ -155,7 +230,7 @@
                 </select>
               </div>
             </div>
-            
+
             <div id="substitution-content" class="event-content hidden">
               <div>
                 <label class="text-sm font-medium mb-1 block">Player Coming Off</label>
@@ -170,25 +245,32 @@
                 </select>
               </div>
             </div>
-            
+
             <div class="flex justify-end gap-2">
               <button id="cancel-btn" class="hidden px-4 py-2 border border-gray-300 rounded-md text-sm font-medium flex items-center gap-1">
                 <i class="ri-refresh-line text-sm"></i>
                 Cancel
               </button>
-              <button id="record-btn" class="px-4 py-2 bg-green-500 text-white rounded-md text-sm font-medium">
-                Record Event
-              </button>
+              <form action="" method="POST" id="record-event-form">
+                <input type="text" name="match_id" id="match_id" value="<?php echo $matchId; ?>" hidden>
+                <input type="text" name="events" id="events" value="" hidden>
+                <button id="record-btn" class="px-4 py-2 bg-green-500 text-white rounded-md text-sm font-medium">
+                  Record Event
+                </button>
+              </form>
             </div>
           </div>
-          
+
           <div>
             <h3 class="font-medium mb-2">Match Timeline</h3>
             <div class="h-[300px] rounded-md border p-4 overflow-y-auto scrollbar-hide" id="timeline">
               <div class="text-center text-muted-foreground py-8" id="empty-timeline">
                 No events recorded yet
               </div>
-              <div class="space-y-4" id="events-container"></div>
+              <div class="space-y-4" id="events-container">
+
+
+              </div>
             </div>
           </div>
         </div>
@@ -197,66 +279,176 @@
   </div>
 
   <script>
+    const matcheFromDb = <?php echo json_encode($match); ?>;
+    console.log("matchesFromDb", matcheFromDb);
+    const lineupsFromDb = <?php echo json_encode($lineups); ?>;
+    console.log("lineupsFromDb", lineupsFromDb);
+    const goalTypesFromDb = <?php echo json_encode($goalTypes); ?>;
+    console.log("goalTypesFromDb", goalTypesFromDb);
+    const goalsFromDb = <?php echo json_encode($goals); ?>;
+    console.log("goalsFromDb", goalsFromDb);
+    const cardsFromDb = <?php echo json_encode($cards); ?>;
+    console.log("cardsFromDb", cardsFromDb);
+    const substitutionsFromDb = <?php echo json_encode($substitutions); ?>;
+    console.log("substitutionsFromDb", substitutionsFromDb);
+
     // Mock data
     const matchDetails = {
-      homeTeam: { id: 1, name: "FC Barcelona", logo: "https://via.placeholder.com/40" },
-      awayTeam: { id: 2, name: "Real Madrid", logo: "https://via.placeholder.com/40" },
-      venue: "Camp Nou",
-      startTime: new Date(),
-      status: "LIVE"
+      homeTeam: {
+        id: matcheFromDb.club1_id,
+        name: matcheFromDb.club1_name,
+        logo: matcheFromDb.club1_logo
+      },
+      awayTeam: {
+        id: matcheFromDb.club2_id,
+        name: matcheFromDb.club2_name,
+        logo: matcheFromDb.club2_logo
+      },
+      venue: matcheFromDb.stadium_name,
+      startTime: matcheFromDb.time,
+      status: matcheFromDb.status
     };
 
     const mockPlayers = {
-      homeTeam: [
-        { id: 1, name: "John Smith", number: 1, position: "GK", onField: true, bench: false },
-        { id: 2, name: "David Johnson", number: 4, position: "DF", onField: true, bench: false },
-        { id: 3, name: "Michael Williams", number: 5, position: "DF", onField: true, bench: false },
-        { id: 4, name: "James Brown", number: 8, position: "MF", onField: true, bench: false },
-        { id: 5, name: "Robert Jones", number: 9, position: "FW", onField: true, bench: false },
-        { id: 6, name: "Thomas Davis", number: 10, position: "FW", onField: true, bench: false },
-        { id: 7, name: "Daniel Miller", number: 11, position: "FW", onField: true, bench: false },
-        { id: 15, name: "William Clark", number: 12, position: "DF", onField: false, bench: true },
-        { id: 16, name: "Joseph Lewis", number: 14, position: "MF", onField: false, bench: true },
-        { id: 17, name: "Richard Walker", number: 16, position: "FW", onField: false, bench: true },
-      ],
-      awayTeam: [
-        { id: 8, name: "Christopher Wilson", number: 1, position: "GK", onField: true, bench: false },
-        { id: 9, name: "Matthew Moore", number: 2, position: "DF", onField: true, bench: false },
-        { id: 10, name: "Anthony Taylor", number: 5, position: "DF", onField: true, bench: false },
-        { id: 11, name: "Paul Anderson", number: 6, position: "MF", onField: true, bench: false },
-        { id: 12, name: "Mark Thomas", number: 8, position: "MF", onField: true, bench: false },
-        { id: 13, name: "Steven Jackson", number: 9, position: "FW", onField: true, bench: false },
-        { id: 14, name: "Andrew White", number: 11, position: "FW", onField: true, bench: false },
-        { id: 18, name: "Edward Harris", number: 13, position: "DF", onField: false, bench: true },
-        { id: 19, name: "Charles Martin", number: 15, position: "MF", onField: false, bench: true },
-        { id: 20, name: "Brian Thompson", number: 17, position: "FW", onField: false, bench: true },
-      ]
-    };
+      homeTeam: lineupsFromDb.filter(player => player.club_type === "H").map(player => ({
+        id: player.id,
+        name: `${player.name} ${player.surname}`,
+        number: player.number,
+        position: player.position_id,
+        onField: player.is_starting == 'Y' ? true : false,
+        bench: player.is_starting == 'Y' ? false : true
+      })),
+      awayTeam: lineupsFromDb.filter(player => player.club_type === "A").map(player => ({
+        id: player.id,
+        name: `${player.name} ${player.surname}`,
+        number: player.number,
+        position: player.position_id,
+        onField: player.is_starting == 'Y' ? true : false,
+        bench: player.is_starting == 'Y' ? false : true
+      }))
+    }
+    console.log("mockPlayers", mockPlayers);
 
-    const goalTypes = [
-      { id: 1, name: "Normal Goal" },
-      { id: 2, name: "Penalty" },
-      { id: 3, name: "Free Kick" },
-      { id: 4, name: "Header" },
-      { id: 5, name: "Own Goal" }
-    ];
 
-    const cardTypes = [
-      { id: 1, name: "Yellow Card", color: "bg-yellow-500" },
-      { id: 2, name: "Red Card", color: "bg-red-600" },
-      { id: 3, name: "Second Yellow Card", color: "bg-gradient-to-r from-yellow-500 to-red-600" }
+    const goalTypes = goalTypesFromDb.map(type => ({
+      id: type.id,
+      name: type.type,
+      description: type.description
+    }));
+
+    const cardTypes = [{
+        id: 1,
+        name: "Yellow Card",
+        color: "bg-yellow-500"
+      },
+      {
+        id: 2,
+        name: "Red Card",
+        color: "bg-red-600"
+      },
     ];
 
     // State
-    let matchTime = 0;
-    let events = [];
+    let matchTime = matcheFromDb.minute;
+
+    console.log("goalsFromDb", goalsFromDb);
+    const goals = goalsFromDb.map((goal) => {
+      const scorrer = lineupsFromDb.find(lineup => lineup.lineup_id == goal.lineup_id);
+      const team = goal.club_type == "H" ? matchDetails.homeTeam : matchDetails.awayTeam;
+      const goalType = goalTypes.find(type => type.id == goal.type_id);
+      const assistPlayer = goal.assistor_id ? lineupsFromDb.find(lineup => lineup.lineup_id == goal.assistor_id) : null;
+
+      const eventDetails = {
+        goalTypeId: goalType.id,
+        goalTypeName: goalType.name,
+      };
+      if (assistPlayer) {
+        eventDetails.assistPlayerId = assistPlayer.id;
+        eventDetails.assistPlayerName = assistPlayer.name;
+        eventDetails.assistPlayerNumber = assistPlayer.number;
+      }
+
+      return {
+        id: goal.id,
+        type: "GOAL",
+        minute: goal.minute,
+        playerId: scorrer.id,
+        playerName: `${scorrer.name} ${scorrer.surname}`,
+        playerNumber: scorrer.number,
+        teamId: team.id,
+        teamName: team.name,
+        details: eventDetails,
+        timestamp: new Date()
+      }
+    });
+    console.log("goals", goals);
+
+    const cards = cardsFromDb.map((card) => {
+      const player = lineupsFromDb.find(lineup => lineup.lineup_id == card.lineup_id);
+      const team = card.club_type == "H" ? matchDetails.homeTeam : matchDetails.awayTeam;
+      const cardType = cardTypes.find(type => type.id == (card.type == "Y" ? 1 : 2));
+
+      return {
+        id: card.id,
+        type: "CARD",
+        minute: card.minute,
+        playerId: player.id,
+        playerName: `${player.name} ${player.surname}`,
+        playerNumber: player.number,
+        teamId: team.id,
+        teamName: team.name,
+        details: {
+          cardTypeId: cardType.id,
+          cardTypeName: cardType.name,
+          cardColor: cardType.color
+        },
+        timestamp: new Date()
+      }
+    });
+
+    const substitutions = substitutionsFromDb.map((sub) => {
+      const playerIn = lineupsFromDb.find(lineup => lineup.lineup_id == sub.lineup_1_id);
+      const playerOut = lineupsFromDb.find(lineup => lineup.lineup_id == sub.lineup_2_id);
+      const team = sub.club_type == "H" ? matchDetails.homeTeam : matchDetails.awayTeam;
+
+      return {
+        id: sub.id,
+        type: "SUBSTITUTION",
+        minute: sub.minute,
+        playerId: playerOut.id,
+        playerName: `${playerOut.name} ${playerOut.surname}`,
+        playerNumber: playerOut.number,
+        teamId: team.id,
+        teamName: team.name,
+        details: {
+          substitutionType: "Standard",
+          playerOffId: playerOut.id,
+          playerOffName: `${playerOut.name} ${playerOut.surname}`,
+          playerOffNumber: playerOut.number,
+          playerOnId: playerIn.id,
+          playerOnName: `${playerIn.name} ${playerIn.surname}`,
+          playerOnNumber: playerIn.number
+
+        },
+        timestamp: new Date()
+      }
+    });
+    console.log("substitution", substitutions);
+    let events = [...goals, ...cards,...substitutions].sort((a, b) => b.minute - a.minute);
+    let eventsToSend = [];
     let selectedTeam = "homeTeam";
     let activeTab = "goal";
-    let score = { home: 0, away: 0 };
+    let score = {
+      home: goalsFromDb.filter(goal => goal.club_type == "H").length,
+      away: goalsFromDb.filter(goal => goal.club_type == "A").length
+    };
+    console.log("score", score);
     let isEditing = null;
 
     // DOM Elements
     const homeTeamLogo = document.getElementById('home-team-logo');
+
+
     const homeTeamName = document.getElementById('home-team-name');
     const awayTeamLogo = document.getElementById('away-team-logo');
     const awayTeamName = document.getElementById('away-team-name');
@@ -285,32 +477,35 @@
       homeTeamName.textContent = matchDetails.homeTeam.name;
       awayTeamLogo.src = matchDetails.awayTeam.logo;
       awayTeamName.textContent = matchDetails.awayTeam.name;
-      
+      homeScore.textContent = score.home;
+      awayScore.textContent = score.away;
+
       // Set team options
       teamSelect.querySelector('option[value="homeTeam"]').textContent = matchDetails.homeTeam.name;
       teamSelect.querySelector('option[value="awayTeam"]').textContent = matchDetails.awayTeam.name;
-      
+
       // Start match timer
       setInterval(updateMatchTime, 60000); // Update every minute
-      
+
       // Populate player select
       populatePlayerSelect();
       populateAssistPlayerSelect();
-      
+
       // Set active tab
       setActiveTab('goal');
-      
+
       // Event listeners
       teamSelect.addEventListener('change', handleTeamChange);
       recordBtn.addEventListener('click', handleRecordEvent);
       cancelBtn.addEventListener('click', handleCancelEdit);
-      
+
       // Tab event listeners
       eventTabs.forEach(tab => {
         tab.addEventListener('click', () => {
           setActiveTab(tab.dataset.tab);
         });
       });
+      renderEvents();
     }
 
     function updateMatchTime() {
@@ -326,7 +521,7 @@
 
     function setActiveTab(tab) {
       activeTab = tab;
-      
+
       // Update tab styling
       eventTabs.forEach(t => {
         if (t.dataset.tab === tab) {
@@ -337,14 +532,14 @@
           t.classList.add('text-gray-700', 'bg-gray-100');
         }
       });
-      
+
       // Show/hide content
       eventContents.forEach(content => {
         content.classList.add('hidden');
       });
-      
+
       document.getElementById(`${tab}-content`).classList.remove('hidden');
-      
+
       // Update player label based on active tab
       if (tab === 'substitution') {
         populateSubstitutionSelects();
@@ -373,9 +568,10 @@
       while (playerSelect.options.length > 1) {
         playerSelect.remove(1);
       }
-      
+
       // Add players from selected team who are on the field
       const players = mockPlayers[selectedTeam].filter(p => p.onField);
+      console.log("players", mockPlayers[selectedTeam]);
       players.forEach(player => {
         const option = document.createElement('option');
         option.value = player.id;
@@ -389,7 +585,7 @@
       while (assistPlayerSelect.options.length > 1) {
         assistPlayerSelect.remove(1);
       }
-      
+
       // Add players from selected team who are on the field
       const players = mockPlayers[selectedTeam].filter(p => p.onField);
       players.forEach(player => {
@@ -408,18 +604,18 @@
       while (playerOnSelect.options.length > 1) {
         playerOnSelect.remove(1);
       }
-      
+
       // Add players from selected team
       const playersOnField = mockPlayers[selectedTeam].filter(p => p.onField);
       const playersOnBench = mockPlayers[selectedTeam].filter(p => p.bench);
-      
+
       playersOnField.forEach(player => {
         const option = document.createElement('option');
         option.value = player.id;
         option.textContent = `${player.number} - ${player.name} (${player.position})`;
         playerOffSelect.appendChild(option);
       });
-      
+
       playersOnBench.forEach(player => {
         const option = document.createElement('option');
         option.value = player.id;
@@ -428,7 +624,12 @@
       });
     }
 
-    function handleRecordEvent() {
+    function handleRecordEvent(e) {
+      e.preventDefault();
+      const matchIdInput = document.getElementById('match_id').value;
+      const eventsInput = document.getElementById('events');
+      const form = document.getElementById('record-event-form');
+
       switch (activeTab) {
         case 'goal':
           recordGoal();
@@ -440,29 +641,39 @@
           recordSubstitution();
           break;
       }
+
+      // Update events input value
+      eventsInput.value = JSON.stringify(eventsToSend);
+      matchIdInput.value = matcheFromDb.id;
+
+      form.submit();
+
+
+
+      //
     }
 
     function recordGoal() {
       const playerId = playerSelect.value;
       const goalTypeId = goalTypeSelect.value;
       const assistPlayerId = assistPlayerSelect.value;
-      
+
       if (!playerId || !goalTypeId) {
         alert('Please select a player and goal type');
         return;
       }
-      
+
       const team = selectedTeam === "homeTeam" ? matchDetails.homeTeam : matchDetails.awayTeam;
       const player = mockPlayers[selectedTeam].find(p => p.id == playerId);
       const goalType = goalTypes.find(gt => gt.id == goalTypeId);
-      
+
       if (!player || !goalType) return;
-      
+
       const eventDetails = {
         goalTypeId: goalType.id,
         goalTypeName: goalType.name
       };
-      
+
       // Add assist details if provided
       if (assistPlayerId) {
         const assistPlayer = mockPlayers[selectedTeam].find(p => p.id == assistPlayerId);
@@ -472,7 +683,7 @@
           eventDetails.assistPlayerNumber = assistPlayer.number;
         }
       }
-      
+
       // Update score
       if (goalType.name === "Own Goal") {
         if (selectedTeam === "homeTeam") {
@@ -491,7 +702,7 @@
           awayScore.textContent = score.away;
         }
       }
-      
+
       const newEvent = {
         id: Date.now().toString(),
         type: "GOAL",
@@ -504,9 +715,20 @@
         details: eventDetails,
         timestamp: new Date()
       };
-      
+
+      eventsToSend.push([{
+        type: "G",
+        minute: matchTime,
+        lineup_player: lineupsFromDb.find(lineup => lineup.id == playerId && lineup.club_type == (selectedTeam == "homeTeam" ? "H" : "A")).lineup_id,
+        goal_type: goalTypeId,
+        assist_player: assistPlayerId ? lineupsFromDb.find(lineup => lineup.id == assistPlayerId && lineup.club_type == (selectedTeam == "homeTeam" ? "H" : "A")).lineup_id : null,
+        isEditing_id: isEditing
+      }]);
+
+
+
       addOrUpdateEvent(newEvent);
-      
+
       // Reset selections
       playerSelect.value = "";
       goalTypeSelect.value = "";
@@ -516,24 +738,24 @@
     function recordCard() {
       const playerId = playerSelect.value;
       const cardTypeId = cardTypeSelect.value;
-      
+
       if (!playerId || !cardTypeId) {
         alert('Please select a player and card type');
         return;
       }
-      
+
       const team = selectedTeam === "homeTeam" ? matchDetails.homeTeam : matchDetails.awayTeam;
       const player = mockPlayers[selectedTeam].find(p => p.id == playerId);
       const cardType = cardTypes.find(ct => ct.id == cardTypeId);
-      
+
       if (!player || !cardType) return;
-      
+
       const eventDetails = {
         cardTypeId: cardType.id,
         cardTypeName: cardType.name,
         cardColor: cardType.color
       };
-      
+
       const newEvent = {
         id: Date.now().toString(),
         type: "CARD",
@@ -546,9 +768,17 @@
         details: eventDetails,
         timestamp: new Date()
       };
-      
+
+      eventsToSend.push([{
+        type: "C",
+        minute: matchTime,
+        lineup_player: lineupsFromDb.find(lineup => lineup.id == playerId && lineup.club_type == (selectedTeam == "homeTeam" ? "H" : "A")).lineup_id,
+        card_type: cardTypeId == 1 ? "Y" : "R",
+        isEditing_id: isEditing
+      }]);
+
       addOrUpdateEvent(newEvent);
-      
+
       // Reset selections
       playerSelect.value = "";
       cardTypeSelect.value = "";
@@ -557,18 +787,18 @@
     function recordSubstitution() {
       const playerOffId = playerOffSelect.value;
       const playerOnId = playerOnSelect.value;
-      
+
       if (!playerOffId || !playerOnId) {
         alert('Please select both players for the substitution');
         return;
       }
-      
+
       const team = selectedTeam === "homeTeam" ? matchDetails.homeTeam : matchDetails.awayTeam;
       const playerOff = mockPlayers[selectedTeam].find(p => p.id == playerOffId);
       const playerOn = mockPlayers[selectedTeam].find(p => p.id == playerOnId);
-      
+
       if (!playerOff || !playerOn) return;
-      
+
       const eventDetails = {
         substitutionType: "Standard",
         playerOffId: playerOff.id,
@@ -578,7 +808,7 @@
         playerOnName: playerOn.name,
         playerOnNumber: playerOn.number
       };
-      
+
       const newEvent = {
         id: Date.now().toString(),
         type: "SUBSTITUTION",
@@ -591,19 +821,28 @@
         details: eventDetails,
         timestamp: new Date()
       };
-      
+
+
+      eventsToSend.push([{
+        type: "S",
+        minute: matchTime,
+        lineup_player_out: lineupsFromDb.find(lineup => lineup.id == playerOffId && lineup.club_type == (selectedTeam == "homeTeam" ? "H" : "A")).lineup_id,
+        lineup_player_in: lineupsFromDb.find(lineup => lineup.id == playerOnId && lineup.club_type == (selectedTeam == "homeTeam" ? "H" : "A")).lineup_id,
+        isEditing_id: isEditing
+      }]);
+
       addOrUpdateEvent(newEvent);
-      
+
       // Update player status
       playerOff.onField = false;
       playerOff.bench = true;
       playerOn.onField = true;
       playerOn.bench = false;
-      
+
       // Reset selections
       playerOffSelect.value = "";
       playerOnSelect.value = "";
-      
+
       // Refresh player selects
       populateSubstitutionSelects();
     }
@@ -617,24 +856,25 @@
       } else {
         events = [newEvent, ...events];
       }
-      
+
       renderEvents();
     }
 
     function renderEvents() {
+      console.log("events", events);
       if (events.length === 0) {
         emptyTimeline.classList.remove('hidden');
         eventsContainer.innerHTML = '';
         return;
       }
-      
+
       emptyTimeline.classList.add('hidden');
       eventsContainer.innerHTML = '';
-      
+
       events.forEach(event => {
         const eventEl = document.createElement('div');
         eventEl.className = 'flex items-start gap-3 pb-3 border-b';
-        
+
         let eventContent = `
           <div class="min-w-[40px] text-center">
             <div class="bg-muted rounded-md px-2 py-1 text-xs font-medium">
@@ -649,7 +889,7 @@
               <span class="text-xs text-muted-foreground">(${event.teamName})</span>
             </div>
         `;
-        
+
         if (event.type === "GOAL") {
           eventContent += `
             <div class="flex items-center gap-2 mt-1">
@@ -657,7 +897,7 @@
               <span class="text-sm">${event.details.goalTypeName}</span>
             </div>
           `;
-          
+
           // Add assist information if available
           if (event.details.assistPlayerName) {
             eventContent += `
@@ -686,7 +926,7 @@
             </div>
           `;
         }
-        
+
         eventContent += `
           </div>
           
@@ -694,12 +934,15 @@
             <button class="h-8 w-8 rounded-md hover:bg-gray-100 flex items-center justify-center" onclick="editEvent('${event.id}')">
               <i class="ri-edit-line text-sm"></i>
             </button>
-            <button class="h-8 w-8 rounded-md hover:bg-gray-100 flex items-center justify-center text-destructive" onclick="deleteEvent('${event.id}')">
-              <i class="ri-delete-bin-line text-sm"></i>
-            </button>
+           
+              
+              <button type="submit" class="h-8 w-8 rounded-md hover:bg-gray-100 flex items-center justify-center text-destructive" onclick="deleteEvent('${event.id}');">
+                <i class="ri-delete-bin-line text-sm"></i>
+              </button>
+            
           </div>
         `;
-        
+
         eventEl.innerHTML = eventContent;
         eventsContainer.appendChild(eventEl);
       });
@@ -709,7 +952,7 @@
       isEditing = null;
       cancelBtn.classList.add('hidden');
       recordBtn.textContent = 'Record Event';
-      
+
       // Reset selections
       playerSelect.value = "";
       goalTypeSelect.value = "";
@@ -721,25 +964,26 @@
 
     // These functions need to be global for the onclick handlers
     window.editEvent = function(eventId) {
-      const event = events.find(e => e.id === eventId);
+      const event = events.find(e => e.id == eventId);
       if (!event) return;
-      
+
       isEditing = eventId;
+      console.log("Editing event:", event);
       cancelBtn.classList.remove('hidden');
       recordBtn.textContent = 'Update Event';
-      
+
       // Set team
       selectedTeam = event.teamId === matchDetails.homeTeam.id ? "homeTeam" : "awayTeam";
       teamSelect.value = selectedTeam;
-      
+
       // Set active tab based on event type
       setActiveTab(event.type.toLowerCase());
-      
+
       // Populate fields based on event type
       if (event.type === "GOAL") {
         playerSelect.value = event.playerId;
         goalTypeSelect.value = event.details.goalTypeId;
-        
+
         // Set assist player if available
         if (event.details.assistPlayerId) {
           assistPlayerSelect.value = event.details.assistPlayerId;
@@ -756,14 +1000,36 @@
     };
 
     window.deleteEvent = function(eventId) {
-      const event = events.find(e => e.id === eventId);
+
+      const event = events.find(e => e.id == eventId);
+      console.log("Deleting event:", event);
       if (!event) return;
-      
+
+      fetch('deleteEvents.php', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            event_id: eventId,
+            event_type: event.type === "GOAL" ? "G" : event.type === "CARD" ? "C" : "S",
+          })
+        })
+        .then(response => response.text())
+        .catch(error => {
+          console.error('Error:', error);
+        });
+
+
+
+
+
+
       // Update score if deleting a goal
       if (event.type === "GOAL") {
         const isOwnGoal = event.details.goalTypeName === "Own Goal";
         const isHomeTeam = event.teamId === matchDetails.homeTeam.id;
-        
+
         if (isOwnGoal) {
           if (isHomeTeam) {
             score.away = Math.max(0, score.away - 1);
@@ -782,37 +1048,43 @@
           }
         }
       }
-      
+
       // If deleting a substitution, revert player statuses
       if (event.type === "SUBSTITUTION") {
         const playerOff = mockPlayers[event.teamId === matchDetails.homeTeam.id ? "homeTeam" : "awayTeam"]
           .find(p => p.id == event.details.playerOffId);
         const playerOn = mockPlayers[event.teamId === matchDetails.homeTeam.id ? "homeTeam" : "awayTeam"]
           .find(p => p.id == event.details.playerOnId);
-          
+
         if (playerOff && playerOn) {
           playerOff.onField = true;
           playerOff.bench = false;
           playerOn.onField = false;
           playerOn.bench = true;
-          
+
           // Refresh player selects if we're on the substitution tab
           if (activeTab === 'substitution') {
             populateSubstitutionSelects();
           }
         }
       }
-      
-      events = events.filter(e => e.id !== eventId);
+
+      events = events.filter(e => e.id != eventId);
+
+      console.log("events after deletion", events);
       renderEvents();
-      
+
+
       if (isEditing === eventId) {
         handleCancelEdit();
       }
+
+
     };
 
     // Initialize the app
     init();
   </script>
 </body>
+
 </html>

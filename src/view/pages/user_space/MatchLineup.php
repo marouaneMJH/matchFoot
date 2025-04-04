@@ -200,15 +200,16 @@ $refereesInMatch = RefereeMatchController::getAllRefereesByMatch($match_id);
 
               <!-- Team-specific formation selectors -->
               <div class="flex items-center">
-                <select id="home-formation-select" class="border border-blue-300 rounded-md px-2 py-1 text-sm bg-blue-50 text-blue-800" style="display: block;">
+                <select disabled id="home-formation-select" class="border border-blue-300 rounded-md px-2 py-1 text-sm bg-blue-50 text-blue-800" style="display: block;">
                   <?php foreach ($formations as $formation) : ?>
+                   
                     <option value="<?php echo $formation[Formation::$id]; ?>"
                       <?php echo ($formation[Formation::$id] == $homeTeamPlayers[0]['formation1_id']) ? 'selected' : ''; ?>>
                       <?php echo $formation[Formation::$name]; ?>
                     </option>
                   <?php endforeach; ?>
                 </select>
-                <select id="away-formation-select" class="border border-red-300 rounded-md px-2 py-1 text-sm bg-red-50 text-red-800" style="display: none;">
+                <select disabled id="away-formation-select" class="border border-red-300 rounded-md px-2 py-1 text-sm bg-red-50 text-red-800" style="display: none;">
                   <?php foreach ($formations as $formation) : ?>
                     <option value="<?php echo $formation[Formation::$id]; ?>"
                       <?php echo ($formation[Formation::$id] == $awayTeamPlayers[0]['formation2_id']) ? 'selected' : ''; ?>>
@@ -444,18 +445,7 @@ $refereesInMatch = RefereeMatchController::getAllRefereesByMatch($match_id);
     </div>
 
     <!-- Save button -->
-    <form method="POST" action="" id="lineup-form">
-      <input type="hidden" name="lineup_data" id="lineup_data_input">
-      <input type="hidden" name="match_id" value="<?php echo $match_id; ?>">
-      <input type="hidden" name="referee_data" id="referee_data_input">
-      <input type="hidden" name="home_team_formation" id="home_team_formation_input">
-      <input type="hidden" name="away_team_formation" id="away_team_formation_input">
-      <div class="mt-6 flex justify-end">
-        <button class="btn btn-primary flex items-center" onclick="submitLineup(event)">
-          <i class="fas fa-save mr-2"></i> Save Match Setup
-        </button>
-      </div>
-    </form>
+  
 
   </div>
 

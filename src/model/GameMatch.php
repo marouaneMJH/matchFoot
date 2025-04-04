@@ -16,6 +16,34 @@ class GameMatch extends Model
     public static $formation2_id = 'formation2_id';
     public static $stadium_id = 'stadium_id';
 
+
+    public static function indexAll():array{
+        try {
+            $table = self::$table;
+            $query = "SELECT game_match.*,club.name as club1_name,club.nickname as club1_nickname,club.logo_path as club1_logo_path,
+                        club2.name as club2_name,club2.nickname as club2_nickname,club2.logo_path as club2_logo_path,
+                        stadium.name as stadium_name,stadium.capacity,city.name as city_name,
+                        r.name as referee_name,r.surname as referee_surname,rm.role_id as referee_role_id
+            FROM game_match JOIN club ON game_match.club1_id = club.id 
+            JOIN club AS club2 ON game_match.club2_id = club2.id 
+            JOIN stadium ON game_match.stadium_id = stadium.id 
+            JOIN city ON stadium.city_id = city.id 
+             LEFT JOIN referee_match rm on game_match.id = rm.match_id
+             LEFT JOIN referee r on rm.referee_id = r.id
+          
+            ORDER BY date ASC, time ASC
+            "; 
+            
+            $stmt = self::connect()->prepare($query);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            $error = "Error fetching game matches: " . $e->getMessage();
+            include __DIR__ . '/../view/Error.php';
+            return [];
+        }
+    }
+
     public static function getAllMatches($tournament_id): array
     {
         try {
@@ -31,6 +59,28 @@ class GameMatch extends Model
             $stmt = self::connect()->prepare($query);
             $stmt->execute([':tournament_id' => $tournament_id]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            $error = "Error fetching game matches: " . $e->getMessage();
+            include __DIR__ . '/../view/Error.php';
+            return [];
+        }
+    }
+
+    public static function getMatchById($match_id):array
+    {
+        try {
+            $table = self::$table;
+            $query = "SELECT $table.*,club.name as club1_name,club.nickname as club1_nickname,club.logo_path as club1_logo_path,club2.name as club2_name,club2.nickname as club2_nickname,club2.logo_path as club2_logo_path,stadium.name as stadium_name,stadium.capacity,city.name as city_name 
+            FROM game_match JOIN club ON game_match.club1_id = club.id 
+            JOIN club AS club2 ON game_match.club2_id = club2.id 
+            JOIN stadium ON game_match.stadium_id = stadium.id 
+            JOIN city ON stadium.city_id = city.id 
+            Where game_match.id = :match_id
+            ORDER BY date ASC, time ASC";
+            
+            $stmt = self::connect()->prepare($query);
+            $stmt->execute([':match_id' => $match_id]);
+            return $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
             $error = "Error fetching game matches: " . $e->getMessage();
             include __DIR__ . '/../view/Error.php';
