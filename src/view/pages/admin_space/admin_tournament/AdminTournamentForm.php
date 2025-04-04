@@ -79,7 +79,7 @@ if (isset($_GET['id'])) {
                 </div>
             </div>
 
-            <!-- Account Information Section -->
+            <!-- Informations sur le compte Section -->
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-[var(--text-color)] mb-1" for="email">Email</label>

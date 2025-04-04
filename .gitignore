@@ -1,2 +1,5 @@
 .env
+connectDB.php
+src/database/connectDB.php
+
 /src/view/node_modules

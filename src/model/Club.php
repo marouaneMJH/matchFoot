@@ -4,7 +4,6 @@ require_once __DIR__ . '/Model.php';
 class Club extends Model
 {
 
-    
 
     public static $table = 'club';
 
@@ -46,4 +45,56 @@ class Club extends Model
             $this->$name = $value;
         }
     }
+
+
+    public static function subscribeByUserId($userId): bool
+    {
+        $query = "INSERT INTO subscription(user_id, team_id) VALUES(:user_id, :team_id)";
+        $stmt = parent::connect();
+        $stmt = $stmt->prepare($query);
+        $stmt->bindParam(':user_id', $userId);
+        $stmt->bindParam(':team_id', self::$id);
+        
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
+    }
+
+
+    /**
+     * Check if a user is subscribed to this club
+     * 
+     * @param int $userId The user ID to check
+     * @return bool True if the user is subscribed, false otherwise
+     */
+    public static function isUserSubscribed($userId): bool
+    {
+        $query = "SELECT COUNT(*) FROM subscription WHERE user_id = :user_id AND team_id = :team_id";
+        $stmt = parent::connect();
+        $stmt = $stmt->prepare($query);
+        $stmt->bindParam(':user_id', $userId);
+        $stmt->bindParam(':team_id', self::$id);
+        
+        $stmt->execute();
+        return (int)$stmt->fetchColumn() > 0;
+    }
+
+    /**
+     * Unsubscribe a user from this club
+     * 
+     * @param int $userId The user ID to unsubscribe
+     * @return bool True if successful, false otherwise
+     */
+    public static function unsubscribeByUserId($userId): bool
+    {
+        $query = "DELETE FROM subscription WHERE user_id = :user_id AND team_id = :team_id";
+        $stmt = parent::connect();
+        $stmt = $stmt->prepare($query);
+        $stmt->bindParam(':user_id', $userId);
+        $stmt->bindParam(':team_id', self::$id);
+        
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
+    }
+
+
 }

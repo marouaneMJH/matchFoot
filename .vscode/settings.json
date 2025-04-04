@@ -1,0 +1,30 @@
+{
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "EFoot",
+            "database": "efoot",
+            "username": "root"
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "efoot-ilisi1-2025-marwanmoujahid008-82ae.h.aivencloud.com",
+            "port": 19232,
+            "driver": "MySQL",
+            "name": "Efoot Online",
+            "database": "efoot",
+            "username": "avnadmin"
+        }
+    ]
+}
