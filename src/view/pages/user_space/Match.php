@@ -75,11 +75,12 @@ foreach ($matches as $match) {
     <section class="mb-12">
         <h2 class="text-2xl font-bold mb-6 text-green-800">Matchs à venir</h2>
         <?php if (count($upComingMatches) > 0): ?>
-            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div  class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 <?php foreach ($upComingMatches as $upcomingMatch): 
                     $matchVotes = VoteController::getMatchVotes($upcomingMatch['id']);
                     $hasVoted = isset($_SESSION['user_id']) ? Vote::hasUserVoted($_SESSION['user_id'], $upcomingMatch['id']) : false;
                 ?>
+                    
                     <div class="bg-white rounded-lg shadow-md p-6 hover:border-green-500 border-2 border-transparent relative">
                         <div class="absolute top-0 right-0 bg-green-100 text-green-800 px-3 py-1 rounded-bl-lg rounded-tr-lg text-sm font-semibold">
                             À venir

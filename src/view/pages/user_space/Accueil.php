@@ -1,7 +1,7 @@
 <?php
 session_start();
 $_SESSION["user_id"] = 1;
-var_dump($_SESSION["user_id"]);
+
 if (isset($_GET["Target"])) {
   $_SESSION["current_page"] = $_GET["Target"];
 }
@@ -195,10 +195,13 @@ if (!isset($_SESSION["current_page"])) {
 
       <h2>CLUBS PRÉFÉRÉS</h2>
       <ul>
-        <li>
-          <img src="../../assets/images/equipes_logo/raja_logo.jpeg" alt="Raja CA" />
-          Raja CA
-        </li>
+        <a href="Accueil.php?Target=club&id=28">
+          <li>
+            <img src="../../assets/images/equipes_logo/raja_logo.jpeg" alt="Raja CA" />
+            Raja CA
+          </li>
+        </a>
+
         <li>
           <img src="../../assets/images/equipes_logo/berkane_logo.jpeg" alt="RS Berkane" />
           RS Berkane

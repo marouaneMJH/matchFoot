@@ -242,7 +242,7 @@ class TournamentController extends Controller
             $standings[$team['id']] = [
                 'team_id' => $team['id'],
                 'name' => $team['name'],
-                'logo' => $team['logo_path'],
+                'logo' => $team['logo_path'] ?  'http://efoot/logo?file=' . $team['logo_path'] . '&dir=club_logo' :"http://efoot/logo?file=img-placeholder.png&dir=image_placeholder" ,
                 'matches_played' => 0,
                 'wins' => 0,
                 'draws' => 0,
