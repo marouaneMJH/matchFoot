@@ -22,6 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login page</title>
     <link rel="stylesheet" href="../../styles/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
 </head>
 <body>
 
@@ -47,6 +49,7 @@ if (isset($_SESSION['error-login'])) {
             <div class="input-group">
                 <label for="password">Mot de passe</label>
                 <input type="password" id="password" name="password" placeholder="Votre mot de passe" required>
+
             </div>
 
             <button type="submit">Se Connecter</button>
@@ -57,6 +60,22 @@ if (isset($_SESSION['error-login'])) {
             <p><a href="ForgotPassword.php">Mot de passe oublié ?</a></p>
         </div>
     </div>
+                <script>
+                    const passwordInput = document.getElementById('password');
+                    const eyeIcon = document.createElement('i');
+                    eyeIcon.className = 'fas fa-eye-slash';
+                    eyeIcon.style.cursor = 'pointer';
+                    eyeIcon.onclick = function() {
+                        if (passwordInput.type === 'password') {
+                            passwordInput.type = 'text';
+                            eyeIcon.className = 'fas fa-eye';
+                        } else {
+                            passwordInput.type = 'password';
+                            eyeIcon.className = 'fas fa-eye-slash';
+                        }
+                    };
+                    passwordInput.parentNode.appendChild(eyeIcon);
+                </script>
 </div>
 
 </body>

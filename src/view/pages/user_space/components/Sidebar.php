@@ -211,6 +211,10 @@ class Sidebar {
         }
         
         $html .= '</aside>';
+        $html .= '<br/>' . $this->getMenuClickHandler();
+        
+
+        
         
         return $html;
     }

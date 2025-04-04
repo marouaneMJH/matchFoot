@@ -15,6 +15,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Signup</title>
     <link rel="stylesheet" href="../../styles/styles12.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
 </head>
 <body>
     <?php
@@ -62,5 +64,27 @@
             </div>
         </div>
     </div>
+        <script>
+                    const passwordInput = document.getElementById('password');
+                    const confirmPasswordInput = document.getElementById('confirmPassword');
+                    const eyeIcon = document.createElement('i');
+                    eyeIcon.className = 'fas fa-eye-slash';
+                    eyeIcon.style.cursor = 'pointer';
+                    eyeIcon.onclick = function() {
+                        if (passwordInput.type === 'password') {
+                            passwordInput.type = 'text';
+                            eyeIcon.className = 'fas fa-eye';
+                        } else {
+                            passwordInput.type = 'password';
+                            eyeIcon.className = 'fas fa-eye-slash';
+                        }
+                    };
+                    const newEyeIcon = eyeIcon.cloneNode(true);
+                    passwordInput.parentNode.appendChild(eyeIcon);
+                    
+                    confirmPasswordInput.parentNode.appendChild(newEyeIcon);
+                
+                
+        </script>
 </body>
 </html>

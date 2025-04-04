@@ -53,7 +53,9 @@
 <body class="bg-gray-50">
     <div class="flex flex-col min-h-screen">
         <!-- Header Navbar -->
-        <?php echo $headerNavbar->renderHeader(); ?>
+        <?php echo $headerNavbar->renderHeader(); 
+            $sidebar->getMenuClickHandler();
+        ?>
 
         <div class="flex h-screen">
             <!-- Main Content -->
