@@ -1,10 +1,16 @@
-<?php require_once __DIR__ . '/../../../controller/TournamentController.php';
+<?php
+ require_once __DIR__ . '/../../../controller/TournamentController.php';
+require_once __DIR__ . '/../../../controller/AuthController.php';
+// AuthController::checkAuth(); // Ensure the user is logged in and authorized to view this page
 
-
-
-if (!isset($_SESSION['admin_id'])) {
-    header('Location: ../auth_page/Login.php');
-    exit;
+// session_start(); // Start the session
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['tournament_id'])) {
+    $_SESSION['tournament_id'] = $_POST['tournament_id'];
+}else 
+{
+    if (!isset($_SESSION['tournament_id'])) {
+        $_SESSION['tournament_id'] = 2;
+    }
 }
 
 
@@ -51,7 +57,7 @@ if (!isset($_SESSION['admin_id'])) {
         <!-- Tournament Selection -->
         <div class="p-4 border-b border-green-700/50">
             <div class="relative">
-                <?php $adminTournaments = TournamentController::getTournamentsByAdminId($_SESSION['admin_id']); ?>
+                <?php $adminTournaments = TournamentController::getTournamentsByAdminId(4) ?>
                 <form action="TournamentInfos.php" method="POST">
                     <select id="tournamentSelector"
                     default="<?php echo $_SESSION['tournament_id'] ?? ''; ?>"
@@ -140,13 +146,15 @@ if (!isset($_SESSION['admin_id'])) {
 
         <!-- Logout Section -->
         <div class="mt-auto border-t border-green-700/50 p-4">
-            <a href="../auth_page/Login.php"
+            <a href="../auth_page/Logout.php"
+
                 class="flex items-center px-4 py-3 text-red-300 hover:bg-red-900/20 hover:text-red-200 rounded-lg transition-all duration-200 group">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
                 <span class="font-medium group-hover:translate-x-1 transition-transform duration-200">Logout</span>
+
             </a>
         </div>
     </div>

@@ -1,146 +1,241 @@
 <?php
 
+use BcMath\Number;
+
 require_once __DIR__ . '/../model/User.php';
 require_once __DIR__ . '/../model/Admin.php';
 require_once __DIR__ . '/../helper/UploadFileHelper.php';
+require_once __DIR__ . '/../model/Model.php';
 
 class AuthController
 {
+    public static function startSession()
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+    }
 
     public static function signup()
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-            isset($_POST['username']) ? $username = trim($_POST['username']) : $username = '';
-            isset($_POST['displayed_name']) ? $displayed_name = trim($_POST['displayed_name']) : $displayed_name = '';
-            isset($_POST['email']) ? $email = trim($_POST['email']) : $email = '';
-            isset($_POST['password']) ? $password = $_POST['password'] : $password = '';
-            isset($_POST['confirm_password']) ? $confirm_password = $_POST['confirm_password'] : $confirm_password = '';
-            $profile_path = null;
-
-            if (empty($username) || empty($email) || empty($password) || empty($confirm_password)) {
-                $error = 'All fields are required';
-                include __DIR__ . '/../views/signup.php';
-                return;
+        try {
+            error_log("Signup function called"); // Debugging
+            if ($_SERVER["REQUEST_METHOD"] === "POST") {
+                error_log("Received POST request: " . json_encode($_POST));
+    
+                // Validate required fields
+                if (empty($_POST['username']) || empty($_POST['displayName']) || empty($_POST['birthDate']) || empty($_POST['email']) || empty($_POST['password'])) {
+                    error_log("Missing required fields");
+                    $_SESSION['error-signup'] = "All fields are required.";
+                    return;
+                }
+    
+                $username = $_POST['username'];
+                $displayName = $_POST['displayName'];
+                $email = $_POST['email'];
+                $birth_date = $_POST['birth_date'] ?? null;
+                $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
+                $createdAt = date('Y-m-d H:i:s');
+    
+                $profilePath = null;
+                if (!empty($_FILES['profileImage']['name'])) {
+                    error_log("Handling profile image upload...");
+                    $uploadDir = __DIR__ . "/../../../uploads/";
+                    if (!file_exists($uploadDir)) {
+                        mkdir($uploadDir, 0777, true);
+                    }
+                    $profilePath = $uploadDir . basename($_FILES['profileImage']['name']);
+                    move_uploaded_file($_FILES['profileImage']['tmp_name'], $profilePath);
+                }
+    
+                error_log("Calling User::create...");
+                $user = User::create($username, $displayName, $email, $password,$birth_date, $createdAt, $profilePath);
+                
+                if ($user) {
+                    error_log("User created successfully!");
+                    header("Location: Login.php");
+                    exit();
+                } else {
+                    error_log("User creation failed");
+                    $_SESSION['error-signup'] = "An error occurred during signup.";
+                }
             }
-
-            if ($password !== $confirm_password) {
-                $error = 'Passwords do not match';
-                include __DIR__ . '/../views/signup.php';
-                return;
-            }
-
-            $existingUser = User::getUserByEmailOrUsername($email, $username);
-            if ($existingUser) {
-                $error = 'User already exists';
-                include __DIR__ . '/../views/signup.php';
-                return;
-            }
-
-            if (isset($_FILES["profile_image"])) {
-                $image = $_FILES["profile_image"];
-                $uploadDir = __DIR__ . "/../public/uploads/profiles/";
-                $profile_path = uploadImage($image, $uploadDir);
-            }
-
-            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-            $created_at = date('Y-m-d H:i:s');
-            $displayed_name = $displayed_name ?? $username;
-            $res = User::create($username, $displayed_name, $email, $hashed_password, $created_at, $profile_path);
-
-            if ($res) {
-                $success = 'Account created successfully. Please log in.';
-                include __DIR__ . '/../views/login.php';
-                return;
-            }
-
-            $error = 'An error occurred during signup';
-            include __DIR__ . '/../views/signup.php';
-            return;
-        } else {
-            include __DIR__ . '/../views/signup.php';
-            return;
+        } catch (Exception $e) {
+            error_log("Signup error: " . $e->getMessage());
+            $_SESSION['error-signup'] = "An error occurred during signup.";
         }
     }
+    
 
     public static function login()
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            isset($_POST['email']) ? $email = trim($_POST['email']) : $email = '';
-            isset($_POST['username']) ? $username = trim($_POST['username']) : $username = '';
-            isset($_POST['password']) ? $password = trim($_POST['password']) : $password = '';
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            self::redirectToLogin();
+        }
 
-            if (empty($email) || empty($password)) {
-                $error = 'All fields are required';
-                include __DIR__ . '/../views/login.php';
-                return;
-            }
-            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        self::startSession();
 
-            // First, check in Admin table
-            $admin = Admin::getData([
-                'email' => $email,
-                'password' => $password
-            ]);
-            //var_dump($admin);
-            
-            if ($admin) {
-                // if (password_verify($password, password_hash($admin[Admin::$password],PASSWORD_DEFAULT)) ) {
-                    session_start();
-                    $_SESSION['user'] = $admin;
-                    $_SESSION['admin_id'] = $admin[0]['id'];
-                   
-                    if ($admin[0][Admin::$roleId] == 1) {
-                        $_SESSION['user_type'] = 'admin';
-                        header('Location: ../admin_space/dashboard/Dashboard.php');
-                        exit;
-                    } else {
-                       
-                        $_SESSION['user_type'] = 'admin_tournament';
+        if (self::isLoggedIn()) {
+            self::redirectToDashboard($_SESSION['user_type'] ?? null);
+        }
 
-                        header('Location: ../admin_tournament_space/Dashboard.php');
-                        exit;
-                    }
-                // }
-            }
+        if (($error_result = self::checkLoginForm($_POST)) !== null) {
+            $_SESSION['error-login'] = $error_result;
+            self::redirectToLogin();
+        }
 
+        $email = trim($_POST['email'] ?? '');
+        $username = trim($_POST['username'] ?? '');
+        $password = trim($_POST['password'] ?? '');
 
+        if (self::loginAdmin($email, $password) || self::loginUser($email, $username, $password)) {
+            exit;
+        }
 
-            // Finally, check in User table
-            $user = User::getUserByEmailOrUsername($email, $username);
-            if ($user) {
-                if (password_verify($password, $user->password)) {
-                    session_start();
-                    $_SESSION['user'] = $user;
-                    $_SESSION['user_type'] = 'user';
-                    $_SESSION['user_id'] = $user->id;
+        $_SESSION['error-login'] = 'Invalid credentials';
+        self::redirectToLogin();
+    }
 
-                    header('Location: /user/dashboard');
-                    exit;
-                }
-            }
+    public static function logout()
+    {
+        self::startSession();
 
-            // If no valid user is found or password doesn't match
-            $error = 'Invalid credentials';
-            include __DIR__ . '/../views/login.php';
-            return;
+        if (!isset($_SESSION['user']) && !isset($_SESSION['admin'])) {
+            self::redirectToLogin();
+            exit;
+        }
+        
+        session_destroy();
+        self::redirectToLogin();
+
+        exit;
+    }
+
+    public static function isLoggedIn()
+    {
+        self::startSession();
+        if(isset($_SESSION['user']) || isset($_SESSION['admin']))
+        {
+            // todo redirect to dashboard
+            // self::redirectToDashboard($_SESSION['user_type'] ?? null);
+            return true;
+        };
+
+        return false;
+    }
+
+    public static function checkAuth()
+    {
+        self::startSession();
+        if (!isset($_SESSION['user']) && !isset($_SESSION['admin'])) {
+            self::redirectToLogin();
+        }
+
+    }
+
+    public static function redirectLastVisitedPage()
+    {
+        self::startSession();
+        if (isset($_SERVER['REQUEST_URI'])) {
+            header('Location: '. $_SERVER['REQUEST_URI']);
+            exit;
         } else {
-            include __DIR__ . '/../views/login.php';
-            return;
+            self::redirectToDashboard();
         }
     }
 
 
-    public static function logout()
+    public static function redirectToLogin()
     {
-        session_start();
-        if (!isset($_SESSION['user'])) {
-            $error = 'User not logged in';
-            include __DIR__ . '/../views/login.php';
-            return;
-        }
-        session_destroy();
-        header('Location: /login');
+        header('Location: Login.php');
         exit;
+    }
+
+    private static function redirectToSignup()
+    {
+        header('Location: Signup.php');
+        exit;
+    }
+
+    public static function redirectToDashboard(?string $userType = null)
+    {
+        self::startSession();
+        $userType = $userType ?? $_SESSION['user_type'] ?? null;
+
+
+        
+        if ($userType === 'admin') {
+            if(isset($_SESSION['admin_role_id']) && $_SESSION['admin_role_id'] == 1) {
+                header('Location: ../admin_space/dashboard/Dashboard.php');
+                exit;
+            } else {
+                header('Location: ../admin_tournament_space/Dashboard.php');
+                exit;
+            }
+        } else
+        {
+            header('Location: ../user_space/Accueil.php');       
+            exit;
+        }
+    }
+
+    private static function loginUser(string $email, string $username, string $password)
+    {
+        $user = User::getUserByEmailOrUsername($email, $username);
+
+        if ($user && password_verify($password, $user->getHashedPassword())) {
+            self::startSession();
+            $_SESSION['user'] = $user;
+            $_SESSION['user_type'] = 'user';
+            $_SESSION['user_id'] = $user->getId();
+            self::redirectToDashboard('user');
+        }
+        return false;
+    }
+
+    private static function loginAdmin(string $email, string $password)
+    {
+        $admin = Admin::getData(['email' => $email]);
+
+        if ($admin && password_verify($password, $admin[0]['password'])) {
+            self::startSession();
+            $_SESSION['admin'] = $admin;
+            $_SESSION['user_type'] = 'admin';
+            $_SESSION['admin_id'] = $admin[0]['id'];
+            $_SESSION['admin_role_id'] = $admin[0]['role_id'];
+            if(isset($admin[0]['role_id']) && $admin[0]['role_id'] == 2) {
+                $_SESSION['tournament_id'] = 2;
+            } 
+
+            self::redirectToDashboard('admin');
+        }
+        return false;
+    }
+
+    private static function checkSignupForm(array $form)
+    {
+        if (empty($form['username']) || empty($form['email']) || empty($form['password']) || empty($form['confirm_password'])) {
+            return 'All fields are required';
+        }
+
+        if ($form['password'] !== $form['confirm_password']) {
+            return 'Passwords do not match';
+        }
+
+        return null;
+    }
+
+    public static function checkLoginForm($form)
+    {
+        if (empty($form['email']) || empty($form['password'])) {
+            return 'All fields are required';
+        }
+        return null;
+    }
+
+    public static function getUserId() : int
+    {
+        self::startSession();
+        return $_SESSION['user_id'] ?? 0;
     }
 }

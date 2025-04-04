@@ -7,6 +7,8 @@ require_once __DIR__ . '/StaffController.php';
 require_once __DIR__ . '/TrainerController.php';
 require_once __DIR__ . '/Controller.php';
 
+require_once "AuthController.php";
+
 class ClubController extends Controller
 {
     private static $uploadDirectory = __DIR__ . '/../../public/uploads/club_logo/';
@@ -284,6 +286,73 @@ class ClubController extends Controller
             include __DIR__ . '/../view/Error.php';
         }
     }
+
+
+    public static function subscribe()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $error = "Invalid request method";
+            include __DIR__ . '/../view/Error.php';
+            return;
+        }
+
+        $userId = $_SESSION['user_id'] ?? null;
+        $clubId = $_POST['club_id'] ?? null;
+
+        if (!$userId || !$clubId) {
+            $error = "User ID and Club ID are required";
+            include __DIR__ . '/../view/Error.php';
+            return;
+        }
+
+        try {
+            if (Club::subscribeByUserId($userId)) {
+                // rederect last view 
+                AuthController::redirectLastVisitedPage();
+                exit();
+            } else {
+                $error = "Failed to subscribe to club";
+                include __DIR__ . '/../view/Error.php';
+            }
+        } catch (Exception $e) {
+            $error = "Error subscribing to club: " . $e->getMessage();
+            include __DIR__ . '/../view/Error.php';
+        }
+    }
+
+    // Add this method to your ClubController class
+
+public static function unsubscribe()
+{
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        $error = "Invalid request method";
+        include __DIR__ . '/../view/Error.php';
+        return;
+    }
+
+    $userId = $_SESSION['user_id'] ?? null;
+    $clubId = $_POST['club_id'] ?? null;
+
+    if (!$userId || !$clubId) {
+        $error = "User ID and Club ID are required";
+        include __DIR__ . '/../view/Error.php';
+        return;
+    }
+
+    try {
+        if (Club::unsubscribeByUserId($userId)) {
+            // redirect to last viewed page
+            AuthController::redirectLastVisitedPage();
+            exit();
+        } else {
+            $error = "Failed to unsubscribe from club";
+            include __DIR__ . '/../view/Error.php';
+        }
+    } catch (Exception $e) {
+        $error = "Error unsubscribing from club: " . $e->getMessage();
+        include __DIR__ . '/../view/Error.php';
+    }
+}
     public static function showClubDetail($clubId)
 {
     try {
