@@ -238,4 +238,10 @@ class AuthController
         self::startSession();
         return $_SESSION['user_id'] ?? 0;
     }
+
+    public static function getAdminId() : int
+    {
+        self::startSession();
+        return $_SESSION['admin_id'] ?? 0;
+    }
 }
