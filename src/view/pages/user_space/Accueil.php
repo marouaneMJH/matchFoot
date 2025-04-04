@@ -1,5 +1,7 @@
 <?php
 session_start();
+$_SESSION["user_id"] = 1;
+var_dump($_SESSION["user_id"]);
 if (isset($_GET["Target"])) {
   $_SESSION["current_page"] = $_GET["Target"];
 }

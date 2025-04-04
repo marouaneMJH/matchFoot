@@ -4,9 +4,17 @@ require_once __DIR__ . '/../../../controller/StadiumController.php';
 require_once __DIR__ . '/../../../controller/GameMatchController.php';
 require_once __DIR__ . '/../../../controller/RefereeController.php';
 require_once __DIR__ . '/../../../controller/TournamentController.php';
+
+
+// Get tournament_id from URL or session
+$tournament_id = $_GET['tournament_id'] ?? 3; // Add proper validation as needed
+$standings = TournamentController::getStandings($tournament_id);
+// var_dump($standings);
+// die();
 session_start();
 // var_dump($_SESSION);
 // die();
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tournament_id'])) {
     $_SESSION['tournament_id'] = $_POST['tournament_id'];
@@ -134,20 +142,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
+
+
                 <!-- Matches Tab Content -->
                 <?php include __DIR__ . '/MatchTabContent.php'; ?>
-
+                <!-- Add Match Modal -->
+                <?php include __DIR__ . '/Add_EditMatchModal.php'; ?>
                 <!-- Standings Tab Content -->
                 <?php include __DIR__ . '/StandingsTabContent.php'; ?>
 
                 <!-- Clubs Tab Content -->
                 <?php include __DIR__ . '/ClubTabContent.php'; ?>
-                
-                
-                
+
+
+
                 <!-- News List -->
                 <?php include __DIR__ . '/news/NewsTabContent.php'; ?>
-                
+
             </div>
 
 
@@ -233,17 +244,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Optional: Add rich text editor initialization if you want to use one
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             // You can initialize a rich text editor here for the news content
             // Example with TinyMCE or other editor of your choice
         });
 
         // Optional: Preview image before upload
-        document.querySelector('input[type="file"]').addEventListener('change', function (e) {
+        document.querySelector('input[type="file"]').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function (e) {
+                reader.onload = function(e) {
                     // You can show a preview of the image here if needed
                 };
                 reader.readAsDataURL(file);
@@ -269,7 +280,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             switchTab('matches'); // Default tab
         }
-
     </script>
 </body>
 
