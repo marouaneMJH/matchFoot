@@ -49,7 +49,7 @@
                     $errors[] = "User not found";
                 } else {
                     // Verify current password
-                    if (password_verify($currentPassword, $userData->password)) {
+                    if (password_verify($currentPassword, $userData->getHashedPassword())) {
                         // Hash new password
                         $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
                         

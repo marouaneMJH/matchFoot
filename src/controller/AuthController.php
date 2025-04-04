@@ -1,5 +1,7 @@
 <?php
 
+use BcMath\Number;
+
 require_once __DIR__ . '/../model/User.php';
 require_once __DIR__ . '/../model/Admin.php';
 require_once __DIR__ . '/../helper/UploadFileHelper.php';
@@ -217,5 +219,11 @@ class AuthController
             return 'All fields are required';
         }
         return null;
+    }
+
+    public static function getUserId() : int
+    {
+        self::startSession();
+        return $_SESSION['user_id'] ?? 0;
     }
 }

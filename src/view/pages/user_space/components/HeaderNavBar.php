@@ -47,7 +47,7 @@ class HeaderNavBar {
         
         // Initialize notification mail button if user is logged in
         if($this->isLoggedIn) {
-            $this->mail = new NotificationMailButton(0, []);
+            $this->mail = new NotificationMailButton(AuthController::getUserId());
         }
     }
     
