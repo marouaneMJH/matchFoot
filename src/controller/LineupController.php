@@ -5,16 +5,34 @@ require_once __DIR__ . '/Controller.php';
 class LineupController extends Controller
 {
 
-    public static function getAllLineups(): array
+    public static function getLineupsByMatchId($matchId): array
     {
-        if (!isset($_GET['match_id'])) {
+        if (empty($matchId)) {
+            $error = "Match ID is required";
+            include __DIR__ . '/../view/error.php';
             return [];
         }
-
-        $matchId = intval($_GET['match_id']);
+        
         $lineups = Lineup::getByFields([
             Lineup::$game_match_id => $matchId,
         ]);
+
+        if ($lineups) {
+            return $lineups;
+        } else {
+            return [];
+        }
+    }
+
+    public static function getAllLineupDataByMatchId($matchId): array
+    {
+        if (empty($matchId)) {
+            $error = "Match ID is required";
+            include __DIR__ . '/../view/error.php';
+            return [];
+        }
+        
+        $lineups = Lineup::getLineupByMatchId($matchId);
 
         if ($lineups) {
             return $lineups;
@@ -75,13 +93,5 @@ class LineupController extends Controller
         }
     }
 
-    public static function getLineupByMatchId($matchId): array
-    {
-        $lineups = Lineup::getLineupByMatchId($matchId);
-        if ($lineups) {
-            return $lineups;
-        } else {
-            return [];
-        }
-    }
+   
 }

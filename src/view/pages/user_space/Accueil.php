@@ -1,5 +1,7 @@
 <?php
 session_start();
+$_SESSION["user_id"] = 1;
+var_dump($_SESSION["user_id"]);
 if (isset($_GET["Target"])) {
   $_SESSION["current_page"] = $_GET["Target"];
 }
@@ -238,6 +240,12 @@ if (!isset($_SESSION["current_page"])) {
           break;
         case "comment_form":
           include_once "comments/CommentForm.php";
+          break;
+        case "club":
+          include_once "Club.php";
+          break;
+        case "player":
+          include_once "Player.php";
           break;
       }
 

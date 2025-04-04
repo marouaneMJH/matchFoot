@@ -13,10 +13,11 @@ class Lineup extends Model
 
 
     public static function getLineupByMatchId($matchId){
-        $query = "SELECT l.id,p.position_id,pos.tag,pos.name,p.id,p.name,p.surname,p.number
+        $query = "SELECT l.id as lineup_id,l.is_starting,l.club_type,p.position_id,pos.tag,pos.name,p.id,p.name,p.surname,p.number
                 FROM lineup l JOIN position pos ON l.position_id = pos.id
                         JOIN game_match gm ON l.match_id = gm.id
-                        JOIN player p ON l.player_id = p.id";
+                        JOIN player p ON l.player_id = p.id
+                        WHERE l.match_id = ?";
         $stmt = self::connect()->prepare($query);
         $stmt->execute([$matchId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

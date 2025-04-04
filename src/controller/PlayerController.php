@@ -89,6 +89,27 @@ class PlayerController extends Controller
             return [];
         }
     }
+        
+        public static function showPlayerDetail($playerId): void
+    {
+        try {
+            // Récupérer les données du joueur
+            $player = self::getPlayerById($playerId);
+            
+            if (empty($player)) {
+                throw new Exception("Joueur non trouvé");
+            }
+            
+            // Vous pourriez ajouter ici d'autres requêtes pour obtenir des données supplémentaires
+            // comme les statistiques du joueur, l'historique des matchs, etc.
+            
+            // Inclure la vue
+            include __DIR__ . '/../view/pages/user_space/PlayerDetail.php';
+        } catch (Exception $e) {
+            $error = $e->getMessage();
+            include __DIR__ . '/../view/Error.php';
+        }
+    }
 
     public static function getPlayersByClub($club_id)
     {
