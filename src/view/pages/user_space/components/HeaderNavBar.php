@@ -97,13 +97,13 @@ class HeaderNavBar {
 
     private function renderSetting() {
         if ($this->isLoggedIn) {
-            return '<a href="' . $this->basePath . 'pages/user_space/Profile.php"><i class="fa-solid fa-gear"></i></a>';
+            return '<a href="' . $this->basePath . 'pages/user_space/Accueil.php?Target=profile"><i class="fa-solid fa-gear"></i></a>';
         }
         return '';
     }
 
     private function renderProfileOptions() {
-        return '' . $this->renderNotificationMail() . $this->renderSetting() . $this->renderAuthButtons() ;
+        return '<div class="flex  gap-4">' . $this->renderNotificationMail() . $this->renderSetting() . $this->renderAuthButtons() . '</div>';
     }
 
     private function renderAuthButtons()

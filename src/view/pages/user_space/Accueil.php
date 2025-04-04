@@ -9,8 +9,11 @@ if (!isset($_SESSION["current_page"])) {
 }
 
 include_once './components/HeaderNavBar.php';
+include_once './components/Sidebar.php';
 
 $header = new HeaderNavBar('../../');
+$sidebar = new Sidebar('../../');
+
 
 ?>
 
@@ -36,76 +39,16 @@ $header = new HeaderNavBar('../../');
 <body>
   <div class="flex flex-col min-h-screen">
 
+    <!-- Header -->
     <?php echo $header->render(); ?>
     <main>
 
-      <aside class="sidebar">
-        <h2>MENU</h2>
-        <ul id="menu">
-          <li data-content="accueil" class="<?php if ($_SESSION['current_page'] == 'accueil')
-                                            echo 'active' ?>">
-            <i class="fas fa-home"></i> <a href="Accueil.php?Target=accueil"> Accueil </a>
-          </li>
-          <li data-content="classement" class="<?php if ($_SESSION['current_page'] == 'classement')
-                                                echo 'active' ?>">
-            <i class="fas fa-list"></i> <a href="Accueil.php?Target=classement">Classement</a>
-          </li>
-          <li data-content="actualite" class="<?php if ($_SESSION['current_page'] == 'news')
-                                              echo 'active' ?>">
-            <i class="fas fa-newspaper"></i> <a href="Accueil.php?Target=news">Actualité</a>
-          </li>
-          <li data-content="sondage" class="<?php if ($_SESSION['current_page'] == 'sondage')
-                                            echo 'active' ?>">
-            <i class="fas fa-poll"></i> <a href="Accueil.php?Target=sondage">Sondage</a>
-          </li>
-          <!-- <li data-content="admin">
-            <i class="fas fa-user-lock"></i> Espace Administrateur
-          </li> -->
-          <li data-content="admin">
-            <i class="fas fa-user-lock"></i> <a href="Accueil.php?Target=comments"> TODO </a>
-          </li>
-        </ul>
-        <h2>TOURNOIS MAROCAINES</h2>
-        <ul>
-          <li>
-            <img src="../../assets/images/equipes_logo/BOTOLA_Logo.png" alt="Botola Pro 1" />
-            Botola Pro inwi 1
-          </li>
-          <li>
-            <img src="../../assets/images/equipes_logo/BOTOLA PRO 2_logo.png" alt="Botola Pro 2" />
-            Botola Pro inwi 2
-          </li>
-          <li>
-            <img src="../../assets/images/equipes_logo/Coupe du throne.jpeg" alt="Coupe du Throne" />
-            Coupe du Throne
-          </li>
-          <li>
-            <img src="../../assets/images/equipes_logo/Excellence cup.jpeg" alt="Coupe d'excellence" />
-            Coupe d'excellence
-          </li>
-        </ul>
+      
+      
+      <!-- Sidebar -->
+      <?php echo $sidebar->render() ?> 
 
-        <h2>CLUBS PRÉFÉRÉS</h2>
-        <ul>
-          <li>
-            <img src="../../assets/images/equipes_logo/raja_logo.jpeg" alt="Raja CA" />
-            Raja CA
-          </li>
-          <li>
-            <img src="../../assets/images/equipes_logo/berkane_logo.jpeg" alt="RS Berkane" />
-            RS Berkane
-          </li>
-          <li>
-            <img src="../../assets/images/equipes_logo/WYDAD_logo.png" alt="Wydad AC" />
-            Wydad AC
-          </li>
-          <li>
-            <img src="../../assets/images/equipes_logo/AS far_logo.jpeg" alt="AS far" />
-            AS Far
-          </li>
-        </ul>
-      </aside>
-
+      <!-- Main Content -->
       <section id="content">
 
         <?php
@@ -119,6 +62,9 @@ $header = new HeaderNavBar('../../');
           break;
         case "news":
           include_once "News.php";
+          break;
+        case "mail":
+          include_once "Mail.php";
           break;
         case "sondage":
           include_once "Sondage.php";

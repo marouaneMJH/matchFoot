@@ -53,19 +53,17 @@
 <body class="bg-gray-50">
     <div class="flex flex-col min-h-screen">
         <!-- Header Navbar -->
-        <?php echo $headerNavbar->renderHeader(); 
-            $sidebar->getMenuClickHandler();
-        ?>
+    
 
         <div class="flex h-screen">
             <!-- Main Content -->
-            <?php echo $sidebar->render() ?> 
+
             <div class="flex-1 overflow-auto ml-272 lg:ml-0">
                 <div class="p-8">
                     <!-- Page Header -->
                     <div class="mb-8">
-                        <h1 class="text-3xl font-bold text-green-900">My Profile</h1>
-                        <p class="text-green-600 mt-1">View and manage your account information</p>
+                        <h1 class="text-3xl font-bold text-green-900">Mon Profile</h1>
+                        <p class="text-green-600 mt-1">Afficher et gérer les informations de votre compte</p>
                     </div>
 
                     <?php if (isset($error)): ?>
@@ -108,8 +106,8 @@
                         </div>
                         
                         <!-- Profile Details -->
-                        <div class="bg-white rounded-xl shadow-sm p-6 border border-green-100 lg:col-span-2">
-                            <h3 class="text-lg font-semibold text-green-900 mb-4">Account Information</h3>
+                        <div class="bg-white rounded-xl shadow-sm p-6 border border-green-100 lg:col-span-4 ">
+                            <h3 class="text-lg font-semibold text-green-900 mb-4">Informations sur le compte</h3>
                             
                             <div class="space-y-4">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
