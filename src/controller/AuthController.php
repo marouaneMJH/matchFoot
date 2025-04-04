@@ -133,6 +133,18 @@ class AuthController
 
     }
 
+    public static function redirectLastVisitedPage()
+    {
+        self::startSession();
+        if (isset($_SERVER['REQUEST_URI'])) {
+            header('Location: '. $_SERVER['REQUEST_URI']);
+            exit;
+        } else {
+            self::redirectToDashboard();
+        }
+    }
+
+
     public static function redirectToLogin()
     {
         header('Location: Login.php');

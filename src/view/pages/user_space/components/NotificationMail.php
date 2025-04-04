@@ -5,7 +5,7 @@ require_once  '../../../model/News.php';
 class NotificationMailButton {
     private int $notificationCount = 0;
     private array $notifications = [];
-    private string $viewAllLink = 'Accueil.php?Target=news';
+    private string $viewAllLink = 'Accueil.php?Target=mail';
     private int $userId;
 
     public function __construct(int $userId) {
@@ -87,7 +87,7 @@ class NotificationMailButton {
                 
                 <div class="p-2" role="none">
                     <a href="<?= $this->viewAllLink ?>" class="block w-full text-center px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-md">
-                        View all notifications
+                        Voir toues les notifications
                     </a>
                 </div>
             </div>
