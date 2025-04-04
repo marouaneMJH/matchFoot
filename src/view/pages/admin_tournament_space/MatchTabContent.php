@@ -145,9 +145,7 @@ foreach ($gameMatches as $match) {
                     </div>
                     <!-- Hover action buttons - hidden by default, shown on hover -->
                     <div class="absolute inset-0 flex items-center justify-center  gap-4 opacity-0 cursor-pointer  transition-opacity duration-300 to-be-shown-<?php echo $match[GameMatch::$id] ?>" onclick="blureDiv(<?php echo $match[GameMatch::$id] ?>)">
-                        <a class="px-3 py-2 bg-blue-500 text-white rounded-md font-semibold hover:bg-blue-600 transition-colors shadow-md cursor-pointer">
-                            Edit Match
-                        </a>
+                       
                         <a href="./MatchAffectations.php?match_id=<?php echo $match[GameMatch::$id] ?>" class="px-3 py-2 bg-green-500 text-white rounded-md font-semibold hover:bg-green-600 transition-colors shadow-md cursor-pointer">
                             Configure Lingup
                         </a>

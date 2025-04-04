@@ -6,6 +6,7 @@ $tournament_id = $_GET['tournament_id'] ?? 3; // Add proper validation as needed
 $standings = TournamentController::getStandings($tournament_id);
 
 
+
 // Helper function to generate last 5 matches status
 function getLastFiveMatches($team_id) {
     // This is a placeholder - you'll need to implement this in your TournamentController
