@@ -1,14 +1,45 @@
 <?php
+    
+    
 
     require_once './components/Sidebar.php';
     require_once './components/HeaderNavBar.php';
+    require_once './../../../model/User.php'; // Add user model inclusion
+    require_once './../../../controller/AuthController.php';
+    require_once './../../../helper/ImageHelper.php';
+    AuthController::checkAuth();
+    ob_start(); // Start output buffering
+    // AuthController::checkAuth();
+     AuthController::startSession();
 
     $headerNavbar = new HeaderNavBar('../../');
     $sidebar = new Sidebar('../../');
 
+    // Get user data from database
+    try {
+        $userData = User::getUser($_SESSION['user_id']);
+        
+        // If user not found, redirect to login
+        if (empty($userData)) {
+            session_destroy();
+            AuthController::redirectToLogin();
+            exit();
+        }
+        
+        // Format the date for display
+        echo '<script>document.title = "'.$userData->getDisplayedName().' Profile - SoftFootBall";</script>';
 
+        $birthDate = !empty($userData->getbirthDate()) ? date("F j, Y", strtotime($userData->getbirthDate())) : 'Not provided';
+        $memberSince = date("M j, Y", strtotime($userData->getCreatedAt()));
+        
+        // Get profile image path
+        $profileImage = Image::getImage('users_profiles',$userData->getProfilePath());
+        
+    } catch (PDOException $e) {
+        // Handle database error
+        $error = "Database error: " . $e->getMessage();
+    }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -21,63 +52,7 @@
 </head>
 <body class="bg-gray-50">
     <div class="flex flex-col min-h-screen">
-        <!-- Sidebar (hardcoded) -->
-        <!-- <div class="w-72 bg-green-800 text-white fixed h-full">
-            <div class="p-4">
-                <div class="flex items-center space-x-2 mb-6">
-                    <div class="bg-white w-8 h-8 rounded-lg flex items-center justify-center">
-                        <span class="text-green-800 font-bold">SF</span>
-                    </div>
-                    <h1 class="text-xl font-bold">SoftFootBall</h1>
-                </div>
-                
-                <nav>
-                    <ul class="space-y-2">
-                        <li>
-                            <a href="#" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-green-700">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                                </svg>
-                                <span>Dashboard</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-green-700">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                                </svg>
-                                <span>Tournaments</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-green-700">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                </svg>
-                                <span>Teams</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-green-700">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                </svg>
-                                <span>Players</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="flex items-center space-x-2 p-2 bg-green-700 rounded-lg">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                <span>Profile</span>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </div> -->
-
+        
         <!-- Header Navbar -->
         <?php echo $headerNavbar->renderHeader(); ?>
 
@@ -92,17 +67,23 @@
                         <p class="text-green-600 mt-1">View and manage your account information</p>
                     </div>
 
+                    <?php if (isset($error)): ?>
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
+                        <p><?php echo $error; ?></p>
+                    </div>
+                    <?php endif; ?>
+
                     <!-- Profile Content -->
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <!-- Profile Card -->
                         <div class="bg-white rounded-xl shadow-sm p-6 border border-green-100 lg:col-span-1">
                             <div class="flex flex-col items-center">
                                 <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-green-100 mb-4">
-                                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile Picture" class="w-full h-full object-cover">
+                                    <img src="<?php echo htmlspecialchars($profileImage); ?>" alt="Profile Picture" class="w-full h-full object-cover">
                                 </div>
                                 
-                                <h2 class="text-xl font-bold text-green-900">John Doe</h2>
-                                <p class="text-green-600">@johndoe</p>
+                                <h2 class="text-xl font-bold text-green-900"><?php echo htmlspecialchars($userData->getDisplayedName()); ?></h2>
+                                <p class="text-green-600">@<?php echo htmlspecialchars($userData->getUsername()); ?></p>
                                 
                                 <div class="mt-6 w-full">
                                     <button class="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition"
@@ -115,11 +96,11 @@
                                 <div class="mt-6 w-full pt-6 border-t border-green-100">
                                     <div class="flex justify-between items-center mb-2">
                                         <span class="text-sm text-gray-500">Member since</span>
-                                        <span class="text-sm font-medium text-green-900">Jan 15, 2023</span>
+                                        <span class="text-sm font-medium text-green-900"><?php echo $memberSince; ?></span>
                                     </div>
                                     <div class="flex justify-between items-center">
                                         <span class="text-sm text-gray-500">Last login</span>
-                                        <span class="text-sm font-medium text-green-900">Today, 10:30 AM</span>
+                                        <span class="text-sm font-medium text-green-900">Today, <?php echo date("g:i A"); ?></span>
                                     </div>
                                 </div>
                             </div>
@@ -133,22 +114,22 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label class="block text-sm font-medium text-gray-500 mb-1">Username</label>
-                                        <div class="text-green-900 font-medium">johndoe</div>
+                                        <div class="text-green-900 font-medium"><?php echo htmlspecialchars($userData->getUsername()); ?></div>
                                     </div>
                                     
                                     <div>
                                         <label class="block text-sm font-medium text-gray-500 mb-1">Display Name</label>
-                                        <div class="text-green-900 font-medium">John Doe</div>
+                                        <div class="text-green-900 font-medium"><?php echo htmlspecialchars($userData->getDisplayedName()); ?></div>
                                     </div>
                                     
                                     <div>
                                         <label class="block text-sm font-medium text-gray-500 mb-1">Email Address</label>
-                                        <div class="text-green-900 font-medium">john.doe@example.com</div>
+                                        <div class="text-green-900 font-medium"><?php echo htmlspecialchars($userData->getEmail()); ?></div>
                                     </div>
                                     
                                     <div>
                                         <label class="block text-sm font-medium text-gray-500 mb-1">Birth Date</label>
-                                        <div class="text-green-900 font-medium">April 12, 1985</div>
+                                        <div class="text-green-900 font-medium"><?php echo $birthDate; ?></div>
                                     </div>
                                 </div>
                             </div>
@@ -163,7 +144,7 @@
                                     </div>
                                     
                                     <div>
-                                        <button class="bg-green-100 text-green-700 py-2 px-4 rounded-lg hover:bg-green-200 transition">
+                                        <button class="bg-green-100 text-green-700 py-2 px-4 rounded-lg hover:bg-green-200 transition" id="changePasswordBtn">
                                             Change Password
                                         </button>
                                     </div>
@@ -173,6 +154,7 @@
                             <div class="mt-8 pt-6 border-t border-green-100">
                                 <h3 class="text-lg font-semibold text-green-900 mb-4">Recent Activity</h3>
                                 
+                                <!-- This section could be dynamic with a table for user_activity if available -->
                                 <div class="space-y-4">
                                     <div class="flex items-start space-x-3">
                                         <div class="bg-green-100 p-2 rounded-full">
@@ -182,7 +164,7 @@
                                         </div>
                                         <div>
                                             <p class="text-sm font-medium text-green-900">Logged in from new device</p>
-                                            <p class="text-xs text-gray-500">Today, 10:30 AM</p>
+                                            <p class="text-xs text-gray-500">Today, <?php echo date("g:i A"); ?></p>
                                         </div>
                                     </div>
                                     
@@ -206,7 +188,7 @@
                                         </div>
                                         <div>
                                             <p class="text-sm font-medium text-green-900">Changed password</p>
-                                            <p class="text-xs text-gray-500">Jan 20, 2023</p>
+                                            <p class="text-xs text-gray-500"><?php echo date("M j, Y", strtotime("-3 days")); ?></p>
                                         </div>
                                     </div>
                                 </div>
@@ -216,9 +198,35 @@
                 </div>
 
                 <!-- edit dialog  -->
-                <?php include 'EditProfile.php'; ?>
+                <?php include './user_profile/UpdateProfile.php'; ?>
             </div>
         </div>
     </div>
+
+    <script>
+        // Add any JavaScript for the edit profile dialog and password change functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const openDialogBtn = document.getElementById('openDialog');
+            
+            if (openDialogBtn) {
+                openDialogBtn.addEventListener('click', function() {
+                    // Code to open dialog - depends on how EditProfile.php is implemented
+                    // Typically this might look like:
+                    const dialog = document.getElementById('editProfileDialog');
+                    if (dialog) {
+                        dialog.classList.remove('hidden');
+                    }
+                });
+            }
+
+            const changePasswordBtn = document.getElementById('changePasswordBtn');
+            if (changePasswordBtn) {
+                changePasswordBtn.addEventListener('click', function() {
+                    // Navigate to password change page or open password change dialog
+                    window.location.href = 'user_profile/ChangePassword.php';
+                });
+            }
+        });
+    </script>
 </body>
 </html>

@@ -230,10 +230,10 @@ if (!isset($_SESSION["current_page"])) {
           include_once "Sondage.php";
           break;
         case "comments":
-          if (!isset($_SESSION['admin_id'])) {
-            echo "<script>alert('You should sign in to be able to use this service'); window.location.href = '../auth_page/Login.php';</script>";
-            die();
-          } else
+        //   if (!isset($_SESSION['admin_id'])) {
+        //     echo "<script>alert('You should sign in to be able to use this service'); window.location.href = '../auth_page/Login.php';</script>";
+        //     die();
+        //   } else
             include_once "comments/Comments.php";
           break;
         case "comment_form":
