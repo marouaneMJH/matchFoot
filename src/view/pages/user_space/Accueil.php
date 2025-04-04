@@ -147,7 +147,7 @@ if (!isset($_SESSION["current_page"])) {
             <i class="fas fa-user-lock"></i> Espace Administrateur
           </li> -->
         <li data-content="admin">
-          <i class="fas fa-user-lock"></i> <a href="Accueil.php?Target=comments"> TODO </a>
+          <i class="fas fa-user-lock"></i> <a href="Accueil.php?Target=comments"> Discussion </a>
         </li>
         <!-- code javascript LOGIQUE -->
         <!-- document.addEventListener("DOMContentLoaded", function () {
