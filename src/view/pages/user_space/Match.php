@@ -87,11 +87,11 @@ foreach ($matches as $match) {
                         <div class="flex items-center justify-between mb-6">
                             <div class="flex items-center space-x-3">
                                 <img src="../../assets/images/equipes_logo/raja_logo.jpeg" alt="RCA" class="w-12 h-12 rounded-full border-2 border-green-200">
-                                <span class="font-semibold text-gray-800"><?php echo $upcomingMatch['club1_name'] ?></span>
+                                <span class="font-semibold text-gray-800"><?php echo $upcomingMatch['club1_nickname'] ?></span>
                             </div>
                             <div class="text-2xl font-bold text-green-600">VS</div>
                             <div class="flex items-center space-x-3">
-                                <span class="font-semibold text-gray-800"><?php echo $upcomingMatch['club2_name'] ?></span>
+                                <span class="font-semibold text-gray-800"><?php echo $upcomingMatch['club2_nickname'] ?></span>
                                 <img src="../../assets/images/equipes_logo/WYDAD_logo.png" alt="WAC" class="w-12 h-12 rounded-full border-2 border-green-200">
                             </div>
                         </div>
@@ -101,9 +101,9 @@ foreach ($matches as $match) {
                             <div class="text-center mb-4">
                                 <span class="text-sm font-semibold">Pronostics des fans:</span>
                                 <div class="flex justify-between text-sm mt-2">
-                                    <span><?php echo $matchVotes['home_percentage'] ?>% <?php echo $upcomingMatch['club1_name'] ?></span>
+                                    <span><?php echo $matchVotes['home_percentage'] ?>% <?php echo $upcomingMatch['club1_nickname'] ?></span>
                                     <span><?php echo $matchVotes['draw_percentage'] ?>% Nul</span>
-                                    <span><?php echo $matchVotes['away_percentage'] ?>% <?php echo $upcomingMatch['club2_name'] ?></span>
+                                    <span><?php echo $matchVotes['away_percentage'] ?>% <?php echo $upcomingMatch['club2_nickname'] ?></span>
                                 </div>
                             </div>
                             

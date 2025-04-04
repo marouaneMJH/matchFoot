@@ -241,6 +241,12 @@ if (!isset($_SESSION["current_page"])) {
         case "comment_form":
           include_once "comments/CommentForm.php";
           break;
+        case "club":
+          include_once "Club.php";
+          break;
+        case "player":
+          include_once "Player.php";
+          break;
       }
 
       ?>
