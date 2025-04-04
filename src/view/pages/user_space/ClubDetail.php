@@ -729,19 +729,19 @@
                 <div class="stats-grid">
                     <div class="stat-box stat-wins">
                         <p class="stat-label">Victoires</p>
-                        <p class="stat-value"><?= $stats['wins'] ?></p>
+                        <p class="stat-value">18</p>
                     </div>
                     <div class="stat-box stat-draws">
                         <p class="stat-label">Nuls</p>
-                        <p class="stat-value"><?= $stats['draws'] ?></p>
+                        <p class="stat-value">7</p>
                     </div>
                     <div class="stat-box stat-losses">
                         <p class="stat-label">Défaites</p>
-                        <p class="stat-value"><?= $stats['losses'] ?></p>
+                        <p class="stat-value">4</p>
                     </div>
                     <div class="stat-box stat-goals">
                         <p class="stat-label">Buts</p>
-                        <p class="stat-value"><?= $stats['goals_for'] ?> - <?= $stats['goals_against'] ?></p>
+                        <p class="stat-value">50-14</p>
                     </div>
                 </div>
             </div>
@@ -754,10 +754,7 @@
             <input type="text" id="player-search" class="search-input" placeholder="Rechercher un joueur...">
             <select id="position-filter" class="filter-select">
                 <option value="">Toutes les positions</option>
-                <option value="Gardien">Gardien</option>
-                <option value="Défenseur">Défenseur</option>
-                <option value="Milieu">Milieu</option>
-                <option value="Attaquant">Attaquant</option>
+                
             </select>
         </div>
 
