@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../helper/UploadFileHelper.php';
 require_once __DIR__ . '/../model/News.php';
+require_once __DIR__ . '/../model/Club.php';
 require_once __DIR__ . '/Controller.php';
 
 class NewsController extends Controller
@@ -15,11 +16,20 @@ class NewsController extends Controller
 
             $modifiedNews = [];
             if ($news) {
-                foreach ($news as $news) {
-                    if ($news[News::$image_path])
-                        $news['image'] = 'http://efoot/logo?file=' . $news[News::$image_path] . '&dir=' . self::$uploadSubDirectory;
+                foreach ($news as $newsItem) {
+                    if ($newsItem[News::$image_path]) {
+                        $newsItem['image'] = 'http://efoot/logo?file=' . $newsItem[News::$image_path] . '&dir=' . self::$uploadSubDirectory;
+                    }
 
-                    $modifiedNews[] = $news;
+                    if ($newsItem[News::$club_id]) {
+                        $temp_club = Club::getById($newsItem[News::$club_id]);
+                        // var_dump($temp_club);
+                        if ($temp_club) {
+                            $newsItem['club_name'] = $temp_club[Club::$name];
+                        }
+                    }
+
+                    $modifiedNews[] = $newsItem;
                 }
 
                 rsort($modifiedNews);
@@ -64,6 +74,7 @@ class NewsController extends Controller
         $category = isset($_POST['category']) ? trim($_POST['category']) : null;
         $status = isset($_POST['status']) ? trim($_POST['status']) : null;
         $date = isset($_POST['date']) ? trim(intval($_POST['date'])) : null;
+        $club_id = isset($_POST['club_id']) ? trim(intval($_POST['club_id'])) : null;
         $image_path = null;
 
 
@@ -74,7 +85,8 @@ class NewsController extends Controller
             News::$content => $content,
             News::$category => $category,
             News::$status => $status,
-            News::$date => $date
+            News::$date => $date,
+            News::$club_id => $club_id
         ];
         var_dump($data);
 
@@ -129,6 +141,7 @@ class NewsController extends Controller
         $category = isset($_POST['category']) ? trim($_POST['category']) : null;
         $status = isset($_POST['status']) ? trim($_POST['status']) : null;
         $date = isset($_POST['date']) ? trim(intval($_POST['date'])) : null;
+        $club_id = isset($_POST['club_id']) ? trim(intval($_POST['club_id'])) : null;
         $image_path = null;
         $old_image_path = null;
 
@@ -151,7 +164,8 @@ class NewsController extends Controller
             News::$content => $content,
             News::$category => $category,
             News::$status => $status,
-            News::$date => $news[News::$date]
+            News::$date => $news[News::$date],
+            News::$club_id => $club_id
         ];
 
         $rules = [

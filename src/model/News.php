@@ -19,10 +19,11 @@ class News extends Model
     public static $status="status";
     public static $image_path="image_path";
     public static $date="date";
+    public static $club_id="club_id";
 
 
     
-    public function __construct($id = null, $admin_id = null, $title = null, $content = null, $category = null, $status = null, $date = null) {
+    public function __construct($id = null, $admin_id = null, $title = null, $content = null, $category = null, $status = null, $date = null, $club_id = null) {
         $this->id = $id;
         $this->admin_id = $admin_id;
         $this->title = $title;
@@ -30,6 +31,7 @@ class News extends Model
         $this->category = $category;
         $this->status = $status;
         $this->date = $date;
+        $this->club_id = $club_id;
     }
 
 

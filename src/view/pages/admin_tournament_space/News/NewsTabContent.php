@@ -34,6 +34,8 @@
                         <th class="px-6 py-4 text-left text-xs font-medium text-green-700 uppercase tracking-wider">
                             Status</th>
                         <th class="px-6 py-4 text-left text-xs font-medium text-green-700 uppercase tracking-wider">
+                            Club</th>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-green-700 uppercase tracking-wider">
                             Actions</th>
                     </tr>
                 </thead>
@@ -42,6 +44,7 @@
 
                     <?php
                     $news = NewsController::index();
+                    // var_dump($news);
                     if (empty($news)) {
                         echo '<tr><td colspan="7" class="px-6 py-4 text-center text-green-500">No news found</td></tr>';
                     } else {
@@ -75,6 +78,9 @@
                                         class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                                         <?php echo $newsItem[News::$status] ?>
                                     </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-sm font-medium text-green-900"><?php echo $newsItem['club_name'] ?></div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-3">

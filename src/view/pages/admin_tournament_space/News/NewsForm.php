@@ -5,7 +5,8 @@ $content = "";
 $category = "";
 $status = "";
 $newsId = "";
-$showModal= "";
+$club_id = null;
+$showModal = "";
 
 if (isset($_GET['id'])) {
     $newsItem = NewsController::getNewsById($_GET['id']);
@@ -15,12 +16,15 @@ if (isset($_GET['id'])) {
     $category = $newsItem[News::$category];
     $status = $newsItem[News::$status];
     $newsId = $newsItem[News::$id];
-
+    $club_id = $newsItem[News::$club_id];
 }
 
 if (isset($_GET['showModal'])) {
     $showModal = $_GET['showModal'];
 }
+
+$clubs = ClubController::index();
+// var_dump($clubs);
 
 ?>
 
@@ -52,20 +56,39 @@ if (isset($_GET['showModal'])) {
                     placeholder="Enter news title">
             </div>
 
+            <div>
+                <label class="block text-sm font-medium text-green-700 mb-1">Club</label>
+
+                <select name="club_id"
+                    class="w-full px-4 py-2.5 border border-green-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500">
+
+                    <?php
+                    if ($clubs) {
+                        foreach ($clubs as $club) {
+                            echo '<option value="' . $club[Club::$id] . '"';
+                            if ($club_id == $club[Club::$id])
+                                echo 'selected';
+                            echo '>' . $club[Club::$name] . '</option>';
+                        }
+                    }
+                    ?>
+                </select>
+            </div>
+
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-green-700 mb-1">Category</label>
                     <select name="category"
                         class="w-full px-4 py-2.5 border border-green-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500">
                         <option value="schedule" <?php if ($category == 'schedule')
-                            echo 'selected'; ?>>Schedule</option>
+                                                        echo 'selected'; ?>>Schedule</option>
                         <option value="results" <?php if ($category == 'results')
-                            echo 'selected'; ?>>Results</option>
+                                                    echo 'selected'; ?>>Results</option>
                         <option value="announcements" <?php if ($category == 'announcements')
-                            echo 'selected'; ?>>
+                                                            echo 'selected'; ?>>
                             Announcements</option>
                         <option value="highlights" <?php if ($category == 'highlights')
-                            echo 'selected'; ?>>Highlights
+                                                        echo 'selected'; ?>>Highlights
                         </option>
                     </select>
                 </div>
@@ -75,9 +98,9 @@ if (isset($_GET['showModal'])) {
                     <select name="status"
                         class="w-full px-4 py-2.5 border border-green-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500">
                         <option value="draft" <?php if ($status == 'draft')
-                            echo 'selected'; ?>>Draft</option>
+                                                    echo 'selected'; ?>>Draft</option>
                         <option value="published" <?php if ($status == 'published')
-                            echo 'selected'; ?>>Published</option>
+                                                        echo 'selected'; ?>>Published</option>
                     </select>
                 </div>
             </div>
