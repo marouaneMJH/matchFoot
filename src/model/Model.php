@@ -60,7 +60,7 @@ class Model
     public static function exists($data): bool
     {
         try {
-            var_dump($data);
+            // var_dump($data);
             $pdo = self::connect();
             $whereClause = implode(" AND ", array_map(fn($key) => "$key = :$key", array_keys($data)));
             $sql = "SELECT * FROM " . static::$table . " WHERE $whereClause";

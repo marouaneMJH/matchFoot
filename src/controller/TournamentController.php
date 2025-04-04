@@ -229,4 +229,124 @@ class TournamentController extends Controller
             return;
         }
     }
+
+    public static function getStandings($tournament_id): array {
+        // Get all necessary data
+        $matches = Tournament::getMatchesByTournament($tournament_id);
+        $goals = Tournament::getGoalsByTournament($tournament_id);
+        $teams = Tournament::getTeamsByTournament($tournament_id);
+        
+        // Initialize standings array
+        $standings = [];
+        foreach ($teams as $team) {
+            $standings[$team['id']] = [
+                'team_id' => $team['id'],
+                'name' => $team['name'],
+                'logo' => $team['logo_path'],
+                'matches_played' => 0,
+                'wins' => 0,
+                'draws' => 0,
+                'losses' => 0,
+                'goals_for' => 0,
+                'goals_against' => 0,
+                'goal_difference' => 0,
+                'points' => 0
+            ];
+        }
+
+        // Calculate goals for each match
+        $match_goals = [];
+        foreach ($goals as $goal) {
+            $match_id = $goal['match_id'];
+            if (!isset($match_goals[$match_id])) {
+                $match_goals[$match_id] = ['home' => 0, 'away' => 0];
+            }
+            
+         
+            $match_goals[$match_id][($goal['club_type'] == 'H' ? "home" : "away")]++;
+        }
+
+        // Calculate standings
+        foreach ($matches as $match) {
+            $home_goals = $match_goals[$match['id']]['home'] ?? 0;
+            $away_goals = $match_goals[$match['id']]['away'] ?? 0;
+            
+            // Update home team stats
+            $standings[$match['club1_id']]['matches_played']++;
+            $standings[$match['club1_id']]['goals_for'] += $home_goals;
+            $standings[$match['club1_id']]['goals_against'] += $away_goals;
+            
+            // Update away team stats
+            $standings[$match['club2_id']]['matches_played']++;
+            $standings[$match['club2_id']]['goals_for'] += $away_goals;
+            $standings[$match['club2_id']]['goals_against'] += $home_goals;
+            
+            // Determine match result
+            if ($home_goals > $away_goals) {
+                $standings[$match['club1_id']]['wins']++;
+                $standings[$match['club1_id']]['points'] += 3;
+                $standings[$match['club2_id']]['losses']++;
+            } elseif ($home_goals < $away_goals) {
+                $standings[$match['club2_id']]['wins']++;
+                $standings[$match['club2_id']]['points'] += 3;
+                $standings[$match['club1_id']]['losses']++;
+            } else {
+                $standings[$match['club1_id']]['draws']++;
+                $standings[$match['club2_id']]['draws']++;
+                $standings[$match['club1_id']]['points']++;
+                $standings[$match['club2_id']]['points']++;
+            }
+        }
+
+        // Calculate goal difference and sort standings
+        foreach ($standings as &$team) {
+            $team['goal_difference'] = $team['goals_for'] - $team['goals_against'];
+        }
+
+        // Sort by points, goal difference, and goals scored
+        usort($standings, function($a, $b) {
+            if ($a['points'] !== $b['points']) {
+                return $b['points'] - $a['points'];
+            }
+            if ($a['goal_difference'] !== $b['goal_difference']) {
+                return $b['goal_difference'] - $a['goal_difference'];
+            }
+            return $b['goals_for'] - $a['goals_for'];
+        });
+
+        return $standings;
+    }
+
+    public static function getLastFiveMatches($team_id): array {
+        try {
+            $matches = Tournament::getLastFiveMatchesByTeam($team_id);
+            $results = [];
+            
+            foreach ($matches as $match) {
+                if ($match['club1_id'] == $team_id) {
+                    // Team played at home
+                    if ($match['home_goals'] > $match['away_goals']) {
+                        $results[] = 'W';
+                    } elseif ($match['home_goals'] < $match['away_goals']) {
+                        $results[] = 'L';
+                    } else {
+                        $results[] = 'D';
+                    }
+                } else {
+                    // Team played away
+                    if ($match['away_goals'] > $match['home_goals']) {
+                        $results[] = 'W';
+                    } elseif ($match['away_goals'] < $match['home_goals']) {
+                        $results[] = 'L';
+                    } else {
+                        $results[] = 'D';
+                    }
+                }
+            }
+    
+            return $results;
+        } catch (Exception $e) {
+            return ['N', 'N', 'N', 'N', 'N']; // Return placeholder on error
+        }
+    }
 }
