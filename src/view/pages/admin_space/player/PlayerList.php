@@ -89,7 +89,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </thead>
                             <tbody class="bg-white divide-y divide-[var(--secondary-color)]">
                                 <?php
-                                $players = PlayerController::index();
+                                $players = PlayerController::getAllPlayers();
+                              
                                 if (empty($players)) {
                                     echo '<tr><td colspan="12" class="px-6 py-4 text-center text-[var(--primary-color)]">No players found</td></tr>';
                                 } else {
@@ -108,9 +109,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--primary-color)]"><?php echo $player[Player::$height]; ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--primary-color)]"><?php echo $player[Player::$weight]; ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--primary-color)]"><?php echo $player[Player::$foot]; ?></td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--primary-color)]"><?php echo $player['club'][Club::$name]; ?></td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--primary-color)]"><?php echo $player['country'][Country::$name]; ?></td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--primary-color)]"><?php echo $player['position'][Position::$tag]; ?></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--primary-color)]"><?php echo $player['club_nickname']; ?></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--primary-color)]"><?php echo $player['country_name']; ?></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--primary-color)]"><?php echo $player['position_tag']; ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div class="flex space-x-3">
                                             <a href="PlayerList.php?id=<?php echo $player[Player::$id]; ?>&&showModal" 

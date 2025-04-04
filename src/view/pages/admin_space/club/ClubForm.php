@@ -5,9 +5,9 @@ $clubNickname = '';
 $clubStadeName = '';
 $clubTrainerName = '';
 $clubCreationDate = '';
-$clubLogoPath = '';
 $clubId = '';
 $is_update = false;
+// $clubLogoPath = '';
 
 
 if (isset($_GET['id'])) {
@@ -18,7 +18,7 @@ if (isset($_GET['id'])) {
     $clubNickname = $club[Club::$nickname];
     $clubStadeName = $club['stadium'][Stadium::$name];
     $clubCreationDate = $club[Club::$founded_at];
-    $clubLogoPath = $club['logo'];
+    // $clubLogoPath = $club['logo'];
     $is_update = true;
 
 

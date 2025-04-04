@@ -13,9 +13,10 @@
     <div class="p-6 border-b border-green-100 flex flex-col items-center">
         <div class="relative">
             <img
-                src="http://efoot/logo?file=programmer.jpg&dir=admin_profiles"
+                src="http://efoot/logo?file=img-placeholder.png&dir=image_placeholder"
                 alt="Profile"
-                class="w-24 h-24 rounded-full object-cover border-4 border-green-200 shadow-md">
+                class="w-24 h-24 rounded-full object-cover border-4 border-green-200 shadow-md"/>
+            
             <div class="absolute bottom-0 right-0 bg-green-500 w-4 h-4 rounded-full border-2 border-white"></div>
         </div>
         <h2 class="mt-4 text-lg font-semibold text-green-800">Admin Profile</h2>

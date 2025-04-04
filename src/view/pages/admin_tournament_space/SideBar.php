@@ -57,17 +57,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['tournament_id'])) {
         <!-- Tournament Selection -->
         <div class="p-4 border-b border-green-700/50">
             <div class="relative">
-                <?php $tournaments = TournamentController::getTournamentsByAdminId($_SESSION['admin_id']); ?>
-                <form action="" method="POST">
+                <?php $adminTournaments = TournamentController::getTournamentsByAdminId($_SESSION['admin_id']); ?>
+                <form action="TournamentInfos.php" method="POST">
                     <select id="tournamentSelector"
                     default="<?php echo $_SESSION['tournament_id'] ?? ''; ?>"
                     onchange="this.form.submit()"
                     name="tournament_id"
                         class="w-full p-2.5 bg-green-700 text-white rounded-lg border border-green-600 focus:outline-none focus:border-green-400 focus:ring-1 focus:ring-green-400">
                         <option value="" disabled selected>Select Tournament</option>
-                        <?php foreach ($tournaments as $tournament): ?>
-                            <option value="<?php echo $tournament['id']; ?>">
-                                <?php echo htmlspecialchars($tournament[Tournament::$name]); ?>
+                        <?php foreach ($adminTournaments as $adminTournament): ?>
+                            <option value="<?php echo $adminTournament['id']; ?>">
+                                <?php echo htmlspecialchars($adminTournament[Tournament::$name]); ?>
                             </option>
                         <?php endforeach; ?>
                     </select>

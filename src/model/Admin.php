@@ -37,7 +37,4 @@ class Admin extends Model{
         $this->$name = $value;
     }
 
-    
-
-    
 }
